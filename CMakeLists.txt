@@ -24,14 +24,11 @@ set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR} )
 
 set ( TARGET ${PROJECT_NAME}-${CMAKE_SYSTEM_NAME} )
 
-# 查找并载入Cmake预设
-find_package ( SDL3 REQUIRED )
-find_package ( SDL3_image REQUIRED )
-find_package ( SDL3_mixer REQUIRED )
-find_package ( SDL3_ttf REQUIRED )
-find_package ( glm REQUIRED )
-find_package ( nlohmann_json REQUIRED )
-find_package ( spdlog REQUIRED )
+# 添加third_party中的子目录
+add_subdirectory ( third_party/SDL3 )
+add_subdirectory ( third_party/glm )
+add_subdirectory ( third_party/nlohmann_json )
+add_subdirectory ( third_party/spdlog )
 
 # 设置通用源文件
 set ( SOURCES
@@ -51,13 +48,10 @@ add_executable ( ${TARGET} ${SOURCES} )
 
 # 链接库
 target_link_libraries ( ${TARGET}
-    ${SDL3_LIBRARIES}
-    SDL3_image::SDL3_image
-    SDL3_mixer::SDL3_mixer
-    SDL3_ttf::SDL3_ttf
-    glm::glm
-    nlohmann_json::nlohmann_json
-    spdlog::spdlog
+    SDL3
+    glm
+    nlohmann_json
+    spdlog
 )
 
 # 不要弹出控制台窗口
