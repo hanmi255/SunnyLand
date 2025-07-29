@@ -1,9 +1,9 @@
-/***
+/*** 
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 15:09:13
  * @LastEditTime: 2025-07-29 15:26:26
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
- * @Description:
+ * @Description: 
  * @FilePath: \SunnyLand\src\engine\core\time.cpp
  * @技术宅拯救世界！！！
  */
@@ -22,19 +22,18 @@ namespace engine::core {
     }
 
     void Time::update() {
-        const Uint64 current_time = SDL_GetTicksNS();
 
+        frame_start_time_ = SDL_GetTicksNS(); // 记录进入 update 时的时间戳
         auto current_delta_time =
-            static_cast<double>(current_time - last_time_) / 1000000000.0;
-
-        if (target_frame_time_ <= 0.0) {
+            static_cast<double>(frame_start_time_ - last_time_) / 1000000000.0;
+        if (target_frame_time_ >
+            0.0) { // 如果设置了目标帧率，则限制帧率；否则delta_time_
+                   // = current_delta_time
+            limitFrameRate(current_delta_time);
+        } else {
             delta_time_ = current_delta_time;
-            last_time_ = current_time;
-            return;
         }
 
-        // 如果设置了目标帧率，则限制帧率
-        limitFrameRate(current_delta_time);
         last_time_ = SDL_GetTicksNS(); // 记录离开 update 时的时间戳
     }
 
@@ -60,7 +59,7 @@ namespace engine::core {
             time_scale_ = scale;
             return;
         }
-
+        
         spdlog::warn("Time scale 不能为负。Clamping to 0.");
         time_scale_ = 0.0; // 防止负时间缩放
     }
@@ -73,19 +72,19 @@ namespace engine::core {
             spdlog::warn("Target FPS 不能为负。Setting to 0 (unlimited).");
             fps = 0;
         }
-
+        
         target_fps_ = fps;
-
+        
         // 设置目标帧时间
         if (target_fps_ == 0) {
             target_frame_time_ = 0.0;
             spdlog::info("Target FPS 设置为: Unlimited");
             return;
         }
-
+        
         target_frame_time_ = 1.0 / static_cast<double>(target_fps_);
-        spdlog::info("Target FPS 设置为: {} (Frame time: {:.6f}s)", target_fps_,
-                     target_frame_time_);
+        spdlog::info("Target FPS 设置为: {} (Frame time: {:.6f}s)",
+                     target_fps_, target_frame_time_);
     }
 
     int Time::getTargetFps() const { return target_fps_; }
