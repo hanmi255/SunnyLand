@@ -58,7 +58,7 @@ add_library(SDL3_mixer::SDL3_mixer-shared SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::SDL3_mixer-shared PROPERTIES
   COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include"
   INTERFACE_LINK_LIBRARIES "SDL3::Headers"
   INTERFACE_SDL3_SHARED "ON"
 )
@@ -67,21 +67,21 @@ set_target_properties(SDL3_mixer::SDL3_mixer-shared PROPERTIES
 add_library(SDL3_mixer::ogg SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::ogg PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include"
 )
 
 # Create imported target SDL3_mixer::opus
 add_library(SDL3_mixer::opus SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::opus PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include;${_IMPORT_PREFIX}/include/opus"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include;${_IMPORT_PREFIX}/../include/opus"
 )
 
 # Create imported target SDL3_mixer::opusfile
 add_library(SDL3_mixer::opusfile SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::opusfile PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include/opus"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include/opus"
   INTERFACE_LINK_LIBRARIES "SDL3_mixer::ogg;SDL3_mixer::opus;\$<\$<BOOL:>:m>"
 )
 
@@ -89,21 +89,21 @@ set_target_properties(SDL3_mixer::opusfile PROPERTIES
 add_library(SDL3_mixer::gme_shared SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::gme_shared PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include"
 )
 
 # Create imported target SDL3_mixer::xmp_shared
 add_library(SDL3_mixer::xmp_shared SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::xmp_shared PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include"
 )
 
 # Create imported target SDL3_mixer::WavPack
 add_library(SDL3_mixer::WavPack SHARED IMPORTED)
 
 set_target_properties(SDL3_mixer::WavPack PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/../include"
 )
 
 # Load information for each installed configuration.

@@ -19,6 +19,21 @@ endmacro()
 
 ####################################################################################
 
+# Determine the architecture subdirectory
+if(SDL_CPU_X86)
+    set(_sdl_arch_subdir "x86")
+elseif(SDL_CPU_X64 OR SDL_CPU_ARM64EC)
+    set(_sdl_arch_subdir "x64")
+elseif(SDL_CPU_ARM64)
+    set(_sdl_arch_subdir "arm64")
+else()
+    # Default to x64 if architecture is not set
+    set(_sdl_arch_subdir "x64")
+endif()
+
+# Update the _IMPORT_PREFIX to include the architecture subdirectory for import checks
+set(_IMPORT_PREFIX_WITH_ARCH "${PACKAGE_PREFIX_DIR}/lib/${_sdl_arch_subdir}")
+
 include(FeatureSummary)
 set_package_properties(SDL3_mixer PROPERTIES
     URL "https://www.libsdl.org/projects/SDL_mixer/"
@@ -65,8 +80,11 @@ set(SDLMIXER_SDL3_REQUIRED_VERSION 3.0.0)
 
 set(SDL3_mixer_SDL3_mixer-shared_FOUND FALSE)
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_mixer-shared-targets.cmake")
+    # Pass the architecture directory to the targets file
+    set(_IMPORT_PREFIX "${_IMPORT_PREFIX_WITH_ARCH}")
     include("${CMAKE_CURRENT_LIST_DIR}/SDL3_mixer-shared-targets.cmake")
     set(SDL3_mixer_SDL3_mixer-shared_FOUND TRUE)
+    unset(_IMPORT_PREFIX)
 endif()
 
 set(SDL3_mixer_SDL3_mixer-static FALSE)

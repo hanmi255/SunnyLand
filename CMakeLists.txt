@@ -19,8 +19,8 @@ else ()
 endif ()
 
 # 设置编译输出目录
-set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR} )
-set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR} )
+set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}/build/Debug )
+set ( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/build/Release )
 
 set ( TARGET ${PROJECT_NAME}-${CMAKE_SYSTEM_NAME} )
 
@@ -55,6 +55,7 @@ target_link_libraries ( ${TARGET}
 )
 
 # 不要弹出控制台窗口
-if ( MSVC )
-    target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
-endif ()
+# 注释掉下面的设置，因为我们希望看到控制台输出
+# if ( MSVC )
+#     target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
+# endif ()
