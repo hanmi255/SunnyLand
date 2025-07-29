@@ -24,3 +24,24 @@ endif()
 target_compile_definitions(SDL3 INTERFACE
     SDL_MAIN_USE_CALLBACKS
 )
+
+# 包含SDL3扩展库的配置
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# 查找并链接SDL3_image
+if(WIN32)
+    find_package(SDL3_image REQUIRED CONFIG PATHS "${CMAKE_CURRENT_SOURCE_DIR}/cmake" NO_DEFAULT_PATH)
+    target_link_libraries(SDL3 INTERFACE SDL3_image::SDL3_image-shared)
+endif()
+
+# 查找并链接SDL3_mixer
+if(WIN32)
+    find_package(SDL3_mixer REQUIRED CONFIG PATHS "${CMAKE_CURRENT_SOURCE_DIR}/cmake" NO_DEFAULT_PATH)
+    target_link_libraries(SDL3 INTERFACE SDL3_mixer::SDL3_mixer-shared)
+endif()
+
+# 查找并链接SDL3_ttf
+if(WIN32)
+    find_package(SDL3_ttf REQUIRED CONFIG PATHS "${CMAKE_CURRENT_SOURCE_DIR}/cmake" NO_DEFAULT_PATH)
+    target_link_libraries(SDL3 INTERFACE SDL3_ttf::SDL3_ttf-shared)
+endif()
