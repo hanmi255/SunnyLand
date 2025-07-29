@@ -33,6 +33,8 @@ add_subdirectory ( third_party/spdlog )
 # 设置通用源文件
 set ( SOURCES
     src/main.cpp
+    src/engine/core/game_app.cpp
+    src/engine/core/time.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件
@@ -55,7 +57,6 @@ target_link_libraries ( ${TARGET}
 )
 
 # 不要弹出控制台窗口
-# 注释掉下面的设置，因为我们希望看到控制台输出
-# if ( MSVC )
-#     target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
-# endif ()
+if ( MSVC )
+    target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
+endif ()
