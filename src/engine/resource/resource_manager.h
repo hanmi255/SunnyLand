@@ -21,8 +21,6 @@ struct Mix_Music;
 struct TTF_Font;
 
 namespace engine::resource {
-
-    // 前向声明内部管理器
     class TextureManager;
     class AudioManager;
     class FontManager;
@@ -45,7 +43,7 @@ namespace engine::resource {
          * 的指针，传递给需要它的子管理器。不能为空。
          */
         // explicit 关键字用于防止隐式转换,对于单一参数的构造函数，通常考虑添加
-        explicit ResourceManager(SDL_Renderer *renderer);
+        explicit ResourceManager(SDL_Renderer* renderer);
         ~ResourceManager();
 
         void clear();
@@ -57,27 +55,27 @@ namespace engine::resource {
 
         // --- 统一资源访问接口 ---
         // -- Texture --
-        SDL_Texture *loadTexture(std::string_view file_path);
-        SDL_Texture *getTexture(std::string_view file_path);
+        SDL_Texture* loadTexture(std::string_view file_path);
+        SDL_Texture* getTexture(std::string_view file_path);
         void unloadTexture(std::string_view file_path);
         glm::vec2 getTextureSize(std::string_view file_path);
         void clearTextures();
 
         // -- Sound Effects (Chunks) --
-        Mix_Chunk *loadSound(std::string_view file_path);
-        Mix_Chunk *getSound(std::string_view file_path);
+        Mix_Chunk* loadSound(std::string_view file_path);
+        Mix_Chunk* getSound(std::string_view file_path);
         void unloadSound(std::string_view file_path);
         void clearSounds();
 
         // -- Music --
-        Mix_Music *loadMusic(std::string_view file_path);
-        Mix_Music *getMusic(std::string_view file_path);
+        Mix_Music* loadMusic(std::string_view file_path);
+        Mix_Music* getMusic(std::string_view file_path);
         void unloadMusic(std::string_view file_path);
         void clearMusic();
 
         // -- Fonts --
-        TTF_Font *loadFont(std::string_view file_path, int point_size);
-        TTF_Font *getFont(std::string_view file_path, int point_size);
+        TTF_Font* loadFont(std::string_view file_path, int point_size);
+        TTF_Font* getFont(std::string_view file_path, int point_size);
         void unloadFont(std::string_view file_path, int point_size);
         void clearFonts();
     };

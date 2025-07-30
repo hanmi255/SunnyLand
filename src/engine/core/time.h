@@ -11,10 +11,10 @@ namespace engine::core {
      */
     class Time final {
     private:
-        Uint64 last_time_ = 0; ///< @brief 上一帧的时间戳 (用于计算 delta)
+        Uint64 last_time_ = 0;        ///< @brief 上一帧的时间戳 (用于计算 delta)
         Uint64 frame_start_time_ = 0; ///< @brief 当前帧开始的时间戳 (用于帧率限制)
-        double delta_time_ = 0.0; ///< @brief 未缩放的帧间时间差 (秒)
-        double time_scale_ = 1.0; ///< @brief 时间缩放因子
+        double delta_time_ = 0.0;     ///< @brief 未缩放的帧间时间差 (秒)
+        double time_scale_ = 1.0;     ///< @brief 时间缩放因子
 
         // 帧率限制相关
         int target_fps_ = 0;             ///< @brief 目标 FPS (0 表示不限制)

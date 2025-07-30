@@ -1,0 +1,479 @@
+# 基于 LLVM 风格的配置，这是 C++ 项目中广泛使用的风格之一
+BasedOnStyle: LLVM
+
+# 访问修饰符(public/private/protected)的缩进偏移量
+AccessModifierOffset: -4
+
+# 对齐括号后的内容，例如函数参数
+AlignAfterOpenBracket: Align
+
+# 不对结构体数组进行特殊对齐
+AlignArrayOfStructures: None
+
+# 不对连续的赋值语句进行对齐
+AlignConsecutiveAssignments:
+  Enabled: false
+
+# 不对连续的位字段进行对齐
+AlignConsecutiveBitFields:
+  Enabled: false
+
+# 不对连续的声明进行对齐
+AlignConsecutiveDeclarations:
+  Enabled: false
+
+# 不对连续的宏定义进行对齐
+AlignConsecutiveMacros:
+  Enabled: false
+
+# 转义换行符向右对齐
+AlignEscapedNewlines: Right
+
+# 操作数对齐（如二元操作符两边的表达式）
+AlignOperands: Align
+
+# 总是对齐尾部注释，即使跨空行也最多保留1个空行
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+
+# 空的代码块允许放在一行内
+AllowShortBlocksOnASingleLine: Empty
+
+# case 标签不允许放在一行内
+AllowShortCaseLabelsOnASingleLine: false
+
+# 枚举定义允许放在一行内
+AllowShortEnumsOnASingleLine: true
+
+# 内联函数允许放在一行内
+AllowShortFunctionsOnASingleLine: Inline
+
+# 短的 if 语句允许放在一行内，例如: if (condition) return value;
+AllowShortIfStatementsOnASingleLine: true
+
+# 所有短的 lambda 表达式允许放在一行内
+AllowShortLambdasOnASingleLine: All
+
+# 短的循环语句不允许放在一行内
+AllowShortLoopsOnASingleLine: false
+
+# 函数返回类型不强制换行
+AlwaysBreakAfterReturnType: None
+
+# 多行字符串字面量前不强制换行
+AlwaysBreakBeforeMultilineStrings: false
+
+# 模板声明在需要时换行
+AlwaysBreakTemplateDeclarations: MultiLine
+
+# 参数打包
+BinPackArguments: true
+
+# 函数参数打包
+BinPackParameters: true
+
+# 位字段冒号两边都加空格
+BitFieldColonSpacing: Both
+
+# 数组允许换行
+BreakArrays: true
+
+# 二元操作符前不换行
+BreakBeforeBinaryOperators: None
+
+# 左大括号放在行尾 (Attach 模式)
+BreakBeforeBraces: Attach
+
+# 概念声明前总是换行
+BreakBeforeConceptDeclarations: Always
+
+# 继承列表逗号前不换行
+BreakBeforeInheritanceComma: false
+
+# 三元操作符前换行
+BreakBeforeTernaryOperators: true
+
+# 构造函数初始化列表在逗号前换行
+BreakConstructorInitializers: BeforeComma
+
+# 继承列表在逗号前换行
+BreakInheritanceList: BeforeComma
+
+# 字符串字面量允许换行
+BreakStringLiterals: true
+
+# 代码行长度限制为 100 个字符
+ColumnLimit: 100
+
+# 注释中的 IWYU pragma 不处理
+CommentPragmas: '^ IWYU pragma:'
+
+# 不压缩命名空间
+CompactNamespaces: false
+
+# 构造函数初始化列表强制全部放在一行或每行一个
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# 构造函数初始化列表缩进宽度为 4
+ConstructorInitializerIndentWidth: 4
+
+# 连续行的缩进宽度为 4
+ContinuationIndentWidth: 4
+
+# C++11 列表初始化风格
+Cpp11BracedListStyle: true
+
+# 不自动推导指针对齐方式
+DerivePointerAlignment: false
+
+# 不禁用格式化
+DisableFormat: false
+
+# 访问修饰符后不添加空行
+EmptyLineAfterAccessModifier: Never
+
+# 访问修饰符前根据逻辑块添加空行
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+# 不自动检测参数打包
+ExperimentalAutoDetectBinPacking: false
+
+# 自动修复命名空间注释
+FixNamespaceComments: true
+
+# foreach 宏定义
+ForEachMacros:
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+
+# 保持包含块的格式
+IncludeBlock: Preserve
+
+# 包含文件分类
+IncludeCategories:
+  - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority: 2
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: '^(<|"(gtest|gmock|isl|json)/'
+    Priority: 3
+    SortPriority: 0
+    CaseSensitive: false
+  - Regex: .*
+    Priority: 1
+    SortPriority: 0
+    CaseSensitive: false
+
+# 主包含文件正则表达式
+IncludeIsMainRegex: '(Test)?$'
+
+# 主源文件正则表达式
+IncludeIsMainSourceRegex: ''
+
+# 不缩进访问修饰符
+IndentAccessModifiers: false
+
+# 不缩进 case 代码块
+IndentCaseBlocks: false
+
+# 缩进 case 标签
+IndentCaseLabels: true
+
+# extern "C" 块的缩进方式
+IndentExternBlock: AfterExternBlock
+
+# 缩进 goto 标签
+IndentGotoLabels: true
+
+# 预处理指令不缩进
+IndentPPDirectives: None
+
+# requires 子句缩进
+IndentRequiresClause: true
+
+# 缩进宽度为 4 个空格
+IndentWidth: 4
+
+# 不缩进换行的函数名
+IndentWrappedFunctionNames: false
+
+# 不插入大括号
+InsertBraces: false
+
+# 不在文件末尾插入新行
+InsertNewLineAtEOF: false
+
+# 不插入尾随逗号
+InsertTrailingCommas: None
+
+# 整数字面量分隔符设置
+IntegerLiteralSeparator:
+  Binary: 0
+  BinaryMinDigits: 0
+  Decimal: 0
+  DecimalMinDigits: 0
+  Hex: 0
+  HexMinDigits: 0
+
+# JavaScript 引号保持原样
+JavaScriptQuotes: Leave
+
+# JavaScript 导入换行
+JavaScriptWrapImports: true
+
+# 代码块开始保留空行
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+# Lambda 表达式主体缩进方式
+LambdaBodyIndentation: Signature
+
+# 语言设置为 C++
+Language: Cpp
+
+# 行结束符自动推导
+LineEnding: DeriveLF
+
+# 宏块开始标记
+MacroBlockBegin: ''
+
+# 宏块结束标记
+MacroBlockEnd: ''
+
+# 最多保留 1 个空行
+MaxEmptyLinesToKeep: 1
+
+# 命名空间内部代码缩进
+NamespaceIndentation: All
+
+# Objective-C 协议列表打包方式
+ObjCBinPackProtocolList: Auto
+
+# Objective-C 块缩进宽度
+ObjCBlockIndentWidth: 2
+
+# Objective-C 嵌套块参数前换行
+ObjCBreakBeforeNestedBlockParam: true
+
+# Objective-C 属性后不加空格
+ObjCSpaceAfterProperty: false
+
+# Objective-C 协议列表前加空格
+ObjCSpaceBeforeProtocolList: true
+
+# 构造函数初始化列表打包方式
+PackConstructorInitializers: BinPack
+
+# 赋值换行的惩罚值
+PenaltyBreakAssignment: 20
+
+# 函数调用第一个参数换行的惩罚值
+PenaltyBreakBeforeFirstCallParameter: 19
+
+# 注释换行的惩罚值
+PenaltyBreakComment: 300
+
+# << 操作符换行的惩罚值
+PenaltyBreakFirstLessLess: 120
+
+# 括号换行的惩罚值
+PenaltyBreakOpenParenthesis: 0
+
+# 字符串换行的惩罚值
+PenaltyBreakString: 1000
+
+# 模板声明换行的惩罚值
+PenaltyBreakTemplateDeclaration: 10
+
+# 超出行长度限制的惩罚值
+PenaltyExcessCharacter: 1000000
+
+# 缩进空格的惩罚值
+PenaltyIndentedWhitespace: 0
+
+# 返回类型单独成行的惩罚值
+PenaltyReturnTypeOnItsOwnLine: 60
+
+# 指针符号靠左对齐（如 int* p）
+PointerAlignment: Left
+
+# 限定符对齐方式
+QualifierAlignment: Leave
+
+# 原始字符串格式设置
+RawStringFormats:
+  - Language: Cpp
+    Delimiters:
+      - cc
+      - CC
+      - cpp
+      - Cpp
+      - CPP
+      - 'c++'
+      - 'C++'
+    CanonicalDelimiter: ''
+    BasedOnStyle: google
+  - Language: TextProto
+    Delimiters:
+      - pb
+      - PB
+      - proto
+      - PROTO
+    EnclosingFunctions:
+      - EqualsProto
+      - EquivToProto
+      - PARSE_PARTIAL_TEXT_PROTO
+      - PARSE_TEXT_PROTO
+      - PARSE_PARTIAL_TEXT_PROTO
+      - MergePartialFromAscii
+      - MessageLiteExportProto
+      - PARSE_TEXT_PROTO
+      - ParseTextOrDie
+      - ParseTextPartialOrDie
+    CanonicalDelimiter: pb
+    BasedOnStyle: google
+
+# 引用对齐方式（如 int &a）
+ReferenceAlignment: Right
+
+# 重新排版注释
+ReflowComments: true
+
+# 不移除 LLVM 风格的大括号
+RemoveBracesLLVM: false
+
+# requires 子句位置
+RequiresClausePosition: OwnLine
+
+# requires 表达式缩进
+RequiresExpressionIndentation: OuterScope
+
+# 定义块分隔方式
+SeparateDefinitionBlocks: Leave
+
+# 短命名空间行数限制
+ShortNamespaceLines: 1
+
+# 包含文件按大小写敏感排序
+SortIncludes: CaseSensitive
+
+# Java 静态导入排序方式
+SortJavaStaticImport: Before
+
+# using 声明按字母数字排序
+SortUsingDeclarations: LexicographicNumeric
+
+# C 风格类型转换后不加空格
+SpaceAfterCStyleCast: false
+
+# 逻辑非操作符后不加空格
+SpaceAfterLogicalNot: false
+
+# template 关键字后加空格
+SpaceAfterTemplateKeyword: true
+
+# 指针限定符周围的空格方式
+SpaceAroundPointerQualifiers: Default
+
+# 赋值操作符前加空格
+SpaceBeforeAssignmentOperators: true
+
+# case 冒号前不加空格
+SpaceBeforeCaseColon: false
+
+# C++11 列表初始化前不加空格
+SpaceBeforeCpp11BracedList: false
+
+# 构造函数初始化列表冒号前加空格
+SpaceBeforeCtorInitializerColon: true
+
+# 继承列表冒号前加空格
+SpaceBeforeInheritanceColon: true
+
+# JSON 冒号前不加空格
+SpaceBeforeJsonColon: false
+
+# 控制语句括号前加空格
+SpaceBeforeParens: ControlStatements
+
+# 括号前空格的详细选项
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterCoroutines: true
+  AfterCxx11AttributeSpecifier: false
+  AfterFixedAddressOperator: false
+  AfterForeachMacros: true
+  AfterFunctionDeclarationName: false
+  AfterFunctionDefinitionName: false
+  AfterIfMacros: true
+  AfterOverloadedOperator: false
+  AfterRequiresInClause: false
+  AfterRequiresInExpression: false
+  BeforeNonEmptyParentheses: false
+
+# 范围 for 循环冒号前加空格
+SpaceBeforeRangeBasedForLoopColon: true
+
+# 方括号前不加空格
+SpaceBeforeSquareBrackets: false
+
+# 空代码块中不加空格
+SpaceInEmptyBlock: false
+
+# 空括号中不加空格
+SpaceInEmptyParentheses: false
+
+# 尾部注释前加 1 个空格
+SpacesBeforeTrailingComments: 1
+
+# 角括号中不加空格
+SpacesInAngles: Never
+
+# 条件语句中不加额外空格
+SpacesInConditionalStatement: false
+
+# 容器字面量中加空格（如 {1, 2, 3}）
+SpacesInContainerLiterals: true
+
+# C 风格类型转换括号中不加空格
+SpacesInCStyleCastParentheses: false
+
+# 行注释前缀空格设置
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+
+# 括号中不加空格
+SpacesInParentheses: false
+
+# 方括号中不加空格
+SpacesInSquareBrackets: false
+
+# 使用最新的 C++ 标准
+Standard: Latest
+
+# 语句属性宏
+StatementAttributeLikeMacros:
+  - Q_EMIT
+
+# 语句宏
+StatementMacros:
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+
+# Tab 宽度为 8 个字符
+TabWidth: 8
+
+# 不使用 CRLF 换行符
+UseCRLF: false
+
+# 完全不使用制表符，只用空格
+UseTab: Never
+
+# 空格敏感的宏
+WhitespaceSensitiveMacros:
+  - STRINGIZE
+  - PP_STRINGIZE
+  - BOOST_PP_STRINGIZE
+  - CAPNP_VERSION_STRING

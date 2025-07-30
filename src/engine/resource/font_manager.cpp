@@ -1,3 +1,12 @@
+/***
+ * @Author: hanmi255 hanmi2550505@gmail.com
+ * @Date: 2025-07-29 15:48:15
+ * @LastEditTime: 2025-07-30 17:55:39
+ * @LastEditors: hanmi255 hanmi2550505@gmail.com
+ * @Description:
+ * @FilePath: \SunnyLand\src\engine\resource\font_manager.cpp
+ * @技术宅拯救世界！！！
+ */
 #include "font_manager.h"
 #include <spdlog/spdlog.h>
 

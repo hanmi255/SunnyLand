@@ -20,7 +20,7 @@ namespace engine::resource {
     private:
         // Mix_Chunk 的自定义删除器
         struct SDLMixChunkDeleter {
-            void operator()(Mix_Chunk *chunk) const {
+            void operator()(Mix_Chunk* chunk) const {
                 if (chunk) {
                     Mix_FreeChunk(chunk);
                 }
@@ -29,7 +29,7 @@ namespace engine::resource {
 
         // Mix_Music 的自定义删除器
         struct SDLMixMusicDeleter {
-            void operator()(Mix_Music *music) const {
+            void operator()(Mix_Music* music) const {
                 if (music) {
                     Mix_FreeMusic(music);
                 }
@@ -56,13 +56,13 @@ namespace engine::resource {
         AudioManager &operator=(AudioManager &&) = delete;
 
     private:
-        Mix_Chunk *loadSound(std::string_view file_path);
-        Mix_Chunk *getSound(std::string_view file_path);
+        Mix_Chunk* loadSound(std::string_view file_path);
+        Mix_Chunk* getSound(std::string_view file_path);
         void unloadSound(std::string_view file_path);
         void clearSounds();
 
-        Mix_Music *loadMusic(std::string_view file_path);
-        Mix_Music *getMusic(std::string_view file_path);
+        Mix_Music* loadMusic(std::string_view file_path);
+        Mix_Music* getMusic(std::string_view file_path);
         void unloadMusic(std::string_view file_path);
         void clearMusic();
 

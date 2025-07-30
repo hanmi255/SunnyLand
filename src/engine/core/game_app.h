@@ -16,8 +16,8 @@ namespace engine::core {
      */
     class GameApp final {
     private:
-        SDL_Window *window_ = nullptr;
-        SDL_Renderer *sdl_renderer_ = nullptr;
+        SDL_Window* window_ = nullptr;
+        SDL_Renderer* sdl_renderer_ = nullptr;
         bool is_running_ = false;
 
         // 引擎组件

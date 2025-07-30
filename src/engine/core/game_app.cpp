@@ -51,12 +51,9 @@ namespace engine::core {
 
         setupAssetPath();
 
-        if (!initSDL())
-            return false;
-        if (!initTime())
-            return false;
-        if (!initResourceManager())
-            return false;
+        if (!initSDL()) return false;
+        if (!initTime()) return false;
+        if (!initResourceManager()) return false;
 
         is_running_ = true;
         spdlog::info("GameApp 初始化成功");
@@ -115,7 +112,7 @@ namespace engine::core {
     bool GameApp::initTime() {
         try {
             time_ = std::make_unique<Time>();
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
             spdlog::error("Time 初始化失败: {}", e.what());
             return false;
         }
@@ -127,7 +124,7 @@ namespace engine::core {
         try {
             resource_manager_ = std::make_unique<engine::resource::ResourceManager>(sdl_renderer_);
 
-        } catch (const std::exception &e) {
+        } catch (const std::exception& e) {
             spdlog::error("ResourceManager 初始化失败: {}", e.what());
             return false;
         }

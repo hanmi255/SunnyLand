@@ -1,3 +1,12 @@
+/***
+ * @Author: hanmi255 hanmi2550505@gmail.com
+ * @Date: 2025-07-29 15:47:59
+ * @LastEditTime: 2025-07-30 17:53:33
+ * @LastEditors: hanmi255 hanmi2550505@gmail.com
+ * @Description:
+ * @FilePath: \SunnyLand\src\engine\resource\audio_manager.cpp
+ * @技术宅拯救世界！！！
+ */
 #include "audio_manager.h"
 #include <spdlog/spdlog.h>
 

@@ -10,11 +10,11 @@
 #pragma once
 #include <SDL3/SDL_render.h> // 用于 SDL_Texture 和 SDL_Renderer
 #include <glm/glm.hpp>
-#include <memory>        // 用于 std::shared_ptr
-#include <stdexcept>     // 用于 std::runtime_error
-#include <string>        // 用于 std::string
-#include <string_view>   // 用于 std::string_view
-#include <unordered_map> // 用于 std::unordered_map
+#include <memory>            // 用于 std::shared_ptr
+#include <stdexcept>         // 用于 std::runtime_error
+#include <string>            // 用于 std::string
+#include <string_view>       // 用于 std::string_view
+#include <unordered_map>     // 用于 std::unordered_map
 
 namespace engine::resource {
 
@@ -29,7 +29,7 @@ namespace engine::resource {
 
     private:
         struct SDLTextureDeleter {
-            void operator()(SDL_Texture *texture) const {
+            void operator()(SDL_Texture* texture) const {
                 if (texture) {
                     SDL_DestroyTexture(texture);
                 }
@@ -38,7 +38,7 @@ namespace engine::resource {
 
         // 存储文件路径和指向管理纹理的 unique_ptr 的映射。(容器的键不可使用std::string_view)
         std::unordered_map<std::string, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> textures_;
-        SDL_Renderer *renderer_ = nullptr;
+        SDL_Renderer* renderer_ = nullptr;
 
     public:
         /**
@@ -46,7 +46,7 @@ namespace engine::resource {
          * @param renderer 指向有效的 SDL_Renderer 上下文的指针。不能为空。
          * @throws std::runtime_error 如果 renderer 为 nullptr 或初始化失败。
          */
-        explicit TextureManager(SDL_Renderer *renderer);
+        explicit TextureManager(SDL_Renderer* renderer);
 
         TextureManager(const TextureManager &) = delete;
         TextureManager &operator=(const TextureManager &) = delete;
@@ -54,8 +54,8 @@ namespace engine::resource {
         TextureManager &operator=(TextureManager &&) = delete;
 
     private:
-        SDL_Texture *loadTexture(std::string_view file_path);
-        SDL_Texture *getTexture(std::string_view file_path);
+        SDL_Texture* loadTexture(std::string_view file_path);
+        SDL_Texture* getTexture(std::string_view file_path);
         glm::vec2 getTextureSize(std::string_view file_path);
         void unloadTexture(std::string_view file_path);
         void clearTextures();

@@ -19,8 +19,9 @@ namespace engine::resource {
             std::hash<std::string> string_hasher;
             std::hash<int> int_hasher;
             return string_hasher(key.first) ^
-                   int_hasher(key.second); // 异或运算符 ^
-                                           // 按位计算，每一位的两个值不同为1，相同为0，这是合并两个哈希值的简单方法
+                   int_hasher(
+                       key.second); // 异或运算符 ^
+                                    // 按位计算，每一位的两个值不同为1，相同为0，这是合并两个哈希值的简单方法
         }
     };
 
@@ -36,7 +37,7 @@ namespace engine::resource {
     private:
         // TTF_Font 的自定义删除器
         struct SDLFontDeleter {
-            void operator()(TTF_Font *font) const {
+            void operator()(TTF_Font* font) const {
                 if (font) {
                     TTF_CloseFont(font);
                 }
@@ -64,8 +65,8 @@ namespace engine::resource {
         FontManager &operator=(FontManager &&) = delete;
 
     private: // 仅由 ResourceManager（和内部）访问的方法
-        TTF_Font *loadFont(std::string_view file_path, int point_size);
-        TTF_Font *getFont(std::string_view file_path, int point_size);
+        TTF_Font* loadFont(std::string_view file_path, int point_size);
+        TTF_Font* getFont(std::string_view file_path, int point_size);
         void unloadFont(std::string_view file_path, int point_size);
         void clearFonts();
     };
