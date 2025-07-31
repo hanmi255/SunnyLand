@@ -50,18 +50,18 @@ namespace engine::render {
         clampPosition();
     }
 
-    glm::vec2 Camera::world2Screen(const glm::vec2 &world_pos) const
+    glm::vec2 Camera::worldToScreen(const glm::vec2 &world_pos) const
     {
         return world_pos - position_;
     }
 
-    glm::vec2 Camera::world2ScreenWithParallax(const glm::vec2 &world_pos,
-                                               const glm::vec2 &scroll_factor) const
+    glm::vec2 Camera::worldToScreenWithParallax(const glm::vec2 &world_pos,
+                                                const glm::vec2 &scroll_factor) const
     {
         return world_pos - position_ * scroll_factor;
     }
 
-    glm::vec2 Camera::screen2World(const glm::vec2 &screen_pos) const
+    glm::vec2 Camera::screenToWorld(const glm::vec2 &screen_pos) const
     {
         return screen_pos + position_;
     }

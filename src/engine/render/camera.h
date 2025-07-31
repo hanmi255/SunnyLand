@@ -44,10 +44,10 @@ namespace engine::render {
         void update(float delta_time);
         void move(const glm::vec2 &offset);
 
-        glm::vec2 world2Screen(const glm::vec2 &world_pos) const;
-        glm::vec2 world2ScreenWithParallax(const glm::vec2 &world_pos,
-                                           const glm::vec2 &scroll_factor) const;
-        glm::vec2 screen2World(const glm::vec2 &screen_pos) const;
+        glm::vec2 worldToScreen(const glm::vec2 &world_pos) const;
+        glm::vec2 worldToScreenWithParallax(const glm::vec2 &world_pos,
+                                            const glm::vec2 &scroll_factor) const;
+        glm::vec2 screenToWorld(const glm::vec2 &screen_pos) const;
 
         // --- getters ---
         const glm::vec2 getPosition() const;

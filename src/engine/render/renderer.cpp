@@ -45,7 +45,7 @@ namespace engine::render {
         }
 
         // 应用相机变换
-        glm::vec2 screen_pos = camera.world2Screen(position);
+        glm::vec2 screen_pos = camera.worldToScreen(position);
 
         // 计算目标矩形
         const float scaled_w = src_rect.value().w * scale.x;
@@ -88,7 +88,7 @@ namespace engine::render {
         }
 
         const glm::vec2 viewport_size = camera.getViewportSize();
-        const glm::vec2 screen_pos = camera.world2ScreenWithParallax(position, scroll_factor);
+        const glm::vec2 screen_pos = camera.worldToScreenWithParallax(position, scroll_factor);
 
         // 计算缩放后纹理尺寸 - 使用const避免重复计算
         const float scaled_w = src_rect.value().w * scale.x;
@@ -276,7 +276,7 @@ namespace engine::render {
     bool Renderer::isRectInViewport(const Camera &camera, const SDL_FRect &rect)
     {
         glm::vec2 viewport_size = camera.getViewportSize();
-        return rect.x + rect.w >= 0 && rect.x <= viewport_size.x &&
-               rect.y + rect.h >= 0 && rect.y <= viewport_size.y;
+        return rect.x + rect.w >= 0 && rect.x <= viewport_size.x && rect.y + rect.h >= 0 &&
+               rect.y <= viewport_size.y;
     }
 } // namespace engine::render
