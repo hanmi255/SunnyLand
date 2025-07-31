@@ -1,7 +1,7 @@
 /***
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 14:34:14
- * @LastEditTime: 2025-07-29 15:22:33
+ * @LastEditTime: 2025-07-31 11:46:09
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
  * @Description:
  * @FilePath: \SunnyLand\src\engine\core\game_app.cpp
@@ -11,6 +11,7 @@
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include "../resource/resource_manager.h"
+#include "config.h"
 #include "time.h"
 #include <SDL3/SDL.h>
 #include <filesystem> // 用于 std::filesystem
@@ -34,8 +35,6 @@ namespace engine::core {
             return;
         }
 
-        time_->setTargetFps(144); // 模拟帧率
-
         while (is_running_) {
             time_->update();
             float delta_time = time_->getDeltaTime();
@@ -56,6 +55,7 @@ namespace engine::core {
 
         setupAssetPath();
 
+        if (!initConfig()) return false;
         if (!initSDL()) return false;
         if (!initTime()) return false;
         if (!initResourceManager()) return false;
@@ -106,6 +106,18 @@ namespace engine::core {
         is_running_ = false;
     }
 
+    bool GameApp::initConfig()
+    {
+        try {
+            config_ = std::make_unique<engine::core::Config>("assets/config/config.json");
+        } catch (const std::exception &e) {
+            spdlog::error("Config 初始化失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("Config 初始化成功");
+        return true;
+    }
+
     bool GameApp::initSDL()
     {
         if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
@@ -113,7 +125,8 @@ namespace engine::core {
             return false;
         }
 
-        window_ = SDL_CreateWindow("SunnyLand", 1280, 720, SDL_WINDOW_RESIZABLE);
+        window_ = SDL_CreateWindow(config_->getWindowTitle().c_str(), config_->getWindowWidth(),
+                                   config_->getWindowHeight(), SDL_WINDOW_RESIZABLE);
         if (window_ == nullptr) {
             spdlog::error("SDL 创建窗口失败: {}", SDL_GetError());
             return false;
@@ -125,8 +138,16 @@ namespace engine::core {
             return false;
         }
 
+        // 设置 VSync
+        // (注意: VSync开启时，驱动程序会尝试将帧率限制到显示器刷新率，有可能会覆盖我们手动设置的 target_fps)
+        int vsync_mode = config_->isVSyncEnabled() ? SDL_RENDERER_VSYNC_ADAPTIVE
+                                                   : SDL_RENDERER_VSYNC_DISABLED;
+        SDL_SetRenderVSync(sdl_renderer_, vsync_mode);
+        spdlog::trace("VSync 设置为: {}", config_->isVSyncEnabled() ? "Enabled" : "Disabled");
+
         // 设置逻辑分辨率（针对像素风）
-        SDL_SetRenderLogicalPresentation(sdl_renderer_, 640, 360,
+        SDL_SetRenderLogicalPresentation(sdl_renderer_, config_->getWindowWidth() / 2,
+                                         config_->getWindowHeight() / 2,
                                          SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
         spdlog::trace("SDL 初始化成功");
@@ -136,11 +157,12 @@ namespace engine::core {
     bool GameApp::initTime()
     {
         try {
-            time_ = std::make_unique<Time>();
+            time_ = std::make_unique<engine::core::Time>();
         } catch (const std::exception &e) {
             spdlog::error("Time 初始化失败: {}", e.what());
             return false;
         }
+        time_->setTargetFps(config_->getTargetFps());
         spdlog::trace("Time 初始化成功");
         return true;
     }
@@ -173,7 +195,8 @@ namespace engine::core {
     bool GameApp::initCamera()
     {
         try {
-            camera_ = std::make_unique<engine::render::Camera>(glm::vec2(640, 360));
+            camera_ = std::make_unique<engine::render::Camera>(
+                glm::vec2(config_->getWindowWidth() / 2, config_->getWindowHeight() / 2));
         } catch (const std::exception &e) {
             spdlog::error("Camera 初始化失败: {}", e.what());
             return false;

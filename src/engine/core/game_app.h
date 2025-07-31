@@ -14,6 +14,7 @@ namespace engine::resource {
 } // namespace engine::resource
 
 namespace engine::core {
+    class Config;
     class Time;
 
     /**
@@ -26,6 +27,7 @@ namespace engine::core {
         bool is_running_ = false;
 
         // 引擎组件
+        std::unique_ptr<engine::core::Config> config_;
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
@@ -55,6 +57,7 @@ namespace engine::core {
         void close();
 
         // 模块初始化函数
+        [[nodiscard]] bool initConfig();
         [[nodiscard]] bool initSDL();
         [[nodiscard]] bool initTime();
         [[nodiscard]] bool initResourceManager();

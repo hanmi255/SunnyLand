@@ -32,6 +32,7 @@ add_subdirectory ( third_party/spdlog )
 # 设置通用源文件
 set ( SOURCES
     src/main.cpp
+    src/engine/core/config.cpp
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
     src/engine/render/camera.cpp
