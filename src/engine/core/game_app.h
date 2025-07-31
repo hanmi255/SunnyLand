@@ -52,7 +52,7 @@ namespace engine::core {
     private:
         [[nodiscard]] bool init();
         void handleEvents();
-        void update(float delta_time);
+        void update(double delta_time);
         void render();
         void close();
 

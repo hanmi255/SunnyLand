@@ -1,7 +1,7 @@
 /***
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 15:08:41
- * @LastEditTime: 2025-07-31 09:44:09
+ * @LastEditTime: 2025-07-31 12:25:53
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
  * @Description:
  * @FilePath: \SunnyLand\src\engine\core\time.h
@@ -47,14 +47,14 @@ namespace engine::core {
          *
          * @return double 缩放后的 DeltaTime (秒)。
          */
-        float getDeltaTime() const;
+        double getDeltaTime() const;
 
         /**
          * @brief 获取未经过时间缩放的原始帧间时间差。
          *
          * @return double 未缩放的 DeltaTime (秒)。
          */
-        float getUnscaledDeltaTime() const;
+        double getUnscaledDeltaTime() const;
 
         /**
          * @brief 设置时间缩放因子。
@@ -62,14 +62,14 @@ namespace engine::core {
          * @param scale 时间缩放值。1.0 为正常速度，< 1.0 为慢动作，> 1.0
          * 为快进。 不允许负值。
          */
-        void setTimeScale(float scale);
+        void setTimeScale(double scale);
 
         /**
          * @brief 获取当前的时间缩放因子。
          *
-         * @return float 当前的时间缩放因子。
+         * @return double 当前的时间缩放因子。
          */
-        float getTimeScale() const;
+        double getTimeScale() const;
 
         /**
          * @brief 设置目标帧率。
@@ -93,7 +93,7 @@ namespace engine::core {
          *
          * @param current_delta_time 当前帧的执行时间（秒）
          */
-        void limitFrameRate(float current_delta_time);
+        void limitFrameRate(double current_delta_time);
     };
 
 } // namespace engine::core

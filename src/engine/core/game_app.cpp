@@ -1,7 +1,7 @@
 /***
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 14:34:14
- * @LastEditTime: 2025-07-31 11:46:09
+ * @LastEditTime: 2025-07-31 12:39:15
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
  * @Description:
  * @FilePath: \SunnyLand\src\engine\core\game_app.cpp
@@ -37,7 +37,7 @@ namespace engine::core {
 
         while (is_running_) {
             time_->update();
-            float delta_time = time_->getDeltaTime();
+            double delta_time = time_->getDeltaTime();
 
             handleEvents();
             update(delta_time);
@@ -77,7 +77,7 @@ namespace engine::core {
         }
     }
 
-    void GameApp::update(float /* delta_time */)
+    void GameApp::update(double /* delta_time */)
     {
         testCamera();
     }

@@ -40,7 +40,7 @@ namespace engine::core {
         last_time_ = SDL_GetTicksNS(); // 记录离开 update 时的时间戳
     }
 
-    void Time::limitFrameRate(float current_delta_time)
+    void Time::limitFrameRate(double current_delta_time)
     {
         // 如果当前帧耗费的时间不小于目标帧时间，则无需等待
         if (current_delta_time >= target_frame_time_) {
@@ -53,17 +53,17 @@ namespace engine::core {
         delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / 1000000000.0;
     }
 
-    float Time::getDeltaTime() const
+    double Time::getDeltaTime() const
     {
         return delta_time_ * time_scale_;
     }
 
-    float Time::getUnscaledDeltaTime() const
+    double Time::getUnscaledDeltaTime() const
     {
         return delta_time_;
     }
 
-    void Time::setTimeScale(float scale)
+    void Time::setTimeScale(double scale)
     {
         if (scale >= 0.0) {
             time_scale_ = scale;
@@ -74,7 +74,7 @@ namespace engine::core {
         time_scale_ = 0.0; // 防止负时间缩放
     }
 
-    float Time::getTimeScale() const
+    double Time::getTimeScale() const
     {
         return time_scale_;
     }

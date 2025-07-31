@@ -32,7 +32,7 @@ namespace engine::core {
         Config &operator=(Config &&) = delete;
 
         bool loadFromFile(const std::string &file_path);
-        [[_nodiscard]] bool saveToFile(const std::string &file_path) const;
+        [[nodiscard]] bool saveToFile(const std::string &file_path) const;
 
         // --- getters ---
         const std::string &getWindowTitle() const;
