@@ -29,7 +29,8 @@ namespace engine::resource {
 
     private:
         struct SDLTextureDeleter {
-            void operator()(SDL_Texture* texture) const {
+            void operator()(SDL_Texture* texture) const
+            {
                 if (texture) {
                     SDL_DestroyTexture(texture);
                 }

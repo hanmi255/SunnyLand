@@ -11,8 +11,9 @@
 #include <SDL3/SDL_main.h>
 #include <spdlog/spdlog.h>
 
-int main(int /* argc */, char* /* argv */[]) {
-    spdlog::set_level(spdlog::level::off);
+int main(int /* argc */, char* /* argv */[])
+{
+    spdlog::set_level(spdlog::level::trace);
 
     engine::core::GameApp app;
     app.run();

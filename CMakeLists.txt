@@ -34,6 +34,8 @@ set ( SOURCES
     src/main.cpp
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
+    src/engine/render/camera.cpp
+    src/engine/render/renderer.cpp
     src/engine/resource/audio_manager.cpp
     src/engine/resource/font_manager.cpp
     src/engine/resource/resource_manager.cpp
@@ -59,7 +61,7 @@ target_link_libraries ( ${TARGET}
     spdlog
 )
 
-# 不要弹出控制台窗口
-if ( MSVC )
-    target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
-endif ()
+# # 不要弹出控制台窗口
+# if ( MSVC )
+#     target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
+# endif ()

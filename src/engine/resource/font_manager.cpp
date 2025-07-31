@@ -1,7 +1,7 @@
 /***
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 15:48:15
- * @LastEditTime: 2025-07-30 17:55:39
+ * @LastEditTime: 2025-07-31 09:50:28
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
  * @Description:
  * @FilePath: \SunnyLand\src\engine\resource\font_manager.cpp
@@ -12,14 +12,17 @@
 
 namespace engine::resource {
 
-    FontManager::FontManager() {
+    FontManager::FontManager()
+    {
         if (!TTF_WasInit() && !TTF_Init()) {
-            throw std::runtime_error("FontManager 错误: TTF_Init 失败：" + std::string(SDL_GetError()));
+            throw std::runtime_error("FontManager 错误: TTF_Init 失败：" +
+                                     std::string(SDL_GetError()));
         }
         spdlog::trace("FontManager 构造成功。");
     }
 
-    FontManager::~FontManager() {
+    FontManager::~FontManager()
+    {
         if (!fonts_.empty()) {
             spdlog::debug("FontManager 不为空，调用 clearFonts 处理清理逻辑。");
             clearFonts();
@@ -28,7 +31,8 @@ namespace engine::resource {
         spdlog::trace("FontManager 析构成功。");
     }
 
-    TTF_Font *FontManager::loadFont(std::string_view file_path, int point_size) {
+    TTF_Font* FontManager::loadFont(std::string_view file_path, int point_size)
+    {
         // 检查点大小是否有效
         if (point_size <= 0) {
             spdlog::error("无法加载字体 '{}'：无效的点大小 {}。", file_path, point_size);
@@ -46,7 +50,7 @@ namespace engine::resource {
 
         // 缓存中不存在，则加载字体
         spdlog::debug("正在加载字体：{} ({}pt)", file_path, point_size);
-        TTF_Font *raw_font = TTF_OpenFont(file_path.data(), point_size);
+        TTF_Font* raw_font = TTF_OpenFont(file_path.data(), point_size);
         if (!raw_font) {
             spdlog::error("加载字体 '{}' ({}pt) 失败：{}", file_path, point_size, SDL_GetError());
             return nullptr;
@@ -58,7 +62,8 @@ namespace engine::resource {
         return raw_font;
     }
 
-    TTF_Font *FontManager::getFont(std::string_view file_path, int point_size) {
+    TTF_Font* FontManager::getFont(std::string_view file_path, int point_size)
+    {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);
         if (it != fonts_.end()) {
@@ -69,7 +74,8 @@ namespace engine::resource {
         return loadFont(file_path, point_size);
     }
 
-    void FontManager::unloadFont(std::string_view file_path, int point_size) {
+    void FontManager::unloadFont(std::string_view file_path, int point_size)
+    {
         FontKey key = {std::string(file_path), point_size};
         auto it = fonts_.find(key);
         if (it != fonts_.end()) {
@@ -80,7 +86,8 @@ namespace engine::resource {
         }
     }
 
-    void FontManager::clearFonts() {
+    void FontManager::clearFonts()
+    {
         if (!fonts_.empty()) {
             spdlog::debug("正在清理所有 {} 个缓存的字体。", fonts_.size());
             fonts_.clear();

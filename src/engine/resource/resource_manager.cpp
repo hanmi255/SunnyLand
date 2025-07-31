@@ -1,7 +1,7 @@
 /***
  * @Author: hanmi255 hanmi2550505@gmail.com
  * @Date: 2025-07-29 15:45:27
- * @LastEditTime: 2025-07-30 17:59:06
+ * @LastEditTime: 2025-07-31 09:53:09
  * @LastEditors: hanmi255 hanmi2550505@gmail.com
  * @Description:
  * @FilePath: \SunnyLand\src\engine\resource\resource_manager.cpp
@@ -20,7 +20,8 @@ namespace engine::resource {
 
     ResourceManager::~ResourceManager() = default;
 
-    ResourceManager::ResourceManager(SDL_Renderer *renderer) {
+    ResourceManager::ResourceManager(SDL_Renderer* renderer)
+    {
         // --- 初始化各个子系统 --- (如果出现错误会抛出异常，由上层捕获)
         texture_manager_ = std::make_unique<TextureManager>(renderer);
         audio_manager_ = std::make_unique<AudioManager>();
@@ -29,7 +30,8 @@ namespace engine::resource {
         spdlog::trace("ResourceManager 构造成功。");
     }
 
-    void ResourceManager::clear() {
+    void ResourceManager::clear()
+    {
         font_manager_->clearFonts();
         audio_manager_->clearSounds();
         texture_manager_->clearTextures();
@@ -37,66 +39,91 @@ namespace engine::resource {
     }
 
     // --- 纹理接口实现 ---
-    SDL_Texture *ResourceManager::loadTexture(std::string_view file_path) {
+    SDL_Texture* ResourceManager::loadTexture(std::string_view file_path)
+    {
         return texture_manager_->loadTexture(file_path);
     }
 
-    SDL_Texture *ResourceManager::getTexture(std::string_view file_path) {
+    SDL_Texture* ResourceManager::getTexture(std::string_view file_path)
+    {
         return texture_manager_->getTexture(file_path);
     }
 
-    glm::vec2 ResourceManager::getTextureSize(std::string_view file_path) {
+    glm::vec2 ResourceManager::getTextureSize(std::string_view file_path)
+    {
         return texture_manager_->getTextureSize(file_path);
     }
 
-    void ResourceManager::unloadTexture(std::string_view file_path) {
+    void ResourceManager::unloadTexture(std::string_view file_path)
+    {
         texture_manager_->unloadTexture(file_path);
     }
 
-    void ResourceManager::clearTextures() { texture_manager_->clearTextures(); }
+    void ResourceManager::clearTextures()
+    {
+        texture_manager_->clearTextures();
+    }
 
     // --- 音频接口实现 ---
-    Mix_Chunk *ResourceManager::loadSound(std::string_view file_path) {
+    Mix_Chunk* ResourceManager::loadSound(std::string_view file_path)
+    {
         return audio_manager_->loadSound(file_path);
     }
 
-    Mix_Chunk *ResourceManager::getSound(std::string_view file_path) {
+    Mix_Chunk* ResourceManager::getSound(std::string_view file_path)
+    {
         return audio_manager_->getSound(file_path);
     }
 
-    void ResourceManager::unloadSound(std::string_view file_path) {
+    void ResourceManager::unloadSound(std::string_view file_path)
+    {
         audio_manager_->unloadSound(file_path);
     }
 
-    void ResourceManager::clearSounds() { audio_manager_->clearSounds(); }
+    void ResourceManager::clearSounds()
+    {
+        audio_manager_->clearSounds();
+    }
 
-    Mix_Music *ResourceManager::loadMusic(std::string_view file_path) {
+    Mix_Music* ResourceManager::loadMusic(std::string_view file_path)
+    {
         return audio_manager_->loadMusic(file_path);
     }
 
-    Mix_Music *ResourceManager::getMusic(std::string_view file_path) {
+    Mix_Music* ResourceManager::getMusic(std::string_view file_path)
+    {
         return audio_manager_->getMusic(file_path);
     }
 
-    void ResourceManager::unloadMusic(std::string_view file_path) {
+    void ResourceManager::unloadMusic(std::string_view file_path)
+    {
         audio_manager_->unloadMusic(file_path);
     }
 
-    void ResourceManager::clearMusic() { audio_manager_->clearMusic(); }
+    void ResourceManager::clearMusic()
+    {
+        audio_manager_->clearMusic();
+    }
 
     // --- 字体接口实现 ---
-    TTF_Font *ResourceManager::loadFont(std::string_view file_path, int point_size) {
+    TTF_Font* ResourceManager::loadFont(std::string_view file_path, int point_size)
+    {
         return font_manager_->loadFont(file_path, point_size);
     }
 
-    TTF_Font *ResourceManager::getFont(std::string_view file_path, int point_size) {
+    TTF_Font* ResourceManager::getFont(std::string_view file_path, int point_size)
+    {
         return font_manager_->getFont(file_path, point_size);
     }
 
-    void ResourceManager::unloadFont(std::string_view file_path, int point_size) {
+    void ResourceManager::unloadFont(std::string_view file_path, int point_size)
+    {
         font_manager_->unloadFont(file_path, point_size);
     }
 
-    void ResourceManager::clearFonts() { font_manager_->clearFonts(); }
+    void ResourceManager::clearFonts()
+    {
+        font_manager_->clearFonts();
+    }
 
 } // namespace engine::resource

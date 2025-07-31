@@ -20,7 +20,8 @@ namespace engine::resource {
     private:
         // Mix_Chunk 的自定义删除器
         struct SDLMixChunkDeleter {
-            void operator()(Mix_Chunk* chunk) const {
+            void operator()(Mix_Chunk* chunk) const
+            {
                 if (chunk) {
                     Mix_FreeChunk(chunk);
                 }
@@ -29,7 +30,8 @@ namespace engine::resource {
 
         // Mix_Music 的自定义删除器
         struct SDLMixMusicDeleter {
-            void operator()(Mix_Music* music) const {
+            void operator()(Mix_Music* music) const
+            {
                 if (music) {
                     Mix_FreeMusic(music);
                 }

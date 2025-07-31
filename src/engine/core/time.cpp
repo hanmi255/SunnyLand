@@ -13,7 +13,8 @@
 
 namespace engine::core {
 
-    Time::Time() {
+    Time::Time()
+    {
         // 初始化 last_time_ 和 frame_start_time_ 为当前时间，避免第一帧
         // DeltaTime 过大
         last_time_ = SDL_GetTicksNS();
@@ -21,10 +22,12 @@ namespace engine::core {
         spdlog::trace("Time 初始化。Last time: {}", last_time_);
     }
 
-    void Time::update() {
+    void Time::update()
+    {
 
         frame_start_time_ = SDL_GetTicksNS(); // 记录进入 update 时的时间戳
-        auto current_delta_time = static_cast<double>(frame_start_time_ - last_time_) / 1000000000.0;
+        auto current_delta_time = static_cast<double>(frame_start_time_ - last_time_) /
+                                  1000000000.0;
 
         // 如果设置了目标帧率，则限制帧率；
         // 否则delta_time_ = current_delta_time
@@ -37,7 +40,8 @@ namespace engine::core {
         last_time_ = SDL_GetTicksNS(); // 记录离开 update 时的时间戳
     }
 
-    void Time::limitFrameRate(float current_delta_time) {
+    void Time::limitFrameRate(float current_delta_time)
+    {
         // 如果当前帧耗费的时间不小于目标帧时间，则无需等待
         if (current_delta_time >= target_frame_time_) {
             return;
@@ -49,15 +53,18 @@ namespace engine::core {
         delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / 1000000000.0;
     }
 
-    float Time::getDeltaTime() const {
+    float Time::getDeltaTime() const
+    {
         return delta_time_ * time_scale_;
     }
 
-    float Time::getUnscaledDeltaTime() const {
+    float Time::getUnscaledDeltaTime() const
+    {
         return delta_time_;
     }
 
-    void Time::setTimeScale(float scale) {
+    void Time::setTimeScale(float scale)
+    {
         if (scale >= 0.0) {
             time_scale_ = scale;
             return;
@@ -67,11 +74,13 @@ namespace engine::core {
         time_scale_ = 0.0; // 防止负时间缩放
     }
 
-    float Time::getTimeScale() const {
+    float Time::getTimeScale() const
+    {
         return time_scale_;
     }
 
-    void Time::setTargetFps(int fps) {
+    void Time::setTargetFps(int fps)
+    {
         // 处理负数FPS情况
         if (fps < 0) {
             spdlog::warn("Target FPS 不能为负。Setting to 0 (unlimited).");
@@ -92,7 +101,8 @@ namespace engine::core {
                      target_frame_time_);
     }
 
-    int Time::getTargetFps() const {
+    int Time::getTargetFps() const
+    {
         return target_fps_;
     }
 

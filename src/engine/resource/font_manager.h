@@ -15,7 +15,8 @@ namespace engine::resource {
 
     // FontKey 的自定义哈希函数（std::pair<std::string, int>），用于 std::unordered_map
     struct FontKeyHash {
-        std::size_t operator()(const FontKey &key) const {
+        std::size_t operator()(const FontKey &key) const
+        {
             std::hash<std::string> string_hasher;
             std::hash<int> int_hasher;
             return string_hasher(key.first) ^
@@ -37,7 +38,8 @@ namespace engine::resource {
     private:
         // TTF_Font 的自定义删除器
         struct SDLFontDeleter {
-            void operator()(TTF_Font* font) const {
+            void operator()(TTF_Font* font) const
+            {
                 if (font) {
                     TTF_CloseFont(font);
                 }

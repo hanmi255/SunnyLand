@@ -4,9 +4,14 @@
 struct SDL_Window;
 struct SDL_Renderer;
 
+namespace engine::render {
+    class Camera;
+    class Renderer;
+} // namespace engine::render
+
 namespace engine::resource {
     class ResourceManager;
-}
+} // namespace engine::resource
 
 namespace engine::core {
     class Time;
@@ -22,6 +27,8 @@ namespace engine::core {
 
         // 引擎组件
         std::unique_ptr<engine::core::Time> time_;
+        std::unique_ptr<engine::render::Camera> camera_;
+        std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
 
     public:
@@ -48,11 +55,17 @@ namespace engine::core {
         void close();
 
         // 模块初始化函数
-        bool initSDL();
-        bool initTime();
-        bool initResourceManager();
+        [[nodiscard]] bool initSDL();
+        [[nodiscard]] bool initTime();
+        [[nodiscard]] bool initResourceManager();
+        [[nodiscard]] bool initRenderer();
+        [[nodiscard]] bool initCamera();
 
         // 设置资源路径
         bool setupAssetPath();
+
+        void testResourceManager();
+        void testRenderer();
+        void testCamera();
     };
 } // namespace engine::core

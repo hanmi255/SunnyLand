@@ -1,0 +1,47 @@
+/***
+ * @Author: hanmi255 hanmi2550505@gmail.com
+ * @Date: 2025-07-29 18:18:46
+ * @LastEditTime: 2025-07-29 18:31:49
+ * @LastEditors: hanmi255 hanmi2550505@gmail.com
+ * @Description:
+ * @FilePath: \SunnyLand\src\engine\render\sprite.h
+ * @技术宅拯救世界！！！
+ */
+#pragma once
+#include <SDL3/SDL_rect.h> // 用于 SDL_FRect
+#include <optional>        // 用于 std::optional
+#include <string>          // 用于 std::string
+
+namespace engine::render {
+    /**
+     * @brief 表示要绘制的精灵数据
+     *
+     * 包含纹理标识符、要绘制的纹理部分（源矩形）和翻转状态
+     * 位置、缩放和旋转由外部模块控制（例如 SpriteComponent）
+     * 渲染由 Render 类完成，传入 Sprite 作为参数
+     */
+    class Sprite final {
+    private:
+        std::string texture_id_;            ///< @brief 纹理标识符
+        std::optional<SDL_FRect> src_rect_; ///< @brief (可选)源矩形
+        bool is_flipped_ = false;           ///< @brief 是否翻转
+
+    public:
+        Sprite(const std::string &texture_id,
+               const std::optional<SDL_FRect> &src_rect = std::nullopt, bool is_flipped = false)
+            : texture_id_(texture_id), src_rect_(src_rect), is_flipped_(is_flipped)
+        {
+        }
+
+        // --- getters ---
+        std::string_view getTextureId() const { return texture_id_; }
+        const std::optional<SDL_FRect> &getSrcRect() const { return src_rect_; }
+        bool isFlipped() const { return is_flipped_; }
+
+        // --- setters ---
+        void setTextureId(const std::string &texture_id) { this->texture_id_ = texture_id; }
+        void setSrcRect(const std::optional<SDL_FRect> &src_rect) { this->src_rect_ = src_rect; }
+        void setFlipped(bool flipped) { this->is_flipped_ = flipped; }
+    };
+
+} // namespace engine::render

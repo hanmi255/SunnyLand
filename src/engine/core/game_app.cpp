@@ -8,6 +8,8 @@
  * @技术宅拯救世界！！！
  */
 #include "game_app.h"
+#include "../render/camera.h"
+#include "../render/renderer.h"
 #include "../resource/resource_manager.h"
 #include "time.h"
 #include <SDL3/SDL.h>
@@ -17,14 +19,16 @@
 namespace engine::core {
     GameApp::GameApp() = default;
 
-    GameApp::~GameApp() {
+    GameApp::~GameApp()
+    {
         if (is_running_) {
             spdlog::warn("GameApp 仍在运行...尝试关闭");
             close();
         }
     }
 
-    void GameApp::run() {
+    void GameApp::run()
+    {
         if (!init()) {
             spdlog::error("GameApp 初始化失败");
             return;
@@ -46,7 +50,8 @@ namespace engine::core {
         close();
     }
 
-    bool GameApp::init() {
+    bool GameApp::init()
+    {
         spdlog::trace("GameApp 正在初始化...");
 
         setupAssetPath();
@@ -54,13 +59,16 @@ namespace engine::core {
         if (!initSDL()) return false;
         if (!initTime()) return false;
         if (!initResourceManager()) return false;
+        if (!initRenderer()) return false;
+        if (!initCamera()) return false;
 
         is_running_ = true;
         spdlog::info("GameApp 初始化成功");
         return true;
     }
 
-    void GameApp::handleEvents() {
+    void GameApp::handleEvents()
+    {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) {
@@ -69,11 +77,22 @@ namespace engine::core {
         }
     }
 
-    void GameApp::update(float delta_time) {}
+    void GameApp::update(float /* delta_time */)
+    {
+        testCamera();
+    }
 
-    void GameApp::render() {}
+    void GameApp::render()
+    {
+        renderer_->clearScreen();
 
-    void GameApp::close() {
+        testRenderer();
+
+        renderer_->present();
+    }
+
+    void GameApp::close()
+    {
         spdlog::trace("GameApp 正在关闭...");
         if (sdl_renderer_ != nullptr) {
             SDL_DestroyRenderer(sdl_renderer_);
@@ -87,7 +106,8 @@ namespace engine::core {
         is_running_ = false;
     }
 
-    bool GameApp::initSDL() {
+    bool GameApp::initSDL()
+    {
         if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
             spdlog::error("SDL 初始化失败: {}", SDL_GetError());
             return false;
@@ -105,14 +125,19 @@ namespace engine::core {
             return false;
         }
 
+        // 设置逻辑分辨率（针对像素风）
+        SDL_SetRenderLogicalPresentation(sdl_renderer_, 640, 360,
+                                         SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
         spdlog::trace("SDL 初始化成功");
         return true;
     }
 
-    bool GameApp::initTime() {
+    bool GameApp::initTime()
+    {
         try {
             time_ = std::make_unique<Time>();
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             spdlog::error("Time 初始化失败: {}", e.what());
             return false;
         }
@@ -120,11 +145,11 @@ namespace engine::core {
         return true;
     }
 
-    bool GameApp::initResourceManager() {
+    bool GameApp::initResourceManager()
+    {
         try {
             resource_manager_ = std::make_unique<engine::resource::ResourceManager>(sdl_renderer_);
-
-        } catch (const std::exception& e) {
+        } catch (const std::exception &e) {
             spdlog::error("ResourceManager 初始化失败: {}", e.what());
             return false;
         }
@@ -132,7 +157,34 @@ namespace engine::core {
         return true;
     }
 
-    bool GameApp::setupAssetPath() {
+    bool GameApp::initRenderer()
+    {
+        try {
+            renderer_ =
+                std::make_unique<engine::render::Renderer>(sdl_renderer_, resource_manager_.get());
+        } catch (const std::exception &e) {
+            spdlog::error("Renderer 初始化失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("Renderer 初始化成功");
+        return true;
+    }
+
+    bool GameApp::initCamera()
+    {
+        try {
+            camera_ = std::make_unique<engine::render::Camera>(glm::vec2(640, 360));
+        } catch (const std::exception &e) {
+            spdlog::error("Camera 初始化失败: {}", e.what());
+            return false;
+        }
+
+        spdlog::trace("Camera 初始化成功");
+        return true;
+    }
+
+    bool GameApp::setupAssetPath()
+    {
         // 尝试设置资源目录，以便能找到assets文件夹
         std::filesystem::path current_path = std::filesystem::current_path();
         std::filesystem::path assets_path = current_path.parent_path().parent_path() / "assets";
@@ -144,5 +196,42 @@ namespace engine::core {
             spdlog::warn("未找到 assets 目录，使用默认工作目录");
             return false;
         }
+    }
+
+    void GameApp::testResourceManager()
+    {
+        resource_manager_->getTexture("assets/textures/Actors/eagle-attack.png");
+        resource_manager_->getFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);
+        resource_manager_->getSound("assets/audio/button_click.wav");
+
+        resource_manager_->unloadTexture("assets/textures/Actors/eagle-attack.png");
+        resource_manager_->unloadFont("assets/fonts/VonwaonBitmap-16px.ttf", 16);
+        resource_manager_->unloadSound("assets/audio/button_click.wav");
+    }
+
+    void GameApp::testRenderer()
+    {
+        engine::render::Sprite sprite_world("assets/textures/Actors/frog.png");
+        engine::render::Sprite sprite_ui("assets/textures/UI/buttons/Start1.png");
+        engine::render::Sprite sprite_parallax("assets/textures/Layers/back.png");
+
+        static float rotation = 0.0f;
+        rotation += 0.1f;
+
+        // 注意渲染顺序
+        renderer_->drawParallax(*camera_, sprite_parallax, glm::vec2(100, 100),
+                                glm::vec2(0.5f, 0.5f), glm::bvec2(true, false));
+        renderer_->drawSprite(*camera_, sprite_world, glm::vec2(200, 200), glm::vec2(1.0f, 1.0f),
+                              rotation);
+        renderer_->drawUISprite(sprite_ui, glm::vec2(100, 100));
+    }
+
+    void GameApp::testCamera()
+    {
+        auto key_state = SDL_GetKeyboardState(nullptr);
+        if (key_state[SDL_SCANCODE_UP]) camera_->move(glm::vec2(0, -1));
+        if (key_state[SDL_SCANCODE_DOWN]) camera_->move(glm::vec2(0, 1));
+        if (key_state[SDL_SCANCODE_LEFT]) camera_->move(glm::vec2(-1, 0));
+        if (key_state[SDL_SCANCODE_RIGHT]) camera_->move(glm::vec2(1, 0));
     }
 } // namespace engine::core

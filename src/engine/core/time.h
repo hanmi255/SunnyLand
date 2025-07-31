@@ -1,3 +1,12 @@
+/***
+ * @Author: hanmi255 hanmi2550505@gmail.com
+ * @Date: 2025-07-29 15:08:41
+ * @LastEditTime: 2025-07-31 09:44:09
+ * @LastEditors: hanmi255 hanmi2550505@gmail.com
+ * @Description:
+ * @FilePath: \SunnyLand\src\engine\core\time.h
+ * @技术宅拯救世界！！！
+ */
 #pragma once
 #include <SDL3/SDL_stdinc.h> // 用于 Uint64
 

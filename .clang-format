@@ -82,8 +82,29 @@ BreakArrays: true
 # 二元操作符前不换行
 BreakBeforeBinaryOperators: None
 
-# 左大括号放在行尾 (Attach 模式)
-BreakBeforeBraces: Attach
+# 针对不同类型的代码块使用不同的大括号策略
+# 函数定义使用新行大括号，其他控制结构保持大括号在同一行
+BreakBeforeBraces: Custom
+BreakBeforeBracePointerAlignment: None
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
 
 # 概念声明前总是换行
 BreakBeforeConceptDeclarations: Always
