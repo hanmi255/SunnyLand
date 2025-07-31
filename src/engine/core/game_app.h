@@ -4,6 +4,10 @@
 struct SDL_Window;
 struct SDL_Renderer;
 
+namespace engine::input {
+    class InputManager;
+} // namespace engine::input
+
 namespace engine::render {
     class Camera;
     class Renderer;
@@ -29,6 +33,7 @@ namespace engine::core {
         // 引擎组件
         std::unique_ptr<engine::core::Config> config_;
         std::unique_ptr<engine::core::Time> time_;
+        std::unique_ptr<engine::input::InputManager> input_manager_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
@@ -63,6 +68,7 @@ namespace engine::core {
         [[nodiscard]] bool initResourceManager();
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
+        [[nodiscard]] bool initInputManager();
 
         // 设置资源路径
         bool setupAssetPath();
@@ -70,5 +76,6 @@ namespace engine::core {
         void testResourceManager();
         void testRenderer();
         void testCamera();
+        void testInputManager();
     };
 } // namespace engine::core

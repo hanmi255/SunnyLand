@@ -42,6 +42,7 @@ namespace engine::core {
         const int getTargetFps() const;
         const float getMusicVolume() const;
         const float getSoundVolume() const;
+        const std::unordered_map<std::string, std::vector<std::string>> &getInputMappings() const;
 
     private:
         void fromJson(const nlohmann::json &json);

@@ -93,6 +93,12 @@ namespace engine::core {
         return sound_volume_;
     }
 
+    const std::unordered_map<std::string, std::vector<std::string>> &
+    Config::getInputMappings() const
+    {
+        return input_mappings_;
+    }
+
     void Config::fromJson(const nlohmann::json &json)
     {
         if (json.contains("window")) {

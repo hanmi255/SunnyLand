@@ -8,6 +8,7 @@
  * @技术宅拯救世界！！！
  */
 #include "game_app.h"
+#include "../input/input_manager.h"
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include "../resource/resource_manager.h"
@@ -39,6 +40,8 @@ namespace engine::core {
             time_->update();
             double delta_time = time_->getDeltaTime();
 
+            input_manager_->update();
+
             handleEvents();
             update(delta_time);
             render();
@@ -61,6 +64,7 @@ namespace engine::core {
         if (!initResourceManager()) return false;
         if (!initRenderer()) return false;
         if (!initCamera()) return false;
+        if (!initInputManager()) return false;
 
         is_running_ = true;
         spdlog::info("GameApp 初始化成功");
@@ -69,12 +73,13 @@ namespace engine::core {
 
     void GameApp::handleEvents()
     {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
-                is_running_ = false;
-            }
+        if (input_manager_->shouldQuit()) {
+            spdlog::trace("GameApp 收到 InputManager 的退出信号");
+            is_running_ = false;
+            return;
         }
+
+        testInputManager();
     }
 
     void GameApp::update(double /* delta_time */)
@@ -139,7 +144,8 @@ namespace engine::core {
         }
 
         // 设置 VSync
-        // (注意: VSync开启时，驱动程序会尝试将帧率限制到显示器刷新率，有可能会覆盖我们手动设置的 target_fps)
+        // (注意: VSync开启时，驱动程序会尝试将帧率限制到显示器刷新率，有可能会覆盖我们手动设置的
+        // target_fps)
         int vsync_mode = config_->isVSyncEnabled() ? SDL_RENDERER_VSYNC_ADAPTIVE
                                                    : SDL_RENDERER_VSYNC_DISABLED;
         SDL_SetRenderVSync(sdl_renderer_, vsync_mode);
@@ -206,6 +212,19 @@ namespace engine::core {
         return true;
     }
 
+    bool GameApp::initInputManager()
+    {
+        try {
+            input_manager_ =
+                std::make_unique<engine::input::InputManager>(sdl_renderer_, config_.get());
+        } catch (const std::exception &e) {
+            spdlog::error("InputManager 初始化失败: {}", e.what());
+            return false;
+        }
+        spdlog::info("InputManager 初始化成功");
+        return true;
+    }
+
     bool GameApp::setupAssetPath()
     {
         // 尝试设置资源目录，以便能找到assets文件夹
@@ -256,5 +275,24 @@ namespace engine::core {
         if (key_state[SDL_SCANCODE_DOWN]) camera_->move(glm::vec2(0, 1));
         if (key_state[SDL_SCANCODE_LEFT]) camera_->move(glm::vec2(-1, 0));
         if (key_state[SDL_SCANCODE_RIGHT]) camera_->move(glm::vec2(1, 0));
+    }
+
+    void GameApp::testInputManager()
+    {
+        std::vector<std::string> actions = {"move_up",    "move_down",      "move_left",
+                                            "move_right", "jump",           "attack",
+                                            "pause",      "MouseLeftClick", "MouseRightClick"};
+
+        for (const auto &action : actions) {
+            if (input_manager_->isActionJustPressed(action)) {
+                spdlog::info(" {} 按下 ", action);
+            }
+            if (input_manager_->isActionJustReleased(action)) {
+                spdlog::info(" {} 抬起 ", action);
+            }
+            if (input_manager_->isActionHeldDown(action)) {
+                spdlog::info(" {} 按下中 ", action);
+            }
+        }
     }
 } // namespace engine::core
