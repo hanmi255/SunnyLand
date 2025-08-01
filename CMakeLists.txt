@@ -46,6 +46,9 @@ set ( SOURCES
     src/engine/resource/font_manager.cpp
     src/engine/resource/resource_manager.cpp
     src/engine/resource/texture_manager.cpp
+    src/engine/scene/scene.cpp
+    src/engine/scene/scene_manager.cpp
+    src/game/scenes/game_scene.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

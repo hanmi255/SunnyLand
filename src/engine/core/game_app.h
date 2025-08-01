@@ -17,6 +17,10 @@ namespace engine::resource {
     class ResourceManager;
 } // namespace engine::resource
 
+namespace engine::scene {
+    class SceneManager;
+}
+
 namespace engine::core {
     class Config;
     class Context;
@@ -39,6 +43,7 @@ namespace engine::core {
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
+        std::unique_ptr<engine::scene::SceneManager> scene_manager_;
 
     public:
         GameApp();
@@ -72,14 +77,9 @@ namespace engine::core {
         [[nodiscard]] bool initCamera();
         [[nodiscard]] bool initInputManager();
         [[nodiscard]] bool initContext();
+        [[nodiscard]] bool initSceneManager();
 
         // 设置资源路径
         bool setupAssetPath();
-
-        void testResourceManager();
-        void testRenderer();
-        void testCamera();
-        void testInputManager();
-        void testGameObject();
     };
 } // namespace engine::core
