@@ -36,6 +36,7 @@ set ( SOURCES
     src/engine/core/game_app.cpp
     src/engine/core/time.cpp
     src/engine/input/input_manager.cpp
+    src/engine/object/game_object.cpp
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
     src/engine/resource/audio_manager.cpp

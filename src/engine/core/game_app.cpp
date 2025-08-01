@@ -9,6 +9,7 @@
  */
 #include "game_app.h"
 #include "../input/input_manager.h"
+#include "../object/game_object.h"
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include "../resource/resource_manager.h"
@@ -68,6 +69,7 @@ namespace engine::core {
 
         is_running_ = true;
         spdlog::info("GameApp 初始化成功");
+        testGameObject();
         return true;
     }
 
@@ -294,5 +296,9 @@ namespace engine::core {
                 spdlog::info(" {} 按下中 ", action);
             }
         }
+    }
+    void GameApp::testGameObject() {
+        engine::object::GameObject go("test");
+        go.addComponent<engine::component::Component>();
     }
 } // namespace engine::core
