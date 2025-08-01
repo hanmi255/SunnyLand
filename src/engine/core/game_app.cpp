@@ -8,18 +8,23 @@
  * @技术宅拯救世界！！！
  */
 #include "game_app.h"
+#include "../component/sprite_component.h"
+#include "../component/transform_component.h"
 #include "../input/input_manager.h"
 #include "../object/game_object.h"
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include "../resource/resource_manager.h"
 #include "config.h"
+#include "context.h"
 #include "time.h"
 #include <SDL3/SDL.h>
 #include <filesystem> // 用于 std::filesystem
 #include <spdlog/spdlog.h>
 
 namespace engine::core {
+    engine::object::GameObject go("test");
+
     GameApp::GameApp() = default;
 
     GameApp::~GameApp()
@@ -67,6 +72,10 @@ namespace engine::core {
         if (!initCamera()) return false;
         if (!initInputManager()) return false;
 
+        if (!initContext()) return false;
+
+        testResourceManager();
+
         is_running_ = true;
         spdlog::info("GameApp 初始化成功");
         testGameObject();
@@ -94,6 +103,7 @@ namespace engine::core {
         renderer_->clearScreen();
 
         testRenderer();
+        go.render(*context_);
 
         renderer_->present();
     }
@@ -227,6 +237,19 @@ namespace engine::core {
         return true;
     }
 
+    bool GameApp::initContext()
+    {
+        try {
+            context_ = std::make_unique<engine::core::Context>(*input_manager_, *camera_,
+                                                               *renderer_, *resource_manager_);
+        } catch (const std::exception &e) {
+            spdlog::error("Context 初始化失败: {}", e.what());
+            return false;
+        }
+        spdlog::info("Context 初始化成功");
+        return true;
+    }
+
     bool GameApp::setupAssetPath()
     {
         // 尝试设置资源目录，以便能找到assets文件夹
@@ -297,8 +320,11 @@ namespace engine::core {
             }
         }
     }
-    void GameApp::testGameObject() {
-        engine::object::GameObject go("test");
-        go.addComponent<engine::component::Component>();
+    void GameApp::testGameObject()
+    {
+        go.addComponent<engine::component::TransformComponent>(glm::vec2(100, 100));
+        go.addComponent<engine::component::SpriteComponent>("assets/textures/Props/big-crate.png",
+                                                            *resource_manager_,
+                                                            engine::utils::Alignment::CENTER);
     }
 } // namespace engine::core

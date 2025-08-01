@@ -1,5 +1,9 @@
 #pragma once
 
+namespace engine::core {
+    class Context;
+} // namespace engine::core
+
 namespace engine::object {
     class GameObject;
 } // namespace engine::object
@@ -35,9 +39,9 @@ namespace engine::component {
     protected:
         // 关键循环函数，全部设为保护，只有 GameObject 需要（可以）调用
         virtual void init() {}
-        virtual void handleInput() {}
-        virtual void update(double) {};
-        virtual void render() {}
+        virtual void handleInput(engine::core::Context &) {}
+        virtual void update(double, engine::core::Context &) {}
+        virtual void render(engine::core::Context &) {}
         virtual void clean() {}
     };
 } // namespace engine::component

@@ -19,6 +19,7 @@ namespace engine::resource {
 
 namespace engine::core {
     class Config;
+    class Context;
     class Time;
 
     /**
@@ -32,6 +33,7 @@ namespace engine::core {
 
         // 引擎组件
         std::unique_ptr<engine::core::Config> config_;
+        std::unique_ptr<engine::core::Context> context_;
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::input::InputManager> input_manager_;
         std::unique_ptr<engine::render::Camera> camera_;
@@ -69,6 +71,7 @@ namespace engine::core {
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
         [[nodiscard]] bool initInputManager();
+        [[nodiscard]] bool initContext();
 
         // 设置资源路径
         bool setupAssetPath();

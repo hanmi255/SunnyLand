@@ -8,6 +8,10 @@
 #include <unordered_map>
 #include <utility>   // 用于 std::forward
 
+namespace engine::core {
+    class Context;
+} // namespace engine::core
+
 namespace engine::object {
 
     class GameObject final {
@@ -27,8 +31,8 @@ namespace engine::object {
         GameObject &operator=(const GameObject &&) = delete;
 
         // --- getters ---
-        const std::string_view &getName() const { return name_; }
-        const std::string_view &getTag() const { return tag_; }
+        std::string_view getName() const { return name_; }
+        std::string_view getTag() const { return tag_; }
         bool isNeedRemove() const { return need_remove_; }
 
         // --- setters ---
@@ -37,10 +41,10 @@ namespace engine::object {
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }
 
         // 关键循环函数
-        void update(double delta_time);
-        void render();
+        void update(double delta_time, engine::core::Context &context);
+        void render(engine::core::Context &context);
         void clean();
-        void handleInput();
+        void handleInput(engine::core::Context &context);
 
     public:
         /**

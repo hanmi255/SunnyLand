@@ -10,19 +10,19 @@ namespace engine::object {
         spdlog::trace("GameObject created: {} {}", name, tag);
     }
 
-    void GameObject::update(double delta_time)
+    void GameObject::update(double delta_time, engine::core::Context &context)
     {
         // 遍历所有组件并更新
         for (const auto &pair : components_) {
-            pair.second->update(delta_time);
+            pair.second->update(delta_time, context);
         }
     }
 
-    void GameObject::render()
+    void GameObject::render(engine::core::Context &context)
     {
         // 遍历所有组件并渲染
         for (const auto &pair : components_) {
-            pair.second->render();
+            pair.second->render(context);
         }
     }
 
@@ -36,11 +36,11 @@ namespace engine::object {
         components_.clear();
     }
 
-    void GameObject::handleInput()
+    void GameObject::handleInput(engine::core::Context &context)
     {
         // 遍历所有组件并处理输入
         for (const auto &pair : components_) {
-            pair.second->handleInput();
+            pair.second->handleInput(context);
         }
     }
 } // namespace engine::object
