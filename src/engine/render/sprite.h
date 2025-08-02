@@ -27,6 +27,19 @@ namespace engine::render {
         bool is_flipped_ = false;           ///< @brief 是否翻转
 
     public:
+        /**
+         * @brief 默认构造函数（创建一个空的/无效的精灵）
+         */
+        Sprite() = default;
+
+        /**
+         * @brief 构造一个精灵
+         *
+         * @param texture_id 纹理资源的标识符。不应为空。
+         * @param source_rect 可选的源矩形（SDL_FRect），定义要使用的纹理部分。如果为
+         * std::nullopt，则使用整个纹理。
+         * @param is_flipped 是否水平翻转
+         */
         Sprite(const std::string &texture_id,
                const std::optional<SDL_FRect> &src_rect = std::nullopt, bool is_flipped = false)
             : texture_id_(texture_id), src_rect_(src_rect), is_flipped_(is_flipped)

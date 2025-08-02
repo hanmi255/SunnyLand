@@ -10,7 +10,7 @@
 
 namespace engine::component {
     SpriteComponent::SpriteComponent(const std::string &texture_id,
-                                     engine::resource::ResourceManager& resource_manager,
+                                     engine::resource::ResourceManager &resource_manager,
                                      engine::utils::Alignment alignment,
                                      const std::optional<SDL_FRect> source_rect_opt,
                                      bool is_flipped)
@@ -21,13 +21,24 @@ namespace engine::component {
         if (!resource_manager_) {
             spdlog::critical("创建 SpriteComponent 时 ResourceManager 为空！，此组件将无效。");
         }
-        spdlog::trace("创建 SpriteComponent，纹理ID: {}", texture_id);
+        spdlog::trace("SpriteComponent 构造完成，纹理ID: {}", texture_id);
+    }
+
+    SpriteComponent::SpriteComponent(engine::render::Sprite &&sprite,
+                                     engine::resource::ResourceManager &resource_manager,
+                                     engine::utils::Alignment alignment)
+        : resource_manager_(&resource_manager), sprite_(std::move(sprite)), alignment_(alignment)
+    {
+        if (!resource_manager_) {
+            spdlog::critical("创建 SpriteComponent 时 ResourceManager 为空！，此组件将无效。");
+        }
+        spdlog::trace("创建 SpriteComponent，纹理ID: {}", sprite_.getTextureId());
     }
 
     void SpriteComponent::init()
     {
         if (!owner_) {
-            spdlog::error("SpriteComponent 在初始化前未设置所有者。");
+            spdlog::error("SpriteComponent 在初始化前未设置 owner_。");
             return;
         }
         transform_component_ = owner_->getComponent<TransformComponent>();

@@ -32,7 +32,9 @@ add_subdirectory ( third_party/spdlog )
 # 设置通用源文件
 set ( SOURCES
     src/main.cpp
+    src/engine/component/parallax_component.cpp
     src/engine/component/sprite_component.cpp
+    src/engine/component/tilelayer_component.cpp
     src/engine/component/transform_component.cpp
     src/engine/core/config.cpp
     src/engine/core/context.cpp
@@ -46,6 +48,7 @@ set ( SOURCES
     src/engine/resource/font_manager.cpp
     src/engine/resource/resource_manager.cpp
     src/engine/resource/texture_manager.cpp
+    src/engine/scene/level_loader.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/game/scenes/game_scene.cpp
