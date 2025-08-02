@@ -101,10 +101,10 @@ namespace engine::component {
         void setOffset(const glm::vec2 &offset) { offset_ = offset; }
         void setVisible(bool visible) { is_visible_ = visible; }
 
-    protected:
+    private:
         // 核心逻辑
         void init() override;
-        void update(double, engine::core::Context &) override {}
+        void update(float, engine::core::Context &) override {}
         void render(engine::core::Context &context) override;
     };
 } // namespace engine::component

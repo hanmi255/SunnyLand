@@ -10,6 +10,7 @@
 #include "game_app.h"
 #include "../../game/scenes/game_scene.h"
 #include "../input/input_manager.h"
+#include "../physics/physics_engine.h"
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include "../resource/resource_manager.h"
@@ -46,7 +47,7 @@ namespace engine::core {
             input_manager_->update();
 
             handleEvents();
-            update(delta_time);
+            update(static_cast<float>(delta_time));
             render();
 
             // spdlog::info("delta_time: {:.2f}", delta_time);
@@ -68,6 +69,7 @@ namespace engine::core {
         if (!initRenderer()) return false;
         if (!initCamera()) return false;
         if (!initInputManager()) return false;
+        if (!initPhysicsEngine()) return false;
 
         if (!initContext()) return false;
         if (!initSceneManager()) return false;
@@ -93,7 +95,7 @@ namespace engine::core {
         scene_manager_->handleInput();
     }
 
-    void GameApp::update(double delta_time)
+    void GameApp::update(float delta_time)
     {
         scene_manager_->update(delta_time);
     }
@@ -110,6 +112,8 @@ namespace engine::core {
     void GameApp::close()
     {
         spdlog::trace("GameApp 正在关闭...");
+        // 先关闭场景管理器，确保所有场景都被清理
+        scene_manager_->clean();
 
         resource_manager_.reset();
 
@@ -235,20 +239,32 @@ namespace engine::core {
             spdlog::error("InputManager 初始化失败: {}", e.what());
             return false;
         }
-        spdlog::info("InputManager 初始化成功");
+        spdlog::trace("InputManager 初始化成功");
+        return true;
+    }
+
+    bool GameApp::initPhysicsEngine()
+    {
+        try {
+            physics_engine_ = std::make_unique<engine::physics::PhysicsEngine>();
+        } catch (const std::exception &e) {
+            spdlog::error("PhysicsEngine 初始化失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("PhysicsEngine 初始化成功");
         return true;
     }
 
     bool GameApp::initContext()
     {
         try {
-            context_ = std::make_unique<engine::core::Context>(*input_manager_, *camera_,
-                                                               *renderer_, *resource_manager_);
+            context_ = std::make_unique<engine::core::Context>(
+                *input_manager_, *camera_, *renderer_, *resource_manager_, *physics_engine_);
         } catch (const std::exception &e) {
             spdlog::error("Context 初始化失败: {}", e.what());
             return false;
         }
-        spdlog::info("Context 初始化成功");
+        spdlog::trace("Context 初始化成功");
         return true;
     }
 
@@ -260,7 +276,7 @@ namespace engine::core {
             spdlog::error("SceneManager 初始化失败: {}", e.what());
             return false;
         }
-        spdlog::info("SceneManager 初始化成功");
+        spdlog::trace("SceneManager 初始化成功");
         return true;
     }
 
@@ -271,7 +287,7 @@ namespace engine::core {
         std::filesystem::path assets_path = current_path.parent_path().parent_path() / "assets";
         if (std::filesystem::exists(assets_path)) {
             std::filesystem::current_path(assets_path.parent_path());
-            spdlog::info("设置工作目录到: {}", std::filesystem::current_path().string());
+            spdlog::trace("设置工作目录到: {}", std::filesystem::current_path().string());
             return true;
         } else {
             spdlog::warn("未找到 assets 目录，使用默认工作目录");

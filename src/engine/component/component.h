@@ -40,7 +40,7 @@ namespace engine::component {
         // 关键循环函数，全部设为保护，只有 GameObject 需要（可以）调用
         virtual void init() {}
         virtual void handleInput(engine::core::Context &) {}
-        virtual void update(double, engine::core::Context &) {}
+        virtual void update(float, engine::core::Context &) {}
         virtual void render(engine::core::Context &) {}
         virtual void clean() {}
     };

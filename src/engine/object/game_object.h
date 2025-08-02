@@ -41,7 +41,7 @@ namespace engine::object {
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }
 
         // 关键循环函数
-        void update(double delta_time, engine::core::Context &context);
+        void update(float delta_time, engine::core::Context &context);
         void render(engine::core::Context &context);
         void clean();
         void handleInput(engine::core::Context &context);

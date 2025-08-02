@@ -4,6 +4,10 @@ namespace engine::input {
     class InputManager;
 } // namespace engine::input
 
+namespace engine::physics {
+    class PhysicsEngine;
+} // namespace engine::physics
+
 namespace engine::render {
     class Camera;
     class Renderer;
@@ -26,6 +30,7 @@ namespace engine::core {
         engine::render::Camera &camera_;
         engine::render::Renderer &renderer_;
         engine::resource::ResourceManager &resource_manager_;
+        engine::physics::PhysicsEngine &physics_engine_;
 
     public:
         /**
@@ -34,11 +39,12 @@ namespace engine::core {
          * @param camera 对 Camera 实例的引用。
          * @param renderer 对 Renderer 实例的引用。
          * @param resource_manager 对 ResourceManager 实例的引用。
+         * @param physics_engine 对 PhysicsEngine 实例的引用。
          */
-        Context(engine::input::InputManager &input_manager,
-                engine::render::Camera &camera,
+        Context(engine::input::InputManager &input_manager, engine::render::Camera &camera,
                 engine::render::Renderer &renderer,
-                engine::resource::ResourceManager &resource_manager);
+                engine::resource::ResourceManager &resource_manager,
+                engine::physics::PhysicsEngine &physics_engine);
 
         // 禁止拷贝和移动语义
         Context(const Context &) = delete;
@@ -51,5 +57,6 @@ namespace engine::core {
         engine::render::Camera &getCamera() const { return camera_; }
         engine::render::Renderer &getRenderer() const { return renderer_; }
         engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
+        engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
     };
 } // namespace engine::core

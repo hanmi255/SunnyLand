@@ -91,7 +91,7 @@ namespace engine::component {
         void updateSpriteSize();
 
         void init() override;
-        void update(double, engine::core::Context &) override {};
+        void update(float, engine::core::Context &) override {};
         void render(engine::core::Context &context) override;
     };
 } // namespace engine::component

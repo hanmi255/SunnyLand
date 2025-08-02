@@ -46,6 +46,6 @@ namespace engine::component {
         void translate(const glm::vec2 &offset) { position_ += offset; }
 
     private:
-        void update(double, engine::core::Context &) override {}
+        void update(float, engine::core::Context &) override {}
     };
 } // namespace engine::component

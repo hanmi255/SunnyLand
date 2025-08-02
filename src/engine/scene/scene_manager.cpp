@@ -15,7 +15,7 @@ namespace engine::scene {
         clean();
     }
 
-    void SceneManager::update(double delta_time)
+    void SceneManager::update(float delta_time)
     {
         // 处理待处理的操作
         processPendingActions();

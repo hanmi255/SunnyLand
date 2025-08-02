@@ -10,7 +10,7 @@ namespace engine::object {
         spdlog::trace("GameObject created: {} {}", name, tag);
     }
 
-    void GameObject::update(double delta_time, engine::core::Context &context)
+    void GameObject::update(float delta_time, engine::core::Context &context)
     {
         // 遍历所有组件并更新
         for (const auto &pair : components_) {

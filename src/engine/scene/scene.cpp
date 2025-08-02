@@ -1,4 +1,6 @@
 #include "scene.h"
+#include "../physics/physics_engine.h"
+#include "../core/context.h"
 #include "../object/game_object.h"
 #include "scene_manager.h"
 #include <algorithm> // 用于 std::remove_if
@@ -20,10 +22,14 @@ namespace engine::scene {
         spdlog::trace("场景 '{}' 初始化完成", name_);
     }
 
-    void Scene::update(double delta_time)
+    void Scene::update(float delta_time)
     {
         if (!is_initialized_) return;
 
+        // 先更新物理引擎
+        context_.getPhysicsEngine().update(delta_time);
+
+        // 遍历所有游戏对象并更新
         auto remove_predicate = [delta_time, this](auto &object) -> bool {
             if (!object) return true;
 

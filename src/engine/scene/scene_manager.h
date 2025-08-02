@@ -44,7 +44,7 @@ namespace engine::scene {
         size_t getSceneCount() const { return scenes_stack_.size(); }
 
         // 核心逻辑
-        void update(double delta_time);
+        void update(float delta_time);
         void render();
         void handleInput();
         void clean();

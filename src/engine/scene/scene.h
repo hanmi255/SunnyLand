@@ -61,7 +61,7 @@ namespace engine::scene {
 
         // 核心逻辑
         virtual void init();
-        virtual void update(double delta_time);
+        virtual void update(float delta_time);
         virtual void render();
         virtual void handleInput();
         virtual void clean();

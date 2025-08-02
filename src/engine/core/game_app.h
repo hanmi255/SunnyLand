@@ -8,6 +8,10 @@ namespace engine::input {
     class InputManager;
 } // namespace engine::input
 
+namespace engine::physics {
+    class PhysicsEngine;
+} // namespace engine::physics
+
 namespace engine::render {
     class Camera;
     class Renderer;
@@ -40,6 +44,7 @@ namespace engine::core {
         std::unique_ptr<engine::core::Context> context_;
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::input::InputManager> input_manager_;
+        std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
@@ -64,7 +69,7 @@ namespace engine::core {
     private:
         [[nodiscard]] bool init();
         void handleEvents();
-        void update(double delta_time);
+        void update(float delta_time);
         void render();
         void close();
 
@@ -76,6 +81,7 @@ namespace engine::core {
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
         [[nodiscard]] bool initInputManager();
+        [[nodiscard]] bool initPhysicsEngine();
         [[nodiscard]] bool initContext();
         [[nodiscard]] bool initSceneManager();
 

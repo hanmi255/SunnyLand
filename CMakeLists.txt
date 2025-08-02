@@ -33,6 +33,7 @@ add_subdirectory ( third_party/spdlog )
 set ( SOURCES
     src/main.cpp
     src/engine/component/parallax_component.cpp
+    src/engine/component/physics_component.cpp
     src/engine/component/sprite_component.cpp
     src/engine/component/tilelayer_component.cpp
     src/engine/component/transform_component.cpp
@@ -42,6 +43,7 @@ set ( SOURCES
     src/engine/core/time.cpp
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
+    src/engine/physics/physics_engine.cpp
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
     src/engine/resource/audio_manager.cpp
