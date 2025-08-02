@@ -51,7 +51,7 @@ namespace engine::scene {
         LevelLoader() = default;
         ~LevelLoader() = default;
 
-        // 禁用拷贝和移动，避免意外的资源复制
+        // 禁用拷贝和移动语义
         LevelLoader(const LevelLoader &) = delete;
         LevelLoader &operator=(const LevelLoader &) = delete;
         LevelLoader(LevelLoader &&) = delete;
