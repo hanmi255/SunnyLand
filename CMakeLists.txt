@@ -32,6 +32,7 @@ add_subdirectory ( third_party/spdlog )
 # 设置通用源文件
 set ( SOURCES
     src/main.cpp
+    src/engine/component/collider_component.cpp
     src/engine/component/parallax_component.cpp
     src/engine/component/physics_component.cpp
     src/engine/component/sprite_component.cpp
@@ -43,6 +44,7 @@ set ( SOURCES
     src/engine/core/time.cpp
     src/engine/input/input_manager.cpp
     src/engine/object/game_object.cpp
+    src/engine/physics/collision.cpp
     src/engine/physics/physics_engine.cpp
     src/engine/render/camera.cpp
     src/engine/render/renderer.cpp
