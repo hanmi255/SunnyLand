@@ -4,13 +4,17 @@
 #include <glm/vec2.hpp>
 #include <vector>
 
+namespace engine::core {
+    class Context;
+} // namespace engine::core
+
 namespace engine::render {
     class Sprite;
 } // namespace engine::render
 
-namespace engine::core {
-    class Context;
-} // namespace engine::core
+namespace engine::physics {
+    class PhysicsEngine;
+} // namespace engine::physics
 
 namespace engine::component {
     /**
@@ -52,6 +56,8 @@ namespace engine::component {
         glm::vec2 offset_ = {0.0f, 0.0f}; ///< @brief 瓦片地图偏移量
 
         bool is_visible_ = true;          ///< @brief 是否可见
+        engine::physics::PhysicsEngine* physics_engine_ =
+            nullptr;                      ///< @brief 物理引擎的指针， clean()函数中可能需要反注册
 
     public:
         TileLayerComponent() = default;
@@ -100,11 +106,16 @@ namespace engine::component {
         // --- setters ---
         void setOffset(const glm::vec2 &offset) { offset_ = offset; }
         void setVisible(bool visible) { is_visible_ = visible; }
+        void setPhysicsEngine(engine::physics::PhysicsEngine *physics_engine)
+        {
+            physics_engine_ = physics_engine;
+        }
 
     private:
         // 核心逻辑
         void init() override;
         void update(float, engine::core::Context &) override {}
         void render(engine::core::Context &context) override;
+        void clean() override;
     };
 } // namespace engine::component

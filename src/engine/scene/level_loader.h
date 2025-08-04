@@ -8,6 +8,7 @@
 
 namespace engine::component {
     struct TileInfo;
+    enum class TileType;
 }
 
 namespace engine::scene {
@@ -39,6 +40,7 @@ namespace engine::scene {
             static constexpr std::string_view IMAGE = "image";
             static constexpr std::string_view DATA = "data";
             static constexpr std::string_view OBJECTS = "objects";
+            static constexpr std::string_view PROPERTIES = "properties";
         };
 
         std::string map_path_;                       ///< 地图路径
@@ -79,6 +81,8 @@ namespace engine::scene {
         void loadObjectLayer(const nlohmann::json &layer_json, Scene &scene);
 
         // 工具函数
+        [[nodiscard]] engine::component::TileType getTileType(const nlohmann::json &tile_json) const;
+        [[nodiscard]] engine::component::TileType getTileTypeById(const nlohmann::json &tileset_json, int local_id) const;
         [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;
         void loadTileset(const std::string &tileset_path, int first_gid);
         [[nodiscard]] std::string resolvePath(const std::string &relative_path,

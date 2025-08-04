@@ -1,6 +1,7 @@
 #include "tilelayer_component.h"
 #include "../core/context.h"
 #include "../object/game_object.h"
+#include "../physics/physics_engine.h"
 #include "../render/camera.h"
 #include "../render/renderer.h"
 #include <spdlog/spdlog.h>
@@ -93,6 +94,13 @@ namespace engine::component {
                 // 执行绘制
                 renderer.drawSprite(camera, tile_info.sprite, tile_pos);
             }
+        }
+    }
+
+    void TileLayerComponent::clean()
+    {
+        if (physics_engine_) {
+            physics_engine_->unregisterCollisionTileLayer(this);
         }
     }
 

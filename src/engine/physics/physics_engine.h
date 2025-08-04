@@ -8,7 +8,10 @@
 namespace engine::component {
     class ColliderComponent;
     class PhysicsComponent;
+    class TileLayerComponent;
     class TransformComponent;
+
+    enum class TileType;
 } // namespace engine::component
 
 namespace engine::object {
@@ -22,7 +25,9 @@ namespace engine::physics {
      */
     class PhysicsEngine {
     private:
-        // 简单的网格空间分割
+        /**
+         * @brief 空间网格结构体
+         */
         struct SpatialGrid {
             float cell_size;
             std::unordered_map<int, std::vector<std::pair<engine::object::GameObject*,
@@ -39,14 +44,16 @@ namespace engine::physics {
 
     private:
         std::vector<engine::component::PhysicsComponent*>
-            components_;               ///< @brief 注册的物理组件容器，非拥有指针
+            components_;               ///<@brief 注册的物理组件容器，非拥有指针
+        std::vector<engine::component::TileLayerComponent*>
+            collision_tile_layers_;    ///<@brief 碰撞检测的瓦片图层容器
         glm::vec2 gravity_ = {0.0f,
-                              980.0f}; ///< @brief 默认重力值 (像素/秒^2, 相当于100像素对应现实1m)
-        float max_speed_ = 500.0f;     ///<< @brief 最大速度
+                              980.0f}; ///<@brief 默认重力值 (像素/秒^2, 相当于100像素对应现实1m)
+        float max_speed_ = 500.0f;     ///<<@brief 最大速度
 
         std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
-            collision_pairs_;      /// < @brief 物体碰撞对（每次 update 都会清空）
-        SpatialGrid spatial_grid_; /// < @brief 空间网格
+            collision_pairs_;                     ///<@brief 物体碰撞对（每次 update 都会清空）
+        SpatialGrid spatial_grid_;                ///<@brief 空间网格
 
     public:
         PhysicsEngine() = default;
@@ -60,8 +67,12 @@ namespace engine::physics {
         void registerComponent(engine::component::PhysicsComponent* component);
         void unregisterComponent(engine::component::PhysicsComponent* component);
 
+        void registerCollisionTileLayer(engine::component::TileLayerComponent* tile_layer);
+        void unregisterCollisionTileLayer(engine::component::TileLayerComponent* tile_layer);
+
         void update(float delta_time);
         void checkObjectCollisions();
+        void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta_time);
 
         // --- getters ---
         const glm::vec2 &getGravity() const { return gravity_; }
@@ -77,6 +88,9 @@ namespace engine::physics {
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
 
     private:
+        /**
+         * @brief 检查指定空间网格中的物体之间的碰撞
+         */
         void checkCollisionsInCell(
             const std::vector<std::pair<engine::object::GameObject*,
                                         engine::component::ColliderComponent*>> &objects,

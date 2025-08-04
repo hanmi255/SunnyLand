@@ -279,6 +279,42 @@ namespace engine::scene {
                       loaded_objects);
     }
 
+    engine::component::TileType LevelLoader::getTileType(const nlohmann::json &tile_json) const
+    {
+        if (tile_json.contains(JsonKeys::PROPERTIES)) {
+            const auto &properties = tile_json[JsonKeys::PROPERTIES];
+            if (properties.is_array()) {
+                for (const auto &property : properties) {
+                    const auto property_name = getJsonValue<std::string>(property, "name", "");
+                    if (property_name == "solid") {
+                        const auto is_solid = getJsonValue(property, "value", false);
+                        return is_solid ? engine::component::TileType::SOLID
+                                        : engine::component::TileType::NORMAL;
+                    }
+                    // TODO: 可以在这里添加更多的自定义属性处理逻辑
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
+    engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json &tileset_json,
+                                                             int local_id) const
+    {
+        if (tileset_json.contains(JsonKeys::TILES)) {
+            const auto &tiles = tileset_json[JsonKeys::TILES];
+            if (tiles.is_array()) {
+                for (const auto &tile : tiles) {
+                    const auto id = getJsonValue(tile, "id", -1);
+                    if (id == local_id) {
+                        return getTileType(tile);
+                    }
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
     engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) const
     {
         if (gid == INVALID_GID) {
@@ -317,7 +353,8 @@ namespace engine::scene {
                                                 static_cast<float>(tile_size_.y)};
 
                 engine::render::Sprite sprite{texture_id, texture_rect};
-                return engine::component::TileInfo(sprite, engine::component::TileType::NORMAL);
+                auto tile_type = getTileTypeById(tileset, local_id);
+                return engine::component::TileInfo(std::move(sprite), tile_type);
             } else if (tileset.contains(JsonKeys::TILES)) {
                 // 多图片模式
                 const auto &tiles_json = tileset[JsonKeys::TILES];
@@ -340,8 +377,8 @@ namespace engine::scene {
                             static_cast<float>(getJsonValue(tile_json, "height", image_height))};
 
                         engine::render::Sprite sprite{texture_id, texture_rect};
-                        return engine::component::TileInfo(sprite,
-                                                           engine::component::TileType::NORMAL);
+                        auto tile_type = getTileType(tile_json);
+                        return engine::component::TileInfo(std::move(sprite), tile_type);
                     }
                 }
             }
@@ -410,5 +447,4 @@ namespace engine::scene {
         return getJsonValue<std::string>(layer_json, JsonKeys::NAME,
                                          std::string(DEFAULT_LAYER_NAME));
     }
-
 } // namespace engine::scene
