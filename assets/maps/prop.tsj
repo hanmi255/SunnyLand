@@ -23,13 +23,13 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":1,
          "image":"..\/textures\/Props\/big-house.png",
          "imageheight":144,
          "imagewidth":170
-        }, 
+        },
         {
          "id":2,
          "image":"..\/textures\/Props\/block-big.png",
@@ -41,7 +41,7 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":3,
          "image":"..\/textures\/Props\/block.png",
@@ -53,25 +53,25 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":4,
          "image":"..\/textures\/Props\/bush.png",
          "imageheight":28,
          "imagewidth":46
-        }, 
+        },
         {
          "id":5,
          "image":"..\/textures\/Props\/crank-down.png",
          "imageheight":16,
          "imagewidth":22
-        }, 
+        },
         {
          "id":6,
          "image":"..\/textures\/Props\/crank-up.png",
          "imageheight":16,
          "imagewidth":22
-        }, 
+        },
         {
          "id":7,
          "image":"..\/textures\/Props\/crate.png",
@@ -83,49 +83,49 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":8,
          "image":"..\/textures\/Props\/door-opened.png",
          "imageheight":33,
          "imagewidth":22
-        }, 
+        },
         {
          "id":9,
          "image":"..\/textures\/Props\/door.png",
          "imageheight":33,
          "imagewidth":22
-        }, 
+        },
         {
          "id":10,
          "image":"..\/textures\/Props\/face-block.png",
          "imageheight":32,
          "imagewidth":32
-        }, 
+        },
         {
          "id":11,
          "image":"..\/textures\/Props\/house.png",
          "imageheight":108,
          "imagewidth":87
-        }, 
+        },
         {
          "id":12,
          "image":"..\/textures\/Props\/palm.png",
          "imageheight":176,
          "imagewidth":79
-        }, 
+        },
         {
          "id":13,
          "image":"..\/textures\/Props\/pine.png",
          "imageheight":130,
          "imagewidth":82
-        }, 
+        },
         {
          "id":14,
          "image":"..\/textures\/Props\/plant-house.png",
          "imageheight":103,
          "imagewidth":123
-        }, 
+        },
         {
          "id":15,
          "image":"..\/textures\/Props\/platform-long.png",
@@ -137,43 +137,43 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":17,
          "image":"..\/textures\/Props\/rock-1.png",
          "imageheight":53,
          "imagewidth":53
-        }, 
+        },
         {
          "id":18,
          "image":"..\/textures\/Props\/rock-2.png",
          "imageheight":57,
          "imagewidth":66
-        }, 
+        },
         {
          "id":19,
          "image":"..\/textures\/Props\/rock.png",
          "imageheight":15,
          "imagewidth":28
-        }, 
+        },
         {
          "id":20,
          "image":"..\/textures\/Props\/shrooms.png",
          "imageheight":15,
          "imagewidth":16
-        }, 
+        },
         {
          "id":21,
          "image":"..\/textures\/Props\/sign.png",
          "imageheight":20,
          "imagewidth":18
-        }, 
+        },
         {
          "id":22,
          "image":"..\/textures\/Props\/skulls.png",
          "imageheight":10,
          "imagewidth":16
-        }, 
+        },
         {
          "id":23,
          "image":"..\/textures\/Props\/small-platform.png",
@@ -185,13 +185,13 @@
                  "type":"bool",
                  "value":true
                 }]
-        }, 
+        },
         {
          "id":24,
          "image":"..\/textures\/Props\/spike-skull.png",
          "imageheight":12,
          "imagewidth":17
-        }, 
+        },
         {
          "id":25,
          "image":"..\/textures\/Props\/spikes-top.png",
@@ -219,7 +219,7 @@
              "x":0,
              "y":0
             }
-        }, 
+        },
         {
          "id":26,
          "image":"..\/textures\/Props\/spikes.png",
@@ -247,25 +247,25 @@
              "x":0,
              "y":0
             }
-        }, 
+        },
         {
          "id":27,
          "image":"..\/textures\/Props\/straw-house.png",
          "imageheight":96,
          "imagewidth":128
-        }, 
+        },
         {
          "id":28,
          "image":"..\/textures\/Props\/tree-house.png",
          "imageheight":144,
          "imagewidth":119
-        }, 
+        },
         {
          "id":29,
          "image":"..\/textures\/Props\/tree.png",
          "imageheight":111,
          "imagewidth":119
-        }, 
+        },
         {
          "id":30,
          "image":"..\/textures\/Props\/wooden-house.png",
