@@ -11,42 +11,65 @@
 
 namespace engine::physics {
 
-    int PhysicsEngine::SpatialGrid::getGridKey(float x, float y) const
+    int64_t PhysicsEngine::SpatialGrid::getGridKey(float x, float y) const
     {
-        int grid_x = static_cast<int>(x / cell_size);
-        int grid_y = static_cast<int>(y / cell_size);
-        return grid_x * 10000 + grid_y; // 简单的hash
+        int32_t grid_x = static_cast<int32_t>(std::floor(x * inv_cell_size));
+        int32_t grid_y = static_cast<int32_t>(std::floor(y * inv_cell_size));
+        // 使用64位避免哈希冲突，更安全的组合方式
+        return (static_cast<int64_t>(grid_x) << 32) | static_cast<int64_t>(grid_y);
     }
 
     void PhysicsEngine::SpatialGrid::clear()
     {
-        grid.clear();
+        for (auto &[key, objects] : grid) {
+            objects.clear(); // 清空但保留容量
+        }
+        // 不清除grid本身，避免重新分配哈希表
     }
 
     void PhysicsEngine::SpatialGrid::insert(engine::object::GameObject* obj,
                                             engine::component::ColliderComponent* cc)
     {
-        auto transform = obj->getComponent<engine::component::TransformComponent>();
+        auto* transform = obj->getComponent<engine::component::TransformComponent>();
         if (!transform) return;
 
-        auto pos = transform->getPosition();
-        int key = getGridKey(pos.x, pos.y);
-        grid[key].emplace_back(obj, cc);
+        const auto world_aabb = cc->getWorldAABB();
+
+        // 获取对象覆盖的所有网格
+        auto grid_keys = getObjectGridKeys(world_aabb.position.x, world_aabb.position.y,
+                                           world_aabb.size.x, world_aabb.size.y);
+
+        for (int64_t key : grid_keys) {
+            grid[key].emplace_back(obj, cc);
+        }
     }
 
-    std::vector<int> PhysicsEngine::SpatialGrid::getNearbyKeys(float x, float y) const
+    std::vector<int64_t> PhysicsEngine::SpatialGrid::getNearbyKeys(float x, float y, float width,
+                                                                   float height) const
     {
-        std::vector<int> keys;
-        keys.reserve(9); // 最多9个相邻格子
+        // 扩展搜索范围以包含相邻网格
+        const float margin = cell_size * 0.1f; // 小的边界扩展
+        return getObjectGridKeys(x - margin, y - margin, width + 2 * margin, height + 2 * margin);
+    }
 
-        int center_x = static_cast<int>(x / cell_size);
-        int center_y = static_cast<int>(y / cell_size);
+    std::vector<int64_t>
+    PhysicsEngine::SpatialGrid::getObjectGridKeys(float x, float y, float width, float height) const
+    {
+        std::vector<int64_t> keys;
 
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                keys.push_back((center_x + dx) * 10000 + (center_y + dy));
+        int32_t min_x = static_cast<int32_t>(std::floor(x * inv_cell_size));
+        int32_t max_x = static_cast<int32_t>(std::floor((x + width) * inv_cell_size));
+        int32_t min_y = static_cast<int32_t>(std::floor(y * inv_cell_size));
+        int32_t max_y = static_cast<int32_t>(std::floor((y + height) * inv_cell_size));
+
+        keys.reserve((max_x - min_x + 1) * (max_y - min_y + 1));
+
+        for (int32_t gx = min_x; gx <= max_x; ++gx) {
+            for (int32_t gy = min_y; gy <= max_y; ++gy) {
+                keys.push_back((static_cast<int64_t>(gx) << 32) | static_cast<int64_t>(gy));
             }
         }
+
         return keys;
     }
 
@@ -128,124 +151,46 @@ namespace engine::physics {
             spatial_grid_.insert(obj, cc);
         }
 
-        // 第二步：只检查同一网格或相邻网格的对象
-        std::set<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
-            checked_pairs; // 避免重复检查
+        // 第二步：检查碰撞，避免重复检查
+        std::set<std::pair<engine::object::GameObject*, engine::object::GameObject*>> checked_pairs;
 
         for (const auto &[grid_key, objects] : spatial_grid_.grid) {
-            // 检查同一网格内的对象
-            checkCollisionsInCell(objects, checked_pairs);
+            if (objects.size() < 2) continue; // 单个对象无需检查
 
-            // 检查相邻网格（可选，取决于网格大小和对象大小的关系）
-            // 这里简化处理，只检查同一网格内的碰撞
+            checkCollisionsInCell(objects, checked_pairs);
         }
     }
 
     void PhysicsEngine::resolveTileCollisions(engine::component::PhysicsComponent* pc,
                                               float delta_time)
     {
-        // 检查组件是否有效
-        auto* obj = pc->getOwner();
-        if (!obj) return;
-        auto* tc = obj->getComponent<engine::component::TransformComponent>();
-        auto* cc = obj->getComponent<engine::component::ColliderComponent>();
-        if (!tc || !cc || !cc->isActive() || cc->isTrigger()) return;
-        auto world_aabb = cc->getWorldAABB(); // 使用最小包围盒进行碰撞检测（简化）
-        auto obj_pos = world_aabb.position;
-        auto obj_size = world_aabb.size;
-        if (world_aabb.size.x <= 0.0f || world_aabb.size.y <= 0.0f) return;
-        // -- 检查结束, 正式开始处理 --
+        engine::component::TransformComponent* tc = nullptr;
+        engine::component::ColliderComponent* cc = nullptr;
+        TileCollisionContext context;
 
-        auto tolerance = 1.0f; // 检查右边缘和下边缘时，需要减1像素，否则会检查到下一行/列的瓦片
-        auto ds = pc->velocity_ * delta_time; // 计算物体在delta_time内的位移
-        auto new_obj_pos = obj_pos + ds;      // 计算物体在delta_time后的新位置
-
-        // 遍历所有注册的碰撞瓦片层
-        for (auto* layer : collision_tile_layers_) {
-            if (!layer) continue;
-            auto tile_size = layer->getTileSize();
-            // 轴分离碰撞检测：先检查X方向是否有碰撞 (y方向使用初始值obj_pos.y)
-            if (ds.x > 0.0f) {
-                // 检查右侧碰撞，需要分别测试右上和右下角
-                auto right_top_x = new_obj_pos.x + obj_size.x;
-                auto tile_x =
-                    static_cast<int>(floor(right_top_x / tile_size.x)); // 获取x方向瓦片坐标
-                // y方向坐标有两个，右上和右下
-                auto tile_y = static_cast<int>(floor(obj_pos.y / tile_size.y));
-                auto tile_type_top = layer->getTileTypeAt({tile_x, tile_y}); // 右上角瓦片类型
-                auto tile_y_bottom =
-                    static_cast<int>(floor((obj_pos.y + obj_size.y - tolerance) / tile_size.y));
-                auto tile_type_bottom =
-                    layer->getTileTypeAt({tile_x, tile_y_bottom}); // 右下角瓦片类型
-
-                if (tile_type_top == engine::component::TileType::SOLID ||
-                    tile_type_bottom == engine::component::TileType::SOLID) {
-                    // 撞墙了！速度归零，x方向移动到贴着墙的位置
-                    new_obj_pos.x = tile_x * layer->getTileSize().x - obj_size.x;
-                    pc->velocity_.x = 0.0f;
-                }
-            } else if (ds.x < 0.0f) {
-                // 检查左侧碰撞，需要分别测试左上和左下角
-                auto left_top_x = new_obj_pos.x;
-                auto tile_x =
-                    static_cast<int>(floor(left_top_x / tile_size.x)); // 获取x方向瓦片坐标
-                // y方向坐标有两个，左上和左下
-                auto tile_y = static_cast<int>(floor(obj_pos.y / tile_size.y));
-                auto tile_type_top = layer->getTileTypeAt({tile_x, tile_y}); // 左上角瓦片类型
-                auto tile_y_bottom =
-                    static_cast<int>(floor((obj_pos.y + obj_size.y - tolerance) / tile_size.y));
-                auto tile_type_bottom =
-                    layer->getTileTypeAt({tile_x, tile_y_bottom}); // 左下角瓦片类型
-
-                if (tile_type_top == engine::component::TileType::SOLID ||
-                    tile_type_bottom == engine::component::TileType::SOLID) {
-                    // 撞墙了！速度归零，x方向移动到贴着墙的位置
-                    new_obj_pos.x = (tile_x + 1) * layer->getTileSize().x;
-                    pc->velocity_.x = 0.0f;
-                }
-            }
-            // 轴分离碰撞检测：再检查Y方向是否有碰撞 (x方向使用初始值obj_pos.x)
-            if (ds.y > 0.0f) {
-                // 检查底部碰撞，需要分别测试左下和右下角
-                auto bottom_left_y = new_obj_pos.y + obj_size.y;
-                auto tile_y = static_cast<int>(floor(bottom_left_y / tile_size.y));
-
-                auto tile_x = static_cast<int>(floor(obj_pos.x / tile_size.x));
-                auto tile_type_left = layer->getTileTypeAt({tile_x, tile_y}); // 左下角瓦片类型
-                auto tile_x_right =
-                    static_cast<int>(floor((obj_pos.x + obj_size.x - tolerance) / tile_size.x));
-                auto tile_type_right =
-                    layer->getTileTypeAt({tile_x_right, tile_y}); // 右下角瓦片类型
-
-                if (tile_type_left == engine::component::TileType::SOLID ||
-                    tile_type_right == engine::component::TileType::SOLID) {
-                    // 到达地面！速度归零，y方向移动到贴着地面的位置
-                    new_obj_pos.y = tile_y * layer->getTileSize().y - obj_size.y;
-                    pc->velocity_.y = 0.0f;
-                }
-            } else if (ds.y < 0.0f) {
-                // 检查顶部碰撞，需要分别测试左上和右上角
-                auto top_left_y = new_obj_pos.y;
-                auto tile_y = static_cast<int>(floor(top_left_y / tile_size.y));
-
-                auto tile_x = static_cast<int>(floor(obj_pos.x / tile_size.x));
-                auto tile_type_left = layer->getTileTypeAt({tile_x, tile_y}); // 左上角瓦片类型
-                auto tile_x_right =
-                    static_cast<int>(floor((obj_pos.x + obj_size.x - tolerance) / tile_size.x));
-                auto tile_type_right =
-                    layer->getTileTypeAt({tile_x_right, tile_y}); // 右上角瓦片类型
-
-                if (tile_type_left == engine::component::TileType::SOLID ||
-                    tile_type_right == engine::component::TileType::SOLID) {
-                    // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
-                    new_obj_pos.y = (tile_y + 1) * layer->getTileSize().y;
-                    pc->velocity_.y = 0.0f;
-                }
-            }
+        // 1. 验证输入参数
+        if (!validateTileCollisionInputs(pc, tc, cc, context)) {
+            return;
         }
-        // 更新物体位置，并限制最大速度
-        tc->setPosition(new_obj_pos);
-        pc->velocity_ = glm::clamp(pc->velocity_, -max_speed_, max_speed_);
+
+        // 2. 计算位移
+        if (!calculateTileDisplacement(pc, delta_time, context)) {
+            return; // 位移太小，跳过处理
+        }
+
+        // 3. 遍历所有碰撞瓦片层进行碰撞检测
+        for (const auto* layer : collision_tile_layers_) {
+            if (!layer) continue;
+
+            // X轴碰撞检测
+            resolveXAxisTileCollision(layer, pc, context);
+
+            // Y轴碰撞检测（使用更新后的X位置）
+            resolveYAxisTileCollision(layer, pc, context);
+        }
+
+        // 4. 应用碰撞结果
+        applyTileCollisionResults(tc, pc, context);
     }
 
     void PhysicsEngine::checkCollisionsInCell(
@@ -273,6 +218,169 @@ namespace engine::physics {
                 }
             }
         }
+    }
+
+    bool PhysicsEngine::validateTileCollisionInputs(engine::component::PhysicsComponent* pc,
+                                                    engine::component::TransformComponent*&tc,
+                                                    engine::component::ColliderComponent*&cc,
+                                                    TileCollisionContext &context) const
+    {
+        auto* obj = pc->getOwner();
+        if (!obj) return false;
+
+        tc = obj->getComponent<engine::component::TransformComponent>();
+        cc = obj->getComponent<engine::component::ColliderComponent>();
+
+        if (!tc || !cc || !cc->isActive() || cc->isTrigger()) {
+            return false;
+        }
+
+        const auto world_aabb = cc->getWorldAABB();
+        if (world_aabb.size.x <= 0.0f || world_aabb.size.y <= 0.0f) {
+            return false;
+        }
+
+        // 初始化上下文
+        context.world_aabb_position = world_aabb.position;
+        context.world_aabb_size = world_aabb.size;
+
+        return true;
+    }
+
+    bool PhysicsEngine::calculateTileDisplacement(engine::component::PhysicsComponent* pc,
+                                                  float delta_time,
+                                                  TileCollisionContext &context) const
+    {
+        context.displacement = pc->velocity_ * delta_time;
+
+        // 早期退出：位移太小
+        constexpr float MIN_DISPLACEMENT_SQ = 0.001f * 0.001f;  // 最小位移平方
+        if (glm::dot(context.displacement, context.displacement) < MIN_DISPLACEMENT_SQ) {
+            return false;
+        }
+
+        context.new_position = context.world_aabb_position + context.displacement;
+        return true;
+    }
+
+    void
+    PhysicsEngine::resolveXAxisTileCollision(const engine::component::TileLayerComponent* layer,
+                                             engine::component::PhysicsComponent* pc,
+                                             TileCollisionContext &context) const
+    {
+        // 用于避免浮点数精度问题的小数值，防止在边界检测时由于精度误差产生错误碰撞
+        constexpr float EPSILON = 0.01f;
+
+        if (std::abs(context.displacement.x) <= EPSILON) {
+            return;
+        }
+
+        const glm::vec2 &tile_size = layer->getTileSize();
+        const glm::vec2 inv_tile_size(1.0f / tile_size.x, 1.0f / tile_size.y);
+
+        // 计算碰撞边缘和目标瓦片
+        const float edge_x = (context.displacement.x > 0)
+                                 ? context.new_position.x + context.world_aabb_size.x
+                                 : context.new_position.x;
+        const int tile_x = static_cast<int>(std::floor(edge_x * inv_tile_size.x));
+
+        // 计算Y方向瓦片范围
+        auto [tile_y_min, tile_y_max] = calculateTileRange(
+            context.world_aabb_position.y, context.world_aabb_size.y, inv_tile_size, EPSILON);
+
+        // 检查垂直范围内的瓦片碰撞
+        bool has_collision = checkTileCollisionInRange(layer, tile_x, tile_y_min, tile_y_max, true);
+
+        if (has_collision) {
+            if (context.displacement.x > 0) {
+                context.new_position.x = tile_x * tile_size.x - context.world_aabb_size.x - EPSILON;
+            } else {
+                context.new_position.x = (tile_x + 1) * tile_size.x + EPSILON;
+            }
+            pc->velocity_.x = 0.0f;
+            context.has_x_collision = true;
+        }
+    }
+
+    void
+    PhysicsEngine::resolveYAxisTileCollision(const engine::component::TileLayerComponent* layer,
+                                             engine::component::PhysicsComponent* pc,
+                                             TileCollisionContext &context) const
+    {
+        // 用于避免浮点数精度问题的小数值，防止在边界检测时由于精度误差产生错误碰撞
+        constexpr float EPSILON = 0.01f;
+
+        if (std::abs(context.displacement.y) <= EPSILON) {
+            return;
+        }
+
+        const glm::vec2 &tile_size = layer->getTileSize();
+        const glm::vec2 inv_tile_size(1.0f / tile_size.x, 1.0f / tile_size.y);
+
+        // 计算碰撞边缘和目标瓦片
+        const float edge_y = (context.displacement.y > 0)
+                                 ? context.new_position.y + context.world_aabb_size.y
+                                 : context.new_position.y;
+        const int tile_y = static_cast<int>(std::floor(edge_y * inv_tile_size.y));
+
+        // 使用更新后的X位置计算范围
+        auto [tile_x_min, tile_x_max] = calculateTileRange(
+            context.new_position.x, context.world_aabb_size.x, inv_tile_size, EPSILON);
+
+        // 检查水平范围内的瓦片碰撞
+        bool has_collision =
+            checkTileCollisionInRange(layer, tile_y, tile_x_min, tile_x_max, false);
+
+        if (has_collision) {
+            if (context.displacement.y > 0) {
+                context.new_position.y = tile_y * tile_size.y - context.world_aabb_size.y - EPSILON;
+            } else {
+                context.new_position.y = (tile_y + 1) * tile_size.y + EPSILON;
+            }
+            pc->velocity_.y = 0.0f;
+            context.has_y_collision = true;
+        }
+    }
+
+    void PhysicsEngine::applyTileCollisionResults(engine::component::TransformComponent* tc,
+                                                  engine::component::PhysicsComponent* pc,
+                                                  const TileCollisionContext &context) const
+    {
+        // 应用位置更新
+        tc->setPosition(context.new_position);
+
+        // 应用速度限制
+        pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_, max_speed_);
+        pc->velocity_.y = std::clamp(pc->velocity_.y, -max_speed_, max_speed_);
+    }
+
+    bool
+    PhysicsEngine::checkTileCollisionInRange(const engine::component::TileLayerComponent* layer,
+                                             int tile_coord, int range_min, int range_max,
+                                             bool is_x_axis) const
+    {
+        for (int i = range_min; i <= range_max; ++i) {
+            const glm::ivec2 tile_pos = is_x_axis ? glm::ivec2(tile_coord, i)
+                                                  : glm::ivec2(i, tile_coord);
+
+            if (layer->getTileTypeAt(tile_pos) == engine::component::TileType::SOLID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    std::pair<int, int> PhysicsEngine::calculateTileRange(float position, float size,
+                                                          const glm::vec2 &inv_tile_size,
+                                                          float epsilon) const
+    {
+        // 计算瓦片范围
+        const float inv_size = (inv_tile_size.x != 0) ? inv_tile_size.x : inv_tile_size.y;
+
+        int range_min = static_cast<int>(std::floor(position * inv_size));
+        int range_max = static_cast<int>(std::floor((position + size - epsilon) * inv_size));
+
+        return {range_min, range_max};
     }
 
 } // namespace engine::physics

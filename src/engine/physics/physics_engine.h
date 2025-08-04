@@ -10,8 +10,6 @@ namespace engine::component {
     class PhysicsComponent;
     class TileLayerComponent;
     class TransformComponent;
-
-    enum class TileType;
 } // namespace engine::component
 
 namespace engine::object {
@@ -30,16 +28,37 @@ namespace engine::physics {
          */
         struct SpatialGrid {
             float cell_size;
-            std::unordered_map<int, std::vector<std::pair<engine::object::GameObject*,
-                                                          engine::component::ColliderComponent*>>>
+            float inv_cell_size; // 预计算倒数，避免重复除法
+            std::unordered_map<int64_t,
+                               std::vector<std::pair<engine::object::GameObject*,
+                                                     engine::component::ColliderComponent*>>>
                 grid;
 
-            SpatialGrid(float size = 100.0f) : cell_size(size) {}
+            SpatialGrid(float size = 100.0f) : cell_size(size), inv_cell_size(1.0f / size)
+            {
+                grid.reserve(128); // 预分配空间
+            }
 
-            int getGridKey(float x, float y) const;
+            int64_t getGridKey(float x, float y) const;
             void clear();
             void insert(engine::object::GameObject* obj, engine::component::ColliderComponent* cc);
-            std::vector<int> getNearbyKeys(float x, float y) const;
+            // 获取指定区域内的所有网格键
+            std::vector<int64_t> getNearbyKeys(float x, float y, float width, float height) const;
+            // 获取对象覆盖的所有网格键
+            std::vector<int64_t> getObjectGridKeys(float x, float y, float width,
+                                                   float height) const;
+        };
+
+        /*
+         * @brief 瓦片图层检测上下文结构体
+         */
+        struct TileCollisionContext {
+            glm::vec2 displacement{0.0f};
+            glm::vec2 new_position{0.0f};
+            glm::vec2 world_aabb_position{0.0f};
+            glm::vec2 world_aabb_size{0.0f};
+            bool has_x_collision = false;
+            bool has_y_collision = false;
         };
 
     private:
@@ -52,8 +71,8 @@ namespace engine::physics {
         float max_speed_ = 500.0f;     ///<<@brief 最大速度
 
         std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
-            collision_pairs_;                     ///<@brief 物体碰撞对（每次 update 都会清空）
-        SpatialGrid spatial_grid_;                ///<@brief 空间网格
+            collision_pairs_;      ///<@brief 物体碰撞对（每次 update 都会清空）
+        SpatialGrid spatial_grid_; ///<@brief 空间网格
 
     public:
         PhysicsEngine() = default;
@@ -96,5 +115,53 @@ namespace engine::physics {
                                         engine::component::ColliderComponent*>> &objects,
             std::set<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
                 &checked_pairs);
+
+        /*
+         * @brief 确认瓦片图层输入参数是否有效
+         */
+        bool validateTileCollisionInputs(engine::component::PhysicsComponent* pc,
+                                         engine::component::TransformComponent*&tc,
+                                         engine::component::ColliderComponent*&cc,
+                                         TileCollisionContext &context) const;
+
+        /*
+         * @brief 计算瓦片图层对象在指定时间间隔内的位移
+         */
+        bool calculateTileDisplacement(engine::component::PhysicsComponent* pc, float delta_time,
+                                       TileCollisionContext &context) const;
+
+        /*
+         * @brief 解决瓦片图层对象在 X 轴上的碰撞
+         */
+        void resolveXAxisTileCollision(const engine::component::TileLayerComponent* layer,
+                                       engine::component::PhysicsComponent* pc,
+                                       TileCollisionContext &context) const;
+
+        /*
+         * @brief 解决瓦片图层对象在 Y 轴上的碰撞
+         */
+        void resolveYAxisTileCollision(const engine::component::TileLayerComponent* layer,
+                                       engine::component::PhysicsComponent* pc,
+                                       TileCollisionContext &context) const;
+
+        /*
+         * @brief 应用瓦片图层对象在指定时间间隔内的位移结果
+         */
+        void applyTileCollisionResults(engine::component::TransformComponent* tc,
+                                       engine::component::PhysicsComponent* pc,
+                                       const TileCollisionContext &context) const;
+
+        /*
+         * @brief 检查指定瓦片图层对象在指定范围区间内的碰撞*/
+        bool checkTileCollisionInRange(const engine::component::TileLayerComponent* layer,
+                                       int tile_coord, int range_min, int range_max,
+                                       bool is_x_axis) const;
+
+        /*
+         * @brief 计算指定瓦片图层对象在指定时间间隔内的位移结果
+         */
+        std::pair<int, int> calculateTileRange(float position, float size,
+                                               const glm::vec2 &inv_tile_size,
+                                               float epsilon = 0.01f) const;
     };
 } // namespace engine::physics
