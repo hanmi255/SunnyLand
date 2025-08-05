@@ -77,16 +77,16 @@ namespace engine::physics {
 
     private:
         std::vector<engine::component::PhysicsComponent*>
-            components_;               ///<@brief 注册的物理组件容器，非拥有指针
+            components_;               ///< @brief 注册的物理组件容器，非拥有指针
         std::vector<engine::component::TileLayerComponent*>
-            collision_tile_layers_;    ///<@brief 碰撞检测的瓦片图层容器
+            collision_tile_layers_;    ///< @brief 碰撞检测的瓦片图层容器
         glm::vec2 gravity_ = {0.0f,
-                              980.0f}; ///<@brief 默认重力值 (像素/秒^2, 相当于100像素对应现实1m)
+                              980.0f}; ///< @brief 默认重力值 (像素/秒^2, 相当于100像素对应现实1m)
         float max_speed_ = 500.0f;     ///<<@brief 最大速度
 
         std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
-            collision_pairs_;      ///<@brief 物体碰撞对（每次 update 都会清空）
-        SpatialGrid spatial_grid_; ///<@brief 空间网格
+            collision_pairs_;      ///< @brief 物体碰撞对（每次 update 都会清空）
+        SpatialGrid spatial_grid_; ///< @brief 空间网格
 
     public:
         PhysicsEngine() = default;

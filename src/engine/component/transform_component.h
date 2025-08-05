@@ -11,9 +11,9 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     private:
-        glm::vec2 position_ = {0.0f, 0.0f}; ///<@brief 位置
-        glm::vec2 scale_ = {1.0f, 1.0f};    ///<@brief 缩放
-        float rotation_ = 0.0f;             ///<@brief 旋转 角度制 单位：度
+        glm::vec2 position_ = {0.0f, 0.0f}; ///< @brief 位置
+        glm::vec2 scale_ = {1.0f, 1.0f};    ///< @brief 缩放
+        float rotation_ = 0.0f;             ///< @brief 旋转 角度制 单位：度
 
     public:
         /**

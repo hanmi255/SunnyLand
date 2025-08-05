@@ -16,12 +16,12 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     private:
-        TransformComponent* transform_component_ = nullptr; ///<@brief 变换组件
+        TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
 
-        engine::render::Sprite sprite_;                     ///<@brief 精灵对象
-        glm::vec2 scroll_factor_; ///<@brief 滚动因子(0=静止, 1=随相机移动, <1=比相机慢)
-        glm::bvec2 repeat_xy_;    ///<@brief 是否沿着x和y轴重复
-        bool is_visible_ = true;  ///<@brief 是否可见
+        engine::render::Sprite sprite_;                     ///< @brief 精灵对象
+        glm::vec2 scroll_factor_; ///< @brief 滚动因子(0=静止, 1=随相机移动, <1=比相机慢)
+        glm::bvec2 repeat_xy_;    ///< @brief 是否沿着x和y轴重复
+        bool is_visible_ = true;  ///< @brief 是否可见
 
     public:
         /**

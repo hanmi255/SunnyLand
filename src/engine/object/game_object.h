@@ -19,7 +19,7 @@ namespace engine::object {
         std::string name_;
         std::string tag_;
         std::unordered_map<std::type_index, std::unique_ptr<component::Component>> components_;
-        bool need_remove_ = false; ///<@breif 将来由场景类负责删除
+        bool need_remove_ = false; ///< @breif 将来由场景类负责删除
 
     public:
         GameObject(const std::string &name = "", const std::string &tag = "");

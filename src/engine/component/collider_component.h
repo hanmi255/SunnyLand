@@ -17,14 +17,14 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     private:
-        TransformComponent* transform_component_ = nullptr;   ///<@brief 变换组件
+        TransformComponent* transform_component_ = nullptr;   ///< @brief 变换组件
 
-        std::unique_ptr<engine::physics::Collider> collider_; ///<@brief 碰撞器对象
-        glm::vec2 offset_ = {0.0f, 0.0f}; ///<@brief 碰撞器左上角相对于原点的偏移
-        engine::utils::Alignment alignment_ = engine::utils::Alignment::NONE; ///<@brief 对齐方式
+        std::unique_ptr<engine::physics::Collider> collider_; ///< @brief 碰撞器对象
+        glm::vec2 offset_ = {0.0f, 0.0f}; ///< @brief 碰撞器左上角相对于原点的偏移
+        engine::utils::Alignment alignment_ = engine::utils::Alignment::NONE; ///< @brief 对齐方式
 
-        bool is_trigger_ = false; ///<@brief 是否触发器（仅检测碰撞，不产生物理响应）
-        bool is_active_ = true;   ///<@brief 是否激活
+        bool is_trigger_ = false; ///< @brief 是否触发器（仅检测碰撞，不产生物理响应）
+        bool is_active_ = true;   ///< @brief 是否激活
 
     public:
         /**
@@ -41,7 +41,8 @@ namespace engine::component {
 
         /**
          * @brief 根据当前的 alignment_anchor_ 和 collider_ 尺寸计算 offset_。
-         * @note 需要用到TransformComponent的scale，因此TransformComponent更新scale时，也要调用此方法。
+         * @note
+         * 需要用到TransformComponent的scale，因此TransformComponent更新scale时，也要调用此方法。
          */
         void updateOffset();
 

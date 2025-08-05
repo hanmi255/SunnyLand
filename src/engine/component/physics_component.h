@@ -13,16 +13,16 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     public:
-        glm::vec2 velocity_ = {0.0f, 0.0f}; ///<@brief 物体的速度
+        glm::vec2 velocity_ = {0.0f, 0.0f}; ///< @brief 物体的速度
 
     private:
-        engine::physics::PhysicsEngine* physics_engine_ = nullptr; ///<@brief 物理引擎
-        TransformComponent* transform_component_ = nullptr;        ///<@brief 物体的变换组件
+        engine::physics::PhysicsEngine* physics_engine_ = nullptr; ///< @brief 物理引擎
+        TransformComponent* transform_component_ = nullptr;        ///< @brief 物体的变换组件
 
-        glm::vec2 force_ = {0.0f, 0.0f};                           ///<@brief 物体的力
-        float mass_ = 1.0f;                                        ///<@brief 物体的质量 默认为1.0f
+        glm::vec2 force_ = {0.0f, 0.0f};                           ///< @brief 物体的力
+        float mass_ = 1.0f;                                        ///< @brief 物体的质量 默认为1.0f
         bool use_gravity_ = true;                                  ///< @brief 物体是否受重力影响
-        bool enabled_ = true;                                      ///<@brief 是否启用组件
+        bool enabled_ = true;                                      ///< @brief 是否启用组件
 
     public:
         /**

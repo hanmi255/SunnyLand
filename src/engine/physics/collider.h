@@ -19,7 +19,7 @@ namespace engine::physics {
      */
     class Collider {
     protected:
-        glm::vec2 aabb_size_ = {0.0f, 0.0f}; ///<@brief 覆盖Collider的最小包围盒的尺寸
+        glm::vec2 aabb_size_ = {0.0f, 0.0f}; ///< @brief 覆盖Collider的最小包围盒的尺寸
 
     public:
         virtual ~Collider() = default;

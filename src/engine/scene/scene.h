@@ -32,14 +32,14 @@ namespace engine::scene {
      */
     class Scene {
     protected:
-        std::string name_;                           ///<@brief 场景名称
-        engine::core::Context &context_;             ///<@brief 上下文引用
-        engine::scene::SceneManager &scene_manager_; ///<@brief 场景管理器引用
-        bool is_initialized_ = false;                ///<@brief 是否已初始化
+        std::string name_;                           ///< @brief 场景名称
+        engine::core::Context &context_;             ///< @brief 上下文引用
+        engine::scene::SceneManager &scene_manager_; ///< @brief 场景管理器引用
+        bool is_initialized_ = false;                ///< @brief 是否已初始化
         std::vector<std::unique_ptr<engine::object::GameObject>>
-            game_objects_;                           ///<@brief 场景中的游戏对象列表
+            game_objects_;                           ///< @brief 场景中的游戏对象列表
         std::vector<std::unique_ptr<engine::object::GameObject>>
-            pending_additions_;                      ///<@brief 待处理的游戏对象列表
+            pending_additions_;                      ///< @brief 待处理的游戏对象列表
 
     public:
         /**

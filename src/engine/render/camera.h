@@ -19,11 +19,11 @@ namespace engine::render {
      */
     class Camera final {
     private:
-        glm::vec2 viewport_size_;          ///<@brief 视口大小
-        glm::vec2 viewport_center_offset_; ///<@brief 视口中心偏移
-        glm::vec2 position_;               ///<@brief 相机左上角的世界坐标
+        glm::vec2 viewport_size_;          ///< @brief 视口大小
+        glm::vec2 viewport_center_offset_; ///< @brief 视口中心偏移
+        glm::vec2 position_;               ///< @brief 相机左上角的世界坐标
         std::optional<engine::utils::Rect>
-            limit_bounds_;                 ///<@brief 限制相机移动范围，空值表示不限制
+            limit_bounds_;                 ///< @brief 限制相机移动范围，空值表示不限制
 
     public:
         /**

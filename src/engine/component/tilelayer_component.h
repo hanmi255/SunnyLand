@@ -49,8 +49,8 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     private:
-        glm::ivec2 tile_size_; ///<@brief 单个瓦片尺寸（像素）
-        glm::ivec2 map_size_;  ///<@brief 瓦片地图尺寸（瓦片数量）
+        glm::ivec2 tile_size_; ///< @brief 单个瓦片尺寸（像素）
+        glm::ivec2 map_size_;  ///< @brief 瓦片地图尺寸（瓦片数量）
         std::vector<TileInfo>
             tiles_; ///< @brief 存储所有瓦片信息 (按"行主序"存储, index = y * map_width_ + x)
         glm::vec2 offset_ = {0.0f, 0.0f}; ///< @brief 瓦片地图偏移量

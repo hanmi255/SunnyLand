@@ -24,16 +24,16 @@ namespace engine::component {
 
     private:
         engine::resource::ResourceManager* resource_manager_ =
-            nullptr;                           ///<@brief 资源管理器指针，用于获取纹理大小
+            nullptr;                           ///< @brief 资源管理器指针，用于获取纹理大小
         TransformComponent* transform_component_ =
-            nullptr;                           ///<@brief 变换组件指针，用于获取位置和缩放(非必须)
+            nullptr;                           ///< @brief 变换组件指针，用于获取位置和缩放(非必须)
 
-        engine::render::Sprite sprite_;        ///<@brief 精灵
+        engine::render::Sprite sprite_;        ///< @brief 精灵
         engine::utils::Alignment alignment_ =
-            engine::utils::Alignment::NONE;    ///<@brief 精灵对齐方式
-        glm::vec2 sprite_size_ = {0.0f, 0.0f}; ///<@brief 精灵大小
-        glm::vec2 offset_ = {0.0f, 0.0f};      ///<@brief 偏移量
-        bool is_visible_ = true;               ///<@brief 是否可见
+            engine::utils::Alignment::NONE;    ///< @brief 精灵对齐方式
+        glm::vec2 sprite_size_ = {0.0f, 0.0f}; ///< @brief 精灵大小
+        glm::vec2 offset_ = {0.0f, 0.0f};      ///< @brief 偏移量
+        bool is_visible_ = true;               ///< @brief 是否可见
 
     public:
         /**
