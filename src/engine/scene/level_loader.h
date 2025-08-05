@@ -86,9 +86,8 @@ namespace engine::scene {
         void loadTileLayer(const nlohmann::json &layer_json, Scene &scene);
         void loadObjectLayer(const nlohmann::json &layer_json, Scene &scene);
 
-        // ========== 对象层创建辅助函数 ==========
         [[nodiscard]] std::unique_ptr<engine::object::GameObject>
-        createGameObjectFromTileObject(const nlohmann::json &object_json, Scene &scene);
+        createGameObjectFromObject(const nlohmann::json &object_json, int gid, Scene &scene);
 
         struct ObjectTransformData {
             glm::vec2 position;
@@ -97,15 +96,15 @@ namespace engine::scene {
             std::string name;
         };
         [[nodiscard]] std::optional<ObjectTransformData>
-        calculateObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size);
+        parseObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size);
 
-        void setupCollisionComponents(engine::object::GameObject &game_object,
-                                      const engine::component::TileInfo &tile_info,
-                                      const std::optional<nlohmann::json> &tile_json,
-                                      const glm::vec2 &src_size, Scene &scene);
+        void setupObjectCollision(engine::object::GameObject &game_object,
+                                  const engine::component::TileInfo &tile_info,
+                                  const std::optional<nlohmann::json> &tile_json,
+                                  const glm::vec2 &src_size, Scene &scene);
 
-        void applyTileProperties(engine::object::GameObject &game_object,
-                                 const std::optional<nlohmann::json> &tile_json, Scene &scene);
+        void applyObjectProperties(engine::object::GameObject &game_object,
+                                   const std::optional<nlohmann::json> &tile_json, Scene &scene);
 
         // ========== 瓦片数据处理函数 ==========
         [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;

@@ -47,16 +47,23 @@ namespace engine::component {
         // 视锥剔除：计算需要渲染的瓦片范围
         const auto camera_bounds_opt = camera.getLimitBounds(); // 返回std::optional<Rect>
 
-        // 如果没有限制边界，则不进行视锥剔除
-        if (!camera_bounds_opt.has_value()) {
-            return;
+        // 确定渲染边界：如果相机有限制边界则使用它，否则使用相机视口
+        float left, right, top, bottom;
+        if (camera_bounds_opt.has_value()) {
+            const auto &camera_bounds = camera_bounds_opt.value();
+            left = camera_bounds.position.x;
+            right = camera_bounds.position.x + camera_bounds.size.x;
+            top = camera_bounds.position.y;
+            bottom = camera_bounds.position.y + camera_bounds.size.y;
+        } else {
+            // 使用相机位置和视口大小作为渲染边界
+            const glm::vec2 camera_pos = camera.getPosition();
+            const glm::vec2 viewport_size = camera.getViewportSize();
+            left = camera_pos.x;
+            right = camera_pos.x + viewport_size.x;
+            top = camera_pos.y;
+            bottom = camera_pos.y + viewport_size.y;
         }
-
-        const auto &camera_bounds = camera_bounds_opt.value();
-        const float left = camera_bounds.position.x;
-        const float right = camera_bounds.position.x + camera_bounds.size.x;
-        const float top = camera_bounds.position.y;
-        const float bottom = camera_bounds.position.y + camera_bounds.size.y;
 
         // 计算可见瓦片的边界（添加一点缓冲以避免边缘问题）
         const int start_x = std::max(0, static_cast<int>((left - offset_.x) / tile_width) - 1);

@@ -1,5 +1,7 @@
 #include "level_loader.h"
+#include "../component/collider_component.h"
 #include "../component/parallax_component.h"
+#include "../component/physics_component.h"
 #include "../component/sprite_component.h"
 #include "../component/tilelayer_component.h"
 #include "../component/transform_component.h"
@@ -13,8 +15,6 @@
 #include <fstream>
 #include <ranges> // 用于 std::views::transform
 #include <spdlog/spdlog.h>
-#include "../component/collider_component.h"
-#include "../component/physics_component.h"
 
 namespace engine::scene {
 
@@ -81,21 +81,6 @@ namespace engine::scene {
 
         tile_size_ = glm::ivec2(getJsonValue(json_data, JsonKeys::TILE_WIDTH, 0),
                                 getJsonValue(json_data, JsonKeys::TILE_HEIGHT, 0));
-
-        return true;
-    }
-
-    bool LevelLoader::validateMapData() const
-    {
-        if (map_size_.x <= 0 || map_size_.y <= 0) {
-            spdlog::error("无效的地图尺寸: {}x{}", map_size_.x, map_size_.y);
-            return false;
-        }
-
-        if (tile_size_.x <= 0 || tile_size_.y <= 0) {
-            spdlog::error("无效的瓦片尺寸: {}x{}", tile_size_.x, tile_size_.y);
-            return false;
-        }
 
         return true;
     }
@@ -221,99 +206,180 @@ namespace engine::scene {
 
     void LevelLoader::loadObjectLayer(const nlohmann::json &layer_json, Scene &scene)
     {
-        if (!validateLayerData(layer_json, JsonKeys::OBJECTS)) {
+        if (!layer_json.contains("objects") || !layer_json["objects"].is_array()) {
+            spdlog::error("对象图层 '{}' 缺少 'objects' 属性。",
+                          layer_json.value("name", "Unnamed"));
             return;
         }
 
-        const auto &objects = layer_json[JsonKeys::OBJECTS];
+        const auto &objects = layer_json["objects"];
         size_t loaded_objects = 0;
 
+        // 遍历对象数据
         for (const auto &object : objects) {
-            const auto gid = getJsonValue(object, "gid", INVALID_GID);
-
-            if (gid == INVALID_GID) {
+            auto gid = object.value("gid", 0);
+            if (gid == 0) {
                 // TODO: 处理自定义形状（碰撞盒、触发器等）
+                spdlog::debug("跳过无 gid 的对象（可能是自定义形状）");
                 continue;
             }
-
-            auto tile_info = getTileInfoByGid(gid);
-            if (tile_info.sprite.getTextureId().empty()) {
-                spdlog::warn("gid为 {} 的瓦片没有图像纹理", gid);
-                continue;
-            }
-
-            // 计算变换信息
-            auto position =
-                glm::vec2(getJsonValue(object, "x", 0.0f), getJsonValue(object, "y", 0.0f));
-
-            const auto dst_size = glm::vec2(getJsonValue(object, "width", 0.0f),
-                                            getJsonValue(object, "height", 0.0f));
-
-            // 调整位置（从左下角到左上角）
-            position.y -= dst_size.y;
-
-            const auto rotation = getJsonValue(object, "rotation", 0.0f);
-
-            const auto src_size_opt = tile_info.sprite.getSrcRect();
-            if (!src_size_opt) {
-                spdlog::warn("gid为 {} 的瓦片没有源矩形", gid);
-                continue;
-            }
-
-            const auto src_size = glm::vec2(src_size_opt->w, src_size_opt->h);
-            const auto scale = dst_size / src_size;
-            const auto object_name =
-                getJsonValue<std::string>(object, JsonKeys::NAME, std::string(DEFAULT_LAYER_NAME));
 
             // 创建游戏对象
-            auto game_object = std::make_unique<engine::object::GameObject>(object_name);
-            game_object->addComponent<engine::component::TransformComponent>(position, scale,
-                                                                             rotation);
-            game_object->addComponent<engine::component::SpriteComponent>(
-                std::move(tile_info.sprite), scene.getContext().getResourceManager());
+            auto game_object = createGameObjectFromObject(object, gid, scene);
+            if (!game_object) {
+                spdlog::warn("创建游戏对象失败，跳过此对象");
+                continue;
+            }
 
+            // 添加到场景中
             scene.addGameObject(std::move(game_object));
             ++loaded_objects;
         }
 
-        spdlog::debug("加载对象图层: '{}' 完成 ({} 对象)", getLayerName(layer_json),
+        spdlog::debug("加载对象图层: '{}' 完成 ({} 对象)", layer_json.value("name", "Unnamed"),
                       loaded_objects);
     }
 
-    engine::component::TileType LevelLoader::getTileType(const nlohmann::json &tile_json) const
+    std::unique_ptr<engine::object::GameObject>
+    LevelLoader::createGameObjectFromObject(const nlohmann::json &object_json, int gid,
+                                            Scene &scene)
     {
-        if (tile_json.contains(JsonKeys::PROPERTIES)) {
-            const auto &properties = tile_json[JsonKeys::PROPERTIES];
-            if (properties.is_array()) {
-                for (const auto &property : properties) {
-                    const auto property_name = getJsonValue<std::string>(property, "name", "");
-                    if (property_name == "solid") {
-                        const auto is_solid = getJsonValue(property, "value", false);
-                        return is_solid ? engine::component::TileType::SOLID
-                                        : engine::component::TileType::NORMAL;
-                    }
-                    // TODO: 可以在这里添加更多的自定义属性处理逻辑
-                }
-            }
+        // 获取瓦片信息
+        auto tile_info = getTileInfoByGid(gid);
+        if (tile_info.sprite.getTextureId().empty()) {
+            spdlog::error("gid为 {} 的瓦片没有图像纹理。", gid);
+            return nullptr;
         }
-        return engine::component::TileType::NORMAL;
+
+        // 获取源矩形尺寸
+        auto src_size_opt = tile_info.sprite.getSrcRect();
+        if (!src_size_opt) {
+            spdlog::error("gid为 {} 的瓦片没有源矩形。", gid);
+            return nullptr;
+        }
+        auto src_size = glm::vec2(src_size_opt->w, src_size_opt->h);
+
+        // 解析变换信息
+        auto transform_data = parseObjectTransform(object_json, src_size);
+        if (!transform_data) {
+            spdlog::error("解析对象变换信息失败");
+            return nullptr;
+        }
+
+        // 创建游戏对象
+        auto game_object = std::make_unique<engine::object::GameObject>(transform_data->name);
+
+        // 添加基础组件
+        game_object->addComponent<engine::component::TransformComponent>(
+            transform_data->position, transform_data->scale, transform_data->rotation);
+        game_object->addComponent<engine::component::SpriteComponent>(
+            std::move(tile_info.sprite), scene.getContext().getResourceManager());
+
+        // 获取瓦片JSON信息
+        auto tile_json = getTileJsonByGid(gid);
+
+        // 设置碰撞组件
+        setupObjectCollision(*game_object, tile_info, tile_json, src_size, scene);
+
+        // 应用对象属性
+        applyObjectProperties(*game_object, tile_json, scene);
+
+        spdlog::debug("加载对象: '{}' 完成", transform_data->name);
+        return game_object;
     }
 
-    engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json &tileset_json,
-                                                             int local_id) const
+    std::optional<LevelLoader::ObjectTransformData>
+    LevelLoader::parseObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size)
     {
-        if (tileset_json.contains(JsonKeys::TILES)) {
-            const auto &tiles = tileset_json[JsonKeys::TILES];
-            if (tiles.is_array()) {
-                for (const auto &tile : tiles) {
-                    const auto id = getJsonValue(tile, "id", -1);
-                    if (id == local_id) {
-                        return getTileType(tile);
-                    }
-                }
+        // 获取基础变换信息
+        auto position = glm::vec2(object_json.value("x", 0.0f), object_json.value("y", 0.0f));
+        auto dst_size =
+            glm::vec2(object_json.value("width", 0.0f), object_json.value("height", 0.0f));
+        auto rotation = object_json.value("rotation", 0.0f);
+        auto object_name = object_json.value("name", std::string("Unnamed"));
+
+        // 验证尺寸
+        if (src_size.x <= 0.0f || src_size.y <= 0.0f) {
+            spdlog::warn("对象 '{}' 的源尺寸无效: ({}, {})", object_name, src_size.x, src_size.y);
+            return std::nullopt;
+        }
+
+        // 调整位置（从左下角到左上角）
+        position.y -= dst_size.y;
+
+        // 计算缩放比例
+        const auto scale = dst_size / src_size;
+
+        return ObjectTransformData{
+            .position = position, .scale = scale, .rotation = rotation, .name = object_name};
+    }
+
+    void LevelLoader::setupObjectCollision(engine::object::GameObject &game_object,
+                                           const engine::component::TileInfo &tile_info,
+                                           const std::optional<nlohmann::json> &tile_json,
+                                           const glm::vec2 &src_size, Scene &scene)
+    {
+        // 优先检查 SOLID 类型
+        if (tile_info.type == engine::component::TileType::SOLID) {
+            auto collider = std::make_unique<engine::physics::AABBCollider>(src_size);
+            game_object.addComponent<engine::component::ColliderComponent>(std::move(collider));
+            // 物理组件不受重力影响
+            game_object.addComponent<engine::component::PhysicsComponent>(
+                &scene.getContext().getPhysicsEngine(), false);
+            // 设置标签方便物理引擎检索
+            game_object.setTag("solid");
+            spdlog::debug("为对象 '{}' 添加了 SOLID 类型碰撞组件", game_object.getName());
+            return;
+        }
+
+        // 检查自定义碰撞体
+        if (!tile_json.has_value()) {
+            return;
+        }
+
+        auto rect = getColliderRect(tile_json.value());
+        if (rect) {
+            // 添加自定义碰撞组件
+            auto collider = std::make_unique<engine::physics::AABBCollider>(rect->size);
+            auto* cc =
+                game_object.addComponent<engine::component::ColliderComponent>(std::move(collider));
+            cc->setOffset(rect->position); // 设置偏移量
+            // 添加物理组件（默认不受重力影响）
+            game_object.addComponent<engine::component::PhysicsComponent>(
+                &scene.getContext().getPhysicsEngine(), false);
+            spdlog::debug("为对象 '{}' 添加了自定义碰撞组件 (size: {}, {}, offset: {}, {})",
+                          game_object.getName(), rect->size.x, rect->size.y, rect->position.x,
+                          rect->position.y);
+        }
+    }
+
+    void LevelLoader::applyObjectProperties(engine::object::GameObject &game_object,
+                                            const std::optional<nlohmann::json> &tile_json,
+                                            Scene &scene)
+    {
+        if (!tile_json.has_value()) {
+            return;
+        }
+
+        // 获取标签信息并设置
+        auto tag = getTileProperty<std::string>(tile_json.value(), "tag");
+        if (tag) {
+            game_object.setTag(tag.value());
+        }
+
+        // 获取重力信息并设置
+        auto gravity = getTileProperty<bool>(tile_json.value(), "gravity");
+        if (gravity) {
+            auto pc = game_object.getComponent<engine::component::PhysicsComponent>();
+            if (pc) {
+                pc->setUseGravity(gravity.value());
+            } else {
+                spdlog::warn("对象 '{}' 在设置重力信息时没有物理组件，请检查地图设置。",
+                             game_object.getName());
+                game_object.addComponent<engine::component::PhysicsComponent>(
+                    &scene.getContext().getPhysicsEngine(), gravity.value());
             }
         }
-        return engine::component::TileType::NORMAL;
     }
 
     engine::component::TileInfo LevelLoader::getTileInfoByGid(int gid) const
@@ -391,6 +457,85 @@ namespace engine::scene {
         return engine::component::TileInfo();
     }
 
+    std::optional<nlohmann::json> LevelLoader::getTileJsonByGid(int gid) const
+    {
+        if (gid == INVALID_GID) {
+            return std::nullopt;
+        }
+
+        // 查找对应的tileset
+        auto tileset_it = tileset_data_.upper_bound(gid);
+        if (tileset_it == tileset_data_.begin()) {
+            return std::nullopt;
+        }
+        --tileset_it;
+
+        const auto &tileset = tileset_it->second;
+        const auto local_id = gid - tileset_it->first;
+
+        // 在tileset的tiles数组中查找对应的tile
+        if (tileset.contains(JsonKeys::TILES)) {
+            const auto &tiles_json = tileset[JsonKeys::TILES];
+            for (const auto &tile_json : tiles_json) {
+                if (getJsonValue(tile_json, "id", -1) == local_id) {
+                    return tile_json;
+                }
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    engine::component::TileType LevelLoader::getTileType(const nlohmann::json &tile_json) const
+    {
+        if (tile_json.contains(JsonKeys::PROPERTIES)) {
+            const auto &properties = tile_json[JsonKeys::PROPERTIES];
+            if (properties.is_array()) {
+                for (const auto &property : properties) {
+                    const auto property_name = getJsonValue<std::string>(property, "name", "");
+                    if (property_name == "solid") {
+                        const auto is_solid = getJsonValue(property, "value", false);
+                        return is_solid ? engine::component::TileType::SOLID
+                                        : engine::component::TileType::NORMAL;
+                    }
+                    // TODO: 可以在这里添加更多的自定义属性处理逻辑
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
+    engine::component::TileType LevelLoader::getTileTypeById(const nlohmann::json &tileset_json,
+                                                             int local_id) const
+    {
+        if (tileset_json.contains(JsonKeys::TILES)) {
+            const auto &tiles = tileset_json[JsonKeys::TILES];
+            if (tiles.is_array()) {
+                for (const auto &tile : tiles) {
+                    const auto id = getJsonValue(tile, "id", -1);
+                    if (id == local_id) {
+                        return getTileType(tile);
+                    }
+                }
+            }
+        }
+        return engine::component::TileType::NORMAL;
+    }
+
+    void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)
+    {
+        auto tileset_json_opt = loadJsonFile(tileset_path);
+        if (!tileset_json_opt) {
+            return;
+        }
+
+        auto tileset_json = std::move(*tileset_json_opt);
+        tileset_json["file_path"] = tileset_path;
+        tileset_data_.emplace(first_gid, std::move(tileset_json));
+
+        spdlog::debug("图块集文件 '{}' 加载完成，firstgid: {}", tileset_path, first_gid);
+    }
+
     template <typename T>
     std::optional<T> LevelLoader::getTileProperty(const nlohmann::json &tile_json,
                                                   std::string_view property_name) const
@@ -409,33 +554,44 @@ namespace engine::scene {
     std::optional<engine::utils::Rect>
     LevelLoader::getColliderRect(const nlohmann::json &tile_json) const
     {
-        if(!tile_json.contains(JsonKeys::OBJECT_GROUP)) return std::nullopt;
+        if (!tile_json.contains(JsonKeys::OBJECT_GROUP)) return std::nullopt;
         const auto &object_group = tile_json[JsonKeys::OBJECT_GROUP];
-        if(!object_group.contains(JsonKeys::OBJECTS)) return std::nullopt;
+        if (!object_group.contains(JsonKeys::OBJECTS)) return std::nullopt;
         const auto &objects = object_group[JsonKeys::OBJECTS];
         for (const auto &object : objects) {
-            auto rect = engine::utils::Rect{glm::vec2(getJsonValue(object, "x", 0.0f),
-                                                  getJsonValue(object, "y", 0.0f)),
-                                        glm::vec2(getJsonValue(object, "width", 0.0f),
-                                                  getJsonValue(object, "height", 0.0f))};
-            if (rect.size.x > 0 && rect.size.y > 0) 
-        return rect;
+            auto rect = engine::utils::Rect{
+                glm::vec2(getJsonValue(object, "x", 0.0f), getJsonValue(object, "y", 0.0f)),
+                glm::vec2(getJsonValue(object, "width", 0.0f),
+                          getJsonValue(object, "height", 0.0f))};
+            if (rect.size.x > 0 && rect.size.y > 0) return rect;
         }
         return std::nullopt;
     }
 
-    void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)
+    bool LevelLoader::validateMapData() const
     {
-        auto tileset_json_opt = loadJsonFile(tileset_path);
-        if (!tileset_json_opt) {
-            return;
+        if (map_size_.x <= 0 || map_size_.y <= 0) {
+            spdlog::error("无效的地图尺寸: {}x{}", map_size_.x, map_size_.y);
+            return false;
         }
 
-        auto tileset_json = std::move(*tileset_json_opt);
-        tileset_json["file_path"] = tileset_path;
-        tileset_data_.emplace(first_gid, std::move(tileset_json));
+        if (tile_size_.x <= 0 || tile_size_.y <= 0) {
+            spdlog::error("无效的瓦片尺寸: {}x{}", tile_size_.x, tile_size_.y);
+            return false;
+        }
 
-        spdlog::debug("图块集文件 '{}' 加载完成，firstgid: {}", tileset_path, first_gid);
+        return true;
+    }
+
+    bool LevelLoader::validateLayerData(const nlohmann::json &layer_json,
+                                        std::string_view expected_key) const
+    {
+        if (!layer_json.contains(expected_key) || !layer_json[expected_key].is_array()) {
+            spdlog::error("图层 '{}' 缺少或无效的 '{}' 属性", getLayerName(layer_json),
+                          expected_key);
+            return false;
+        }
+        return true;
     }
 
     std::string LevelLoader::resolvePath(const std::string &relative_path,
@@ -449,17 +605,6 @@ namespace engine::scene {
             spdlog::warn("解析路径失败，使用原始路径: {} (错误: {})", relative_path, e.what());
             return relative_path;
         }
-    }
-
-    bool LevelLoader::validateLayerData(const nlohmann::json &layer_json,
-                                        std::string_view expected_key) const
-    {
-        if (!layer_json.contains(expected_key) || !layer_json[expected_key].is_array()) {
-            spdlog::error("图层 '{}' 缺少或无效的 '{}' 属性", getLayerName(layer_json),
-                          expected_key);
-            return false;
-        }
-        return true;
     }
 
     template <typename T>
@@ -481,4 +626,5 @@ namespace engine::scene {
         return getJsonValue<std::string>(layer_json, JsonKeys::NAME,
                                          std::string(DEFAULT_LAYER_NAME));
     }
+
 } // namespace engine::scene
