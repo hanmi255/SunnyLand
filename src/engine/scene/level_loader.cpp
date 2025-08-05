@@ -8,12 +8,13 @@
 #include "../render/sprite.h"
 #include "../resource/resource_manager.h"
 #include "../scene/scene.h"
-#include "../utils/math.h"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <ranges>
+#include <ranges> // 用于 std::views::transform
 #include <spdlog/spdlog.h>
+#include "../component/collider_component.h"
+#include "../component/physics_component.h"
 
 namespace engine::scene {
 
@@ -388,6 +389,39 @@ namespace engine::scene {
 
         spdlog::warn("图块集中未找到gid为 {} 的瓦片", gid);
         return engine::component::TileInfo();
+    }
+
+    template <typename T>
+    std::optional<T> LevelLoader::getTileProperty(const nlohmann::json &tile_json,
+                                                  std::string_view property_name) const
+    {
+        if (!tile_json.contains(JsonKeys::PROPERTIES)) return std::nullopt;
+
+        const auto &properties = tile_json[JsonKeys::PROPERTIES];
+        for (const auto &property : properties) {
+            if (getJsonValue<std::string>(property, "name", "") == property_name) {
+                return getJsonValue<T>(property, "value", T{});
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::optional<engine::utils::Rect>
+    LevelLoader::getColliderRect(const nlohmann::json &tile_json) const
+    {
+        if(!tile_json.contains(JsonKeys::OBJECT_GROUP)) return std::nullopt;
+        const auto &object_group = tile_json[JsonKeys::OBJECT_GROUP];
+        if(!object_group.contains(JsonKeys::OBJECTS)) return std::nullopt;
+        const auto &objects = object_group[JsonKeys::OBJECTS];
+        for (const auto &object : objects) {
+            auto rect = engine::utils::Rect{glm::vec2(getJsonValue(object, "x", 0.0f),
+                                                  getJsonValue(object, "y", 0.0f)),
+                                        glm::vec2(getJsonValue(object, "width", 0.0f),
+                                                  getJsonValue(object, "height", 0.0f))};
+            if (rect.size.x > 0 && rect.size.y > 0) 
+        return rect;
+        }
+        return std::nullopt;
     }
 
     void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)

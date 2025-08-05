@@ -193,6 +193,30 @@ namespace engine::physics {
         applyTileCollisionResults(tc, pc, context);
     }
 
+    void PhysicsEngine::resolveSolidObjectCollisions(engine::object::GameObject* move_obj,
+                                                     engine::object::GameObject* solid_obj)
+    {
+        engine::component::TransformComponent* move_tc = nullptr;
+        engine::component::PhysicsComponent* move_pc = nullptr;
+        engine::component::ColliderComponent* move_cc = nullptr;
+        engine::component::ColliderComponent* solid_cc = nullptr;
+        SolidObjectCollisionContext context;
+
+        // 1. 验证输入参数
+        if (!validateSolidObjectCollisionInputs(move_obj, solid_obj, move_tc, move_pc, move_cc,
+                                                solid_cc, context)) {
+            return;
+        }
+
+        // 2. 计算碰撞数据
+        if (!calculateSolidObjectCollisionData(context)) {
+            return; // 没有碰撞或重叠太小
+        }
+
+        // 3. 应用碰撞结果
+        applySolidObjectCollisionResults(move_tc, move_pc, context);
+    }
+
     void PhysicsEngine::checkCollisionsInCell(
         const std::vector<
             std::pair<engine::object::GameObject*, engine::component::ColliderComponent*>> &objects,
@@ -213,9 +237,23 @@ namespace engine::physics {
                 }
                 checked_pairs.insert(pair_key);
 
-                if (collision::checkCollision(*cc_a, *cc_b)) {
-                    collision_pairs_.emplace_back(obj_a, obj_b);
+                if (!collision::checkCollision(*cc_a, *cc_b)) {
+                    continue;
                 }
+
+                // 如果是可移动物体与SOLID物体碰撞，则直接处理位置变化，不用记录碰撞对
+                if (obj_a->getTag() != "solid" && obj_b->getTag() == "solid") {
+                    resolveSolidObjectCollisions(obj_a, obj_b);
+                    continue;
+                }
+
+                if (obj_a->getTag() == "solid" && obj_b->getTag() != "solid") {
+                    resolveSolidObjectCollisions(obj_b, obj_a);
+                    continue;
+                }
+
+                // 记录碰撞对
+                collision_pairs_.emplace_back(obj_a, obj_b);
             }
         }
     }
@@ -254,7 +292,7 @@ namespace engine::physics {
         context.displacement = pc->velocity_ * delta_time;
 
         // 早期退出：位移太小
-        constexpr float MIN_DISPLACEMENT_SQ = 0.001f * 0.001f;  // 最小位移平方
+        constexpr float MIN_DISPLACEMENT_SQ = 0.001f * 0.001f; // 最小位移平方
         if (glm::dot(context.displacement, context.displacement) < MIN_DISPLACEMENT_SQ) {
             return false;
         }
@@ -347,7 +385,7 @@ namespace engine::physics {
                                                   const TileCollisionContext &context) const
     {
         // 应用位置更新
-        tc->setPosition(context.new_position);
+        tc->translate(context.new_position - context.world_aabb_position);
 
         // 应用速度限制
         pc->velocity_.x = std::clamp(pc->velocity_.x, -max_speed_, max_speed_);
@@ -381,6 +419,122 @@ namespace engine::physics {
         int range_max = static_cast<int>(std::floor((position + size - epsilon) * inv_size));
 
         return {range_min, range_max};
+    }
+
+    bool PhysicsEngine::validateSolidObjectCollisionInputs(
+        engine::object::GameObject* move_obj, engine::object::GameObject* solid_obj,
+        engine::component::TransformComponent*&move_tc,
+        engine::component::PhysicsComponent*&move_pc, engine::component::ColliderComponent*&move_cc,
+        engine::component::ColliderComponent*&solid_cc, SolidObjectCollisionContext &context) const
+    {
+        // 验证移动对象
+        if (!move_obj) return false;
+
+        move_tc = move_obj->getComponent<engine::component::TransformComponent>();
+        move_pc = move_obj->getComponent<engine::component::PhysicsComponent>();
+        move_cc = move_obj->getComponent<engine::component::ColliderComponent>();
+
+        if (!move_tc || !move_pc || !move_cc || !move_cc->isActive() || move_cc->isTrigger()) {
+            return false;
+        }
+
+        // 验证固体对象
+        if (!solid_obj) return false;
+
+        solid_cc = solid_obj->getComponent<engine::component::ColliderComponent>();
+
+        if (!solid_cc || !solid_cc->isActive() || solid_cc->isTrigger()) {
+            return false;
+        }
+
+        // 获取AABB信息并验证有效性
+        const auto move_aabb = move_cc->getWorldAABB();
+        const auto solid_aabb = solid_cc->getWorldAABB();
+
+        if (move_aabb.size.x <= 0.0f || move_aabb.size.y <= 0.0f || solid_aabb.size.x <= 0.0f ||
+            solid_aabb.size.y <= 0.0f) {
+            return false;
+        }
+
+        // 初始化上下文
+        context.move_aabb_position = move_aabb.position;
+        context.move_aabb_size = move_aabb.size;
+        context.solid_aabb_position = solid_aabb.position;
+        context.solid_aabb_size = solid_aabb.size;
+
+        return true;
+    }
+
+    bool
+    PhysicsEngine::calculateSolidObjectCollisionData(SolidObjectCollisionContext &context) const
+    {
+        // 计算中心点
+        context.move_center = context.move_aabb_position + context.move_aabb_size / 2.0f;
+        context.solid_center = context.solid_aabb_position + context.solid_aabb_size / 2.0f;
+
+        // 计算重叠部分
+        context.overlap =
+            glm::vec2(context.move_aabb_size / 2.0f + context.solid_aabb_size / 2.0f) -
+            glm::abs(context.move_center - context.solid_center);
+
+        // 检查是否有有效碰撞
+        constexpr float MIN_OVERLAP = 0.01f; // 使用更小的阈值以提高精度
+        if (context.overlap.x < MIN_OVERLAP && context.overlap.y < MIN_OVERLAP) {
+            context.has_collision = false;
+            return false;
+        }
+
+        context.has_collision = true;
+        return true;
+    }
+
+    void PhysicsEngine::applySolidObjectCollisionResults(
+        engine::component::TransformComponent* move_tc,
+        engine::component::PhysicsComponent* move_pc,
+        const SolidObjectCollisionContext &context) const
+    {
+        if (!context.has_collision) return;
+
+        // 使用EPSILON避免浮点精度问题
+        constexpr float EPSILON = 0.01f;
+
+        // 选择最小重叠方向进行分离
+        if (context.overlap.x < context.overlap.y) {
+            // X轴分离
+            if (context.move_center.x < context.solid_center.x) {
+                // 移动物体在左边，向左推出
+                move_tc->translate(glm::vec2(-context.overlap.x - EPSILON, 0.0f));
+                // 只有当速度朝向碰撞方向时才清零
+                if (move_pc->velocity_.x > 0.0f) {
+                    move_pc->velocity_.x = 0.0f;
+                }
+            } else {
+                // 移动物体在右边，向右推出
+                move_tc->translate(glm::vec2(context.overlap.x + EPSILON, 0.0f));
+                if (move_pc->velocity_.x < 0.0f) {
+                    move_pc->velocity_.x = 0.0f;
+                }
+            }
+        } else {
+            // Y轴分离
+            if (context.move_center.y < context.solid_center.y) {
+                // 移动物体在上面，向上推出
+                move_tc->translate(glm::vec2(0.0f, -context.overlap.y - EPSILON));
+                if (move_pc->velocity_.y > 0.0f) {
+                    move_pc->velocity_.y = 0.0f;
+                }
+            } else {
+                // 移动物体在下面，向下推出
+                move_tc->translate(glm::vec2(0.0f, context.overlap.y + EPSILON));
+                if (move_pc->velocity_.y < 0.0f) {
+                    move_pc->velocity_.y = 0.0f;
+                }
+            }
+        }
+
+        // 应用速度限制（与瓦片碰撞保持一致）
+        move_pc->velocity_.x = std::clamp(move_pc->velocity_.x, -max_speed_, max_speed_);
+        move_pc->velocity_.y = std::clamp(move_pc->velocity_.y, -max_speed_, max_speed_);
     }
 
 } // namespace engine::physics

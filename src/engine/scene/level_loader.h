@@ -1,4 +1,5 @@
 #pragma once
+#include "../utils/math.h"
 #include <glm/vec2.hpp>
 #include <map>
 #include <nlohmann/json.hpp>
@@ -9,7 +10,11 @@
 namespace engine::component {
     struct TileInfo;
     enum class TileType;
-}
+} // namespace engine::component
+
+namespace engine::object {
+    class GameObject;
+} // namespace engine::object
 
 namespace engine::scene {
     class Scene;
@@ -40,12 +45,13 @@ namespace engine::scene {
             static constexpr std::string_view IMAGE = "image";
             static constexpr std::string_view DATA = "data";
             static constexpr std::string_view OBJECTS = "objects";
+            static constexpr std::string_view OBJECT_GROUP = "objectgroup";
             static constexpr std::string_view PROPERTIES = "properties";
         };
 
-        std::string map_path_;                       ///< 地图路径
-        glm::ivec2 map_size_{0, 0};                  ///< 地图尺寸(瓦片数量)
-        glm::ivec2 tile_size_{0, 0};                 ///< 瓦片尺寸(像素)
+        std::string map_path_;       ///< 地图路径
+        glm::ivec2 map_size_{0, 0};  ///< 地图尺寸(瓦片数量)
+        glm::ivec2 tile_size_{0, 0}; ///< 瓦片尺寸(像素)
         // 使用 map 解决使用 unordered_map 时，无序查找的错误问题
         std::map<int, nlohmann::json> tileset_data_; ///< firstgid -> 瓦片集数据
 
@@ -68,36 +74,65 @@ namespace engine::scene {
         bool loadLevel(const std::string &level_path, Scene &scene);
 
     private:
-        // 核心加载函数
+        // ========== 核心加载流程函数 ==========
         [[nodiscard]] std::optional<nlohmann::json>
         loadJsonFile(const std::string &file_path) const;
         [[nodiscard]] bool parseMapBasicInfo(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllTilesets(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllLayers(const nlohmann::json &json_data, Scene &scene);
 
-        // 图层加载函数
+        // ========== 图层加载函数 ==========
         void loadImageLayer(const nlohmann::json &layer_json, Scene &scene);
         void loadTileLayer(const nlohmann::json &layer_json, Scene &scene);
         void loadObjectLayer(const nlohmann::json &layer_json, Scene &scene);
 
-        // 工具函数
-        [[nodiscard]] engine::component::TileType getTileType(const nlohmann::json &tile_json) const;
-        [[nodiscard]] engine::component::TileType getTileTypeById(const nlohmann::json &tileset_json, int local_id) const;
-        [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;
-        void loadTileset(const std::string &tileset_path, int first_gid);
-        [[nodiscard]] std::string resolvePath(const std::string &relative_path,
-                                              const std::string &file_path) const;
+        // ========== 对象层创建辅助函数 ==========
+        [[nodiscard]] std::unique_ptr<engine::object::GameObject>
+        createGameObjectFromTileObject(const nlohmann::json &object_json, Scene &scene);
 
-        // 验证函数
+        struct ObjectTransformData {
+            glm::vec2 position;
+            glm::vec2 scale;
+            float rotation;
+            std::string name;
+        };
+        [[nodiscard]] std::optional<ObjectTransformData>
+        calculateObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size);
+
+        void setupCollisionComponents(engine::object::GameObject &game_object,
+                                      const engine::component::TileInfo &tile_info,
+                                      const std::optional<nlohmann::json> &tile_json,
+                                      const glm::vec2 &src_size, Scene &scene);
+
+        void applyTileProperties(engine::object::GameObject &game_object,
+                                 const std::optional<nlohmann::json> &tile_json, Scene &scene);
+
+        // ========== 瓦片数据处理函数 ==========
+        [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;
+        std::optional<nlohmann::json> getTileJsonByGid(int gid) const;
+        [[nodiscard]] engine::component::TileType
+        getTileType(const nlohmann::json &tile_json) const;
+        [[nodiscard]] engine::component::TileType
+        getTileTypeById(const nlohmann::json &tileset_json, int local_id) const;
+        void loadTileset(const std::string &tileset_path, int first_gid);
+
+        // ========== 瓦片属性解析函数 ==========
+        template <typename T>
+        std::optional<T> getTileProperty(const nlohmann::json &tile_json,
+                                         std::string_view property_name) const;
+        std::optional<engine::utils::Rect> getColliderRect(const nlohmann::json &tile_json) const;
+
+        // ========== 验证函数 ==========
         [[nodiscard]] bool validateMapData() const;
         [[nodiscard]] bool validateLayerData(const nlohmann::json &layer_json,
                                              std::string_view expected_key) const;
 
-        // 辅助函数
+        // ========== 通用工具函数 ==========
+        [[nodiscard]] std::string resolvePath(const std::string &relative_path,
+                                              const std::string &file_path) const;
         template <typename T>
         [[nodiscard]] T getJsonValue(const nlohmann::json &json, std::string_view key,
                                      T default_value) const;
-
         [[nodiscard]] std::string getLayerName(const nlohmann::json &layer_json) const;
     };
 

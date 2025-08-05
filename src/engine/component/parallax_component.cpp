@@ -35,7 +35,7 @@ namespace engine::component {
 
     void ParallaxComponent::render(engine::core::Context &context)
     {
-        if (!isVisible() || !transform_component_) {
+        if (!is_visible_ || !transform_component_) {
             return;
         }
         // 直接调用视差滚动绘制函数

@@ -61,6 +61,20 @@ namespace engine::physics {
             bool has_y_collision = false;
         };
 
+        /*
+         * @brief 固体对象碰撞检测上下文结构体
+         */
+        struct SolidObjectCollisionContext {
+            glm::vec2 move_center{0.0f};
+            glm::vec2 solid_center{0.0f};
+            glm::vec2 overlap{0.0f};
+            glm::vec2 move_aabb_position{0.0f};
+            glm::vec2 move_aabb_size{0.0f};
+            glm::vec2 solid_aabb_position{0.0f};
+            glm::vec2 solid_aabb_size{0.0f};
+            bool has_collision = false;
+        };
+
     private:
         std::vector<engine::component::PhysicsComponent*>
             components_;               ///<@brief 注册的物理组件容器，非拥有指针
@@ -90,8 +104,6 @@ namespace engine::physics {
         void unregisterCollisionTileLayer(engine::component::TileLayerComponent* tile_layer);
 
         void update(float delta_time);
-        void checkObjectCollisions();
-        void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta_time);
 
         // --- getters ---
         const glm::vec2 &getGravity() const { return gravity_; }
@@ -107,6 +119,22 @@ namespace engine::physics {
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
 
     private:
+        /*
+         * @brief 检查物体之间的碰撞
+         */
+        void checkObjectCollisions();
+
+        /*
+         * @brief 解决瓦片图层对象之间的碰撞
+         */
+        void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta_time);
+
+        /*
+         * @brief 解决固体对象之间的碰撞
+         */
+        void resolveSolidObjectCollisions(engine::object::GameObject* move_obj,
+                                          engine::object::GameObject* solid_obj);
+
         /**
          * @brief 检查指定空间网格中的物体之间的碰撞
          */
@@ -163,5 +191,28 @@ namespace engine::physics {
         std::pair<int, int> calculateTileRange(float position, float size,
                                                const glm::vec2 &inv_tile_size,
                                                float epsilon = 0.01f) const;
+
+        /*
+         * @brief 验证固体对象碰撞输入参数
+         */
+        bool validateSolidObjectCollisionInputs(engine::object::GameObject* move_obj,
+                                                engine::object::GameObject* solid_obj,
+                                                engine::component::TransformComponent*&move_tc,
+                                                engine::component::PhysicsComponent*&move_pc,
+                                                engine::component::ColliderComponent*&move_cc,
+                                                engine::component::ColliderComponent*&solid_cc,
+                                                SolidObjectCollisionContext &context) const;
+
+        /*
+         * @brief 计算固体对象碰撞数据
+         */
+        bool calculateSolidObjectCollisionData(SolidObjectCollisionContext &context) const;
+
+        /*
+         * @brief 应用固体对象碰撞结果
+         */
+        void applySolidObjectCollisionResults(engine::component::TransformComponent* move_tc,
+                                              engine::component::PhysicsComponent* move_pc,
+                                              const SolidObjectCollisionContext &context) const;
     };
 } // namespace engine::physics

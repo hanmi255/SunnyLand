@@ -46,7 +46,7 @@ namespace engine::component {
         void updateOffset();
 
         // --- getters ---
-        const TransformComponent* getTransform() const { return transform_component_; }
+        TransformComponent* getTransform() const { return transform_component_; }
         const engine::physics::Collider* getCollider() const { return collider_.get(); }
         const glm::vec2 &getOffset() const { return offset_; }
         engine::utils::Alignment getAlignment() const { return alignment_; }
