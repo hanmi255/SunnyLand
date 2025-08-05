@@ -8,6 +8,7 @@
  * @技术宅拯救世界！！！
  */
 #include "camera.h"
+#include "../component/transform_component.h"
 #include <spdlog/spdlog.h>
 
 namespace engine::render {
@@ -21,28 +22,23 @@ namespace engine::render {
         spdlog::trace("Camera 初始化成功，位置: {},{}", position_.x, position_.y);
     }
 
-    void Camera::update(float /* delta_time */)
+    void Camera::update(float delta_time)
     {
-        // TODO 自动跟随目标
+        if (target_ == nullptr) return;
+
+        glm::vec2 desired_position = target_->getPosition() - viewport_center_offset_;
+        glm::vec2 offset = desired_position - position_;
+
+        // 快速距离检查：使用曼哈顿距离或切比雪夫距离
+        if (std::abs(offset.x) < 1.0f && std::abs(offset.y) < 1.0f) {
+            position_ = desired_position;
+        } else {
+            position_ += offset * (smooth_factor_ * delta_time);
+            position_ = glm::round(position_);
+        }
+
+        clampPosition();
     }
-
-    // void Camera::update(float delta_time) {
-    //     if (!target_)
-    //         return;
-
-    //     glm::vec2 desired_position = target_->getPosition() - viewport_center_offset_;
-    //     glm::vec2 offset = desired_position - position_;
-
-    //     // 快速距离检查：使用曼哈顿距离或切比雪夫距离
-    //     if (std::abs(offset.x) < 1.0f && std::abs(offset.y) < 1.0f) {
-    //         position_ = desired_position;
-    //     } else {
-    //         position_ += offset * (smooth_speed_ * delta_time);
-    //         position_ = glm::round(position_);
-    //     }
-
-    //     clampPosition();
-    // }
 
     void Camera::move(const glm::vec2 &offset)
     {
@@ -81,6 +77,11 @@ namespace engine::render {
         return viewport_size_;
     }
 
+    engine::component::TransformComponent* Camera::getTarget() const
+    {
+        return target_;
+    }
+
     void Camera::setPostion(const glm::vec2 &position)
     {
         position_ = position;
@@ -91,6 +92,11 @@ namespace engine::render {
     {
         limit_bounds_ = bounds;
         clampPosition();
+    }
+
+    void Camera::setTarget(engine::component::TransformComponent* target)
+    {
+        target_ = target;
     }
 
     void Camera::clampPosition()

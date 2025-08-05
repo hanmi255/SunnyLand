@@ -11,6 +11,10 @@
 #include "../utils/math.h"
 #include <optional>
 
+namespace engine::component {
+    class TransformComponent;
+} // namespace engine::component
+
 namespace engine::render {
 
     /**
@@ -24,6 +28,9 @@ namespace engine::render {
         glm::vec2 position_;               ///< @brief 相机左上角的世界坐标
         std::optional<engine::utils::Rect>
             limit_bounds_;                 ///< @brief 限制相机移动范围，空值表示不限制
+        float smooth_factor_ = 5.0f;       ///< @brief 平滑因子，用于平滑相机移动
+        engine::component::TransformComponent* target_ =
+            nullptr;                       ///< @brief 目标对象，空值表示不跟随
 
     public:
         /**
@@ -53,10 +60,12 @@ namespace engine::render {
         const glm::vec2 getPosition() const;
         std::optional<engine::utils::Rect> getLimitBounds() const;
         glm::vec2 getViewportSize() const;
+        engine::component::TransformComponent* getTarget() const;
 
         // --- setters ---
         void setPostion(const glm::vec2 &position);
         void setLimitBounds(const engine::utils::Rect &bounds);
+        void setTarget(engine::component::TransformComponent* target);
 
     private:
         void clampPosition();

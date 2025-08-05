@@ -1,5 +1,7 @@
 #pragma once
+#include "../utils/math.h"
 #include <glm/vec2.hpp>
+#include <optional>
 #include <set>     // 用于 std::set
 #include <unordered_map>
 #include <utility> // 用于 std::pair
@@ -10,6 +12,7 @@ namespace engine::component {
     class PhysicsComponent;
     class TileLayerComponent;
     class TransformComponent;
+    enum class TileType;
 } // namespace engine::component
 
 namespace engine::object {
@@ -82,7 +85,8 @@ namespace engine::physics {
             collision_tile_layers_;    ///< @brief 碰撞检测的瓦片图层容器
         glm::vec2 gravity_ = {0.0f,
                               980.0f}; ///< @brief 默认重力值 (像素/秒^2, 相当于100像素对应现实1m)
-        float max_speed_ = 500.0f;     ///<<@brief 最大速度
+        float max_speed_ = 500.0f;     ///< @brief 最大速度
+        std::optional<engine::utils::Rect> world_bounds_; ///< @brief 世界边界，用于限制物体运动
 
         std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
             collision_pairs_;      ///< @brief 物体碰撞对（每次 update 都会清空）
@@ -108,6 +112,7 @@ namespace engine::physics {
         // --- getters ---
         const glm::vec2 &getGravity() const { return gravity_; }
         float getMaxSpeed() const { return max_speed_; }
+        const std::optional<engine::utils::Rect> &getWorldBounds() const { return world_bounds_; }
         const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>> &
         getCollisionPairs() const
         {
@@ -117,6 +122,7 @@ namespace engine::physics {
         // --- setters ---
         void setGravity(const glm::vec2 &gravity) { gravity_ = gravity; }
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
+        void setWorldBounds(const engine::utils::Rect &bounds) { world_bounds_ = bounds; }
 
     private:
         /*
@@ -134,6 +140,22 @@ namespace engine::physics {
          */
         void resolveSolidObjectCollisions(engine::object::GameObject* move_obj,
                                           engine::object::GameObject* solid_obj);
+
+        /*
+         * @brief 应用世界边界限制
+         */
+        void applyWorldBounds(engine::component::PhysicsComponent* pc);
+
+        /*
+         * @brief 检查瓦片类型是否为斜坡瓦片
+         */
+        bool isSlopeTile(engine::component::TileType tile_type) const;
+
+        /*
+         * @brief 根据瓦片类型和指定宽度的 x 坐标，计算瓦片上对应的 y 坐标
+         */
+        float getTileHeightAtWidth(float width, engine::component::TileType tile_type,
+                                   glm::vec2 tile_size) const;
 
         /**
          * @brief 检查指定空间网格中的物体之间的碰撞

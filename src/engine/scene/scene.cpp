@@ -1,7 +1,8 @@
 #include "scene.h"
-#include "../physics/physics_engine.h"
 #include "../core/context.h"
 #include "../object/game_object.h"
+#include "../physics/physics_engine.h"
+#include "../render/camera.h"
 #include "scene_manager.h"
 #include <algorithm> // 用于 std::remove_if
 #include <spdlog/spdlog.h>
@@ -28,6 +29,8 @@ namespace engine::scene {
 
         // 先更新物理引擎
         context_.getPhysicsEngine().update(delta_time);
+        // 再更新相机
+        context_.getCamera().update(delta_time);
 
         // 遍历所有游戏对象并更新
         auto remove_predicate = [delta_time, this](auto &object) -> bool {

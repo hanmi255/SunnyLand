@@ -497,6 +497,28 @@ namespace engine::scene {
                         const auto is_solid = getJsonValue(property, "value", false);
                         return is_solid ? engine::component::TileType::SOLID
                                         : engine::component::TileType::NORMAL;
+                    } else if (property_name == "slope") {
+                        const auto slope_type = getJsonValue<std::string>(property, "value", "");
+                        if (slope_type == "0_1") {
+                            return engine::component::TileType::SLOPE_0_1;
+                        } else if (slope_type == "1_0") {
+                            return engine::component::TileType::SLOPE_1_0;
+                        } else if (slope_type == "0_2") {
+                            return engine::component::TileType::SLOPE_0_2;
+                        } else if (slope_type == "2_0") {
+                            return engine::component::TileType::SLOPE_2_0;
+                        } else if (slope_type == "2_1") {
+                            return engine::component::TileType::SLOPE_2_1;
+                        } else if (slope_type == "1_2") {
+                            return engine::component::TileType::SLOPE_1_2;
+                        } else {
+                            spdlog::error("未知的斜坡类型: {}", slope_type);
+                            return engine::component::TileType::NORMAL;
+                        }
+                    } else if (property_name == "unisolid") {
+                        const auto is_unisolid = getJsonValue(property, "value", false);
+                        return is_unisolid ? engine::component::TileType::UNISOLID
+                                           : engine::component::TileType::NORMAL;
                     }
                     // TODO: 可以在这里添加更多的自定义属性处理逻辑
                 }
