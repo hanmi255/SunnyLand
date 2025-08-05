@@ -24,7 +24,7 @@
              "name":"",
              "objects":[
                     {
-                     "height":39,
+                     "height":24.6363636363636,
                      "id":1,
                      "name":"",
                      "rotation":0,
@@ -32,7 +32,7 @@
                      "visible":true,
                      "width":32,
                      "x":3,
-                     "y":0
+                     "y":14.3636363636364
                     }],
              "opacity":1,
              "type":"objectgroup",
@@ -41,6 +41,16 @@
              "y":0
             },
          "properties":[
+                {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"fly\": {\"frames\": [0,1,2,3]}\n}"
+                },
+                {
+                 "name":"health",
+                 "type":"int",
+                 "value":1
+                },
                 {
                  "name":"tag",
                  "type":"string",
@@ -80,9 +90,24 @@
             },
          "properties":[
                 {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"idle\": {\"duration\": 200, \"row\":0, \"frames\":[0,1,2,3,2,1]},\n  \"walk\": {\"row\":1, \"frames\":[0,1,2,3,4,5]},\n  \"climb\":{\"row\":2, \"frames\":[0,1,2,3]},\n  \"hurt\": {\"row\":4, \"frames\":[0,1]},\n  \"jump\": {\"row\":5, \"frames\":[0]},\n  \"fall\": {\"row\":5, \"frames\":[1]}\n}"
+                },
+                {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
+                },
+                {
+                 "name":"health",
+                 "type":"int",
+                 "value":3
+                },
+                {
+                 "name":"sound",
+                 "type":"string",
+                 "value":"{\n  \"jump\":\"assets\/audio\/cartoon-jump-6462.mp3\",\n  \"hurt\":\"assets\/audio\/monster.mp3\",\n  \"dead\":\"assets\/audio\/dead-8bit-41400.mp3\"\n}"
                 },
                 {
                  "name":"tag",
@@ -123,9 +148,24 @@
             },
          "properties":[
                 {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"idle\": {\"duration\": 300, \"frames\":[0,1,2,3]},\n  \"jump\": {\"row\": 1, \"frames\":[1]},\n  \"fall\": {\"row\": 1, \"frames\":[2]}\n}"
+                },
+                {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
+                },
+                {
+                 "name":"health",
+                 "type":"int",
+                 "value":1
+                },
+                {
+                 "name":"sound",
+                 "type":"string",
+                 "value":"{\n  \"cry\":\"assets\/audio\/frog_quak-81741.mp3\"\n}"
                 },
                 {
                  "name":"tag",
@@ -166,9 +206,19 @@
             },
          "properties":[
                 {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"walk\": {\"frames\":[0,1,2,3,4,5]}\n}"
+                },
+                {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
+                },
+                {
+                 "name":"health",
+                 "type":"int",
+                 "value":1
                 },
                 {
                  "name":"tag",
@@ -209,6 +259,11 @@
             },
          "properties":[
                 {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"idle\": {\"duration\": 200, \"frames\":[0,1,2,3,4,3,2,1]}\n}"
+                },
+                {
                  "name":"tag",
                  "type":"string",
                  "value":"item"
@@ -246,6 +301,11 @@
              "y":0
             },
          "properties":[
+                {
+                 "name":"animation",
+                 "type":"string",
+                 "value":"{\n  \"idle\": {\"duration\": 200, \"frames\":[0,1,2,3,4]}\n}"
+                },
                 {
                  "name":"tag",
                  "type":"string",
