@@ -52,7 +52,7 @@ namespace engine::physics {
                                                    float height) const;
         };
 
-        /*
+        /**
          * @brief 瓦片图层检测上下文结构体
          */
         struct TileCollisionContext {
@@ -64,7 +64,7 @@ namespace engine::physics {
             bool has_y_collision = false;
         };
 
-        /*
+        /**
          * @brief 固体对象碰撞检测上下文结构体
          */
         struct SolidObjectCollisionContext {
@@ -125,37 +125,10 @@ namespace engine::physics {
         void setWorldBounds(const engine::utils::Rect &bounds) { world_bounds_ = bounds; }
 
     private:
-        /*
+        /**
          * @brief 检查物体之间的碰撞
          */
         void checkObjectCollisions();
-
-        /*
-         * @brief 解决瓦片图层对象之间的碰撞
-         */
-        void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta_time);
-
-        /*
-         * @brief 解决固体对象之间的碰撞
-         */
-        void resolveSolidObjectCollisions(engine::object::GameObject* move_obj,
-                                          engine::object::GameObject* solid_obj);
-
-        /*
-         * @brief 应用世界边界限制
-         */
-        void applyWorldBounds(engine::component::PhysicsComponent* pc);
-
-        /*
-         * @brief 检查瓦片类型是否为斜坡瓦片
-         */
-        bool isSlopeTile(engine::component::TileType tile_type) const;
-
-        /*
-         * @brief 根据瓦片类型和指定宽度的 x 坐标，计算瓦片上对应的 y 坐标
-         */
-        float getTileHeightAtWidth(float width, engine::component::TileType tile_type,
-                                   glm::vec2 tile_size) const;
 
         /**
          * @brief 检查指定空间网格中的物体之间的碰撞
@@ -166,7 +139,25 @@ namespace engine::physics {
             std::set<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
                 &checked_pairs);
 
-        /*
+        /**
+         * @brief 解决瓦片图层对象之间的碰撞
+         */
+        void resolveTileCollisions(engine::component::PhysicsComponent* pc, float delta_time);
+
+        /**
+         * @brief 解决固体对象之间的碰撞
+         */
+        void resolveSolidObjectCollisions(engine::object::GameObject* move_obj,
+                                          engine::object::GameObject* solid_obj);
+
+        /**
+         * @brief 应用世界边界限制
+         */
+        void applyWorldBounds(engine::component::PhysicsComponent* pc);
+
+        // ==================== 处理瓦片碰撞函数声明 ====================
+
+        /**
          * @brief 确认瓦片图层输入参数是否有效
          */
         bool validateTileCollisionInputs(engine::component::PhysicsComponent* pc,
@@ -174,47 +165,97 @@ namespace engine::physics {
                                          engine::component::ColliderComponent*&cc,
                                          TileCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 计算瓦片图层对象在指定时间间隔内的位移
          */
         bool calculateTileDisplacement(engine::component::PhysicsComponent* pc, float delta_time,
                                        TileCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 解决瓦片图层对象在 X 轴上的碰撞
          */
         void resolveXAxisTileCollision(const engine::component::TileLayerComponent* layer,
                                        engine::component::PhysicsComponent* pc,
                                        TileCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 解决瓦片图层对象在 Y 轴上的碰撞
          */
         void resolveYAxisTileCollision(const engine::component::TileLayerComponent* layer,
                                        engine::component::PhysicsComponent* pc,
                                        TileCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 应用瓦片图层对象在指定时间间隔内的位移结果
          */
         void applyTileCollisionResults(engine::component::TransformComponent* tc,
                                        engine::component::PhysicsComponent* pc,
                                        const TileCollisionContext &context) const;
 
-        /*
-         * @brief 检查指定瓦片图层对象在指定范围区间内的碰撞*/
-        bool checkTileCollisionInRange(const engine::component::TileLayerComponent* layer,
-                                       int tile_coord, int range_min, int range_max,
-                                       bool is_x_axis) const;
+        // ==================== 辅助函数声明 ====================
 
-        /*
-         * @brief 计算指定瓦片图层对象在指定时间间隔内的位移结果
+        /**
+         * @brief 检查瓦片类型是否为斜坡瓦片
          */
-        std::pair<int, int> calculateTileRange(float position, float size,
-                                               const glm::vec2 &inv_tile_size,
-                                               float epsilon = 0.01f) const;
+        bool isSlopeTile(engine::component::TileType tile_type) const;
 
-        /*
+        /**
+         * @brief 检查瓦片类型是否为固体瓦片
+         */
+        bool isSolidTile(engine::component::TileType tile_type) const;
+
+        /**
+         * @brief 检查瓦片类型是否为地面瓦片（固体或单向平台）
+         */
+        bool isGroundTile(engine::component::TileType tile_type) const;
+
+        /**
+         * @brief 根据瓦片类型和指定宽度的 x 坐标，计算瓦片上对应的 y 坐标
+         */
+        float getTileHeightAtWidth(float width, engine::component::TileType tile_type,
+                                   glm::vec2 tile_size) const;
+
+        /**
+         * @brief 处理X轴固体瓦片碰撞
+         */
+        void handleSolidCollisionX(bool moving_right, int tile_x, const glm::vec2 &tile_size,
+                                   engine::component::PhysicsComponent* pc,
+                                   TileCollisionContext &context) const;
+
+        /**
+         * @brief 处理X轴斜坡瓦片碰撞
+         */
+        void handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
+                                   engine::component::TileType tile_type_bottom,
+                                   const glm::vec2 &tile_size, TileCollisionContext &context) const;
+
+        /**
+         * @brief 处理Y轴地面碰撞
+         */
+        void handleGroundCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                    engine::component::PhysicsComponent* pc,
+                                    TileCollisionContext &context) const;
+
+        /**
+         * @brief 处理Y轴天花板碰撞
+         */
+        void handleCeilingCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                     engine::component::PhysicsComponent* pc,
+                                     TileCollisionContext &context) const;
+
+        /**
+         * @brief 处理Y轴斜坡瓦片碰撞
+         */
+        void handleSlopeCollisionY(int tile_x_left, int tile_x_right, int tile_y,
+                                   engine::component::TileType tile_type_left,
+                                   engine::component::TileType tile_type_right,
+                                   const glm::vec2 &tile_size,
+                                   engine::component::PhysicsComponent* pc,
+                                   TileCollisionContext &context) const;
+
+        // ==================== 处理固体对象碰撞函数声明 ====================
+
+        /**
          * @brief 验证固体对象碰撞输入参数
          */
         bool validateSolidObjectCollisionInputs(engine::object::GameObject* move_obj,
@@ -225,12 +266,12 @@ namespace engine::physics {
                                                 engine::component::ColliderComponent*&solid_cc,
                                                 SolidObjectCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 计算固体对象碰撞数据
          */
         bool calculateSolidObjectCollisionData(SolidObjectCollisionContext &context) const;
 
-        /*
+        /**
          * @brief 应用固体对象碰撞结果
          */
         void applySolidObjectCollisionResults(engine::component::TransformComponent* move_tc,
