@@ -22,7 +22,7 @@ namespace engine::object {
         bool need_remove_ = false; ///< @breif 将来由场景类负责删除
 
     public:
-        GameObject(const std::string &name = "", const std::string &tag = "");
+        GameObject(const std::string_view &name = "", const std::string_view &tag = "");
 
         // 禁止拷贝和移动语义
         GameObject(const GameObject &) = delete;

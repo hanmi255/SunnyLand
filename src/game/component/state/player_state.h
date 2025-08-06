@@ -31,6 +31,8 @@ namespace game::component::state {
         PlayerState(PlayerState &&) = delete;
         PlayerState &operator=(PlayerState &&) = delete;
 
+        void playAnimation(const std::string &name);
+
     protected:
         // 核心状态逻辑
         virtual void enter() = 0;

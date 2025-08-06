@@ -5,7 +5,8 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::object {
-    GameObject::GameObject(const std::string &name, const std::string &tag) : name_(name), tag_(tag)
+    GameObject::GameObject(const std::string_view &name, const std::string_view &tag)
+        : name_(name), tag_(tag)
     {
         spdlog::trace("GameObject created: {} {}", name, tag);
     }

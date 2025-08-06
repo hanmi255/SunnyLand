@@ -1,4 +1,5 @@
 #include "game_scene.h"
+#include "../../engine/component/animation_component.h"
 #include "../../engine/component/collider_component.h"
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/sprite_component.h"
@@ -13,6 +14,8 @@
 #include "../component/player_component.h"
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
+#include <string_view>
+#include <unordered_map>
 
 namespace game::scene {
     GameScene::GameScene(const std::string_view &name, engine::core::Context &context,
@@ -37,6 +40,11 @@ namespace game::scene {
         }
         if (!initPlayer()) {
             spdlog::error("玩家初始化失败，无法继续。");
+            context_.getInputManager().setShouldQuit(true);
+            return;
+        }
+        if (!initEnemyAndItem()) {
+            spdlog::error("敌人和道具初始化失败，无法继续。");
             context_.getInputManager().setShouldQuit(true);
             return;
         }
@@ -126,6 +134,43 @@ namespace game::scene {
         context_.getCamera().setTarget(player_transform);
         spdlog::trace("Player初始化完成。");
         return true;
+    }
+
+    bool GameScene::initEnemyAndItem()
+    {
+        // 定义敌人类型到动画名称的映射
+        static const std::unordered_map<std::string_view, std::string_view> enemy_animations = {
+            {"eagle", "fly"},
+            {"frog", "idle"},
+            {"opossum", "walk"}
+        };
+
+        bool success = true;
+        for (auto &game_object : game_objects_) {
+            // 检查是否为敌人类型
+            const auto enemy_it = enemy_animations.find(game_object->getName());
+            if (enemy_it != enemy_animations.end()) {
+                if (auto ac = game_object->getComponent<engine::component::AnimationComponent>();
+                    ac) {
+                    ac->playAnimation(std::string(enemy_it->second));
+                } else {
+                    spdlog::error("{}对象缺少 AnimationComponent，无法播放动画。",
+                                  game_object->getName());
+                    success = false;
+                }
+            }
+            // 检查是否为道具
+            else if (game_object->getTag() == "item") {
+                if (auto ac = game_object->getComponent<engine::component::AnimationComponent>();
+                    ac) {
+                    ac->playAnimation("idle");
+                } else {
+                    spdlog::error("Item对象缺少 AnimationComponent，无法播放动画。");
+                    success = false;
+                }
+            }
+        }
+        return success;
     }
 
 } // namespace game::scene

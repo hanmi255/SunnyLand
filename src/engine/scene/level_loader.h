@@ -8,6 +8,7 @@
 #include <string_view>
 
 namespace engine::component {
+    class AnimationComponent;
     struct TileInfo;
     enum class TileType;
 } // namespace engine::component
@@ -47,6 +48,7 @@ namespace engine::scene {
             static constexpr std::string_view OBJECTS = "objects";
             static constexpr std::string_view OBJECT_GROUP = "objectgroup";
             static constexpr std::string_view PROPERTIES = "properties";
+            static constexpr std::string_view FRAMES = "frames";
         };
 
         std::string map_path_;       ///< 地图路径
@@ -86,6 +88,7 @@ namespace engine::scene {
         void loadTileLayer(const nlohmann::json &layer_json, Scene &scene);
         void loadObjectLayer(const nlohmann::json &layer_json, Scene &scene);
 
+        // =========== 游戏对象创建函数 ==========
         [[nodiscard]] std::unique_ptr<engine::object::GameObject>
         createGameObjectFromObject(const nlohmann::json &object_json, int gid, Scene &scene);
 
@@ -104,7 +107,11 @@ namespace engine::scene {
                                   const glm::vec2 &src_size, Scene &scene);
 
         void applyObjectProperties(engine::object::GameObject &game_object,
-                                   const std::optional<nlohmann::json> &tile_json, Scene &scene);
+                                   const std::optional<nlohmann::json> &tile_json,
+                                   const glm::vec2 &src_size, Scene &scene);
+
+        void addAnimation(const nlohmann::json &anim_json,
+                          engine::component::AnimationComponent* ac, const glm::vec2 &sprite_size);
 
         // ========== 瓦片数据处理函数 ==========
         [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;

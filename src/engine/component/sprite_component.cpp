@@ -138,6 +138,13 @@ namespace engine::component {
         updateOffset();
     }
 
+    void SpriteComponent::setSrcRect(const std::optional<SDL_FRect> &src_rect_opt)
+    {
+        sprite_.setSrcRect(src_rect_opt);
+        updateSpriteSize();
+        updateOffset();
+    }
+
     void SpriteComponent::setAlignment(engine::utils::Alignment anchor)
     {
         alignment_ = anchor;

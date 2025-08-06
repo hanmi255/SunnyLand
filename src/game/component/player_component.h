@@ -4,9 +4,10 @@
 #include <memory>
 
 namespace engine::component {
-    class TransformComponent;
+    class AnimationComponent;
     class PhysicsComponent;
     class SpriteComponent;
+    class TransformComponent;
 } // namespace engine::component
 
 namespace engine::input {
@@ -27,9 +28,10 @@ namespace game::component {
         friend class engine::object::GameObject;
 
     private:
-        engine::component::TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
-        engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
+        engine::component::AnimationComponent* animation_component_ = nullptr; ///< @brief 动画组件
         engine::component::PhysicsComponent* physics_component_ = nullptr;     ///< @brief 物理组件
+        engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
+        engine::component::TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
 
         std::unique_ptr<state::PlayerState> current_state_;                    ///< @brief 当前状态
         bool is_dead_ = false;                                                 ///< @brief 是否死亡
@@ -51,14 +53,18 @@ namespace game::component {
         PlayerComponent &operator=(PlayerComponent &&) = delete;
 
         // --- getters ---
-        engine::component::TransformComponent* getTransformComponent() const
+        engine::component::AnimationComponent* getAnimationComponent() const
         {
-            return transform_component_;
+            return animation_component_;
         }
-        engine::component::SpriteComponent* getSpriteComponent() const { return sprite_component_; }
         engine::component::PhysicsComponent* getPhysicsComponent() const
         {
             return physics_component_;
+        }
+        engine::component::SpriteComponent* getSpriteComponent() const { return sprite_component_; }
+        engine::component::TransformComponent* getTransformComponent() const
+        {
+            return transform_component_;
         }
 
         bool isDead() const { return is_dead_; }
