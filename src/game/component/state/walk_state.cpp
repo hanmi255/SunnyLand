@@ -30,8 +30,7 @@ namespace game::component::state {
         // 步行状态可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {
             if (physics_component->velocity_.x > 0.0f) {
-                physics_component->velocity_.x =
-                    0.0f; // 如果当前速度是向右的，则先减速到0 (增强操控手感)
+                physics_component->velocity_.x = 0.0f; // 如果当前速度是向右的，则先减速到0
             }
             // 添加向左的水平力
             physics_component->addForce({-player_component_->getMoveForce(), 0.0f});
