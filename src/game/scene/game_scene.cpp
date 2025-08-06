@@ -13,7 +13,7 @@
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
 
-namespace game::scenes {
+namespace game::scene {
     GameScene::GameScene(const std::string_view &name, engine::core::Context &context,
                          engine::scene::SceneManager &scene_manager)
         : Scene(name, context, scene_manager)
@@ -120,4 +120,4 @@ namespace game::scenes {
         }
     }
 
-} // namespace game::scenes
+} // namespace game::scene

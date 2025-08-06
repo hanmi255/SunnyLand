@@ -55,7 +55,7 @@ set ( SOURCES
     src/engine/scene/level_loader.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
-    src/game/scenes/game_scene.cpp
+    src/game/scene/game_scene.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件

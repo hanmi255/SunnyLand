@@ -8,7 +8,7 @@
  * @技术宅拯救世界！！！
  */
 #include "game_app.h"
-#include "../../game/scenes/game_scene.h"
+#include "../../game/scene/game_scene.h"
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
@@ -76,7 +76,7 @@ namespace engine::core {
 
         // 创建第一个场景并压入栈
         auto scene =
-            std::make_unique<game::scenes::GameScene>("GameScene", *context_, *scene_manager_);
+            std::make_unique<game::scene::GameScene>("GameScene", *context_, *scene_manager_);
         scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true;

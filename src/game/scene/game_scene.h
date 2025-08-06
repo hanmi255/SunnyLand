@@ -6,7 +6,7 @@ namespace engine::object {
     class GameObject;
 } // namespace engine::object
 
-namespace game::scenes {
+namespace game::scene {
 
     /**
      * @brief 主要的游戏场景，包含玩家、敌人、关卡元素等。
@@ -31,4 +31,4 @@ namespace game::scenes {
         void testCollisionPairs();
     };
 
-} // namespace game::scenes
+} // namespace game::scene
