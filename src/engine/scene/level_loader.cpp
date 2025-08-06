@@ -18,7 +18,7 @@
 
 namespace engine::scene {
 
-    bool LevelLoader::loadLevel(const std::string &level_path, Scene &scene)
+    [[nodiscard]] bool LevelLoader::loadLevel(const std::string &level_path, Scene &scene)
     {
         // 清理之前的状态
         tileset_data_.clear();

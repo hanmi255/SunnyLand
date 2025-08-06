@@ -24,6 +24,12 @@ namespace engine::component {
         bool use_gravity_ = true;                                  ///< @brief 物体是否受重力影响
         bool enabled_ = true;                                      ///< @brief 是否启用组件
 
+        // --- 碰撞状态标志 ---
+        bool collided_above_ = false;
+        bool collided_below_ = false;
+        bool collided_left_ = false;
+        bool collided_right_ = false;
+
     public:
         /**
          * @brief 构造函数
@@ -63,6 +69,25 @@ namespace engine::component {
         void setMass(float mass) { mass_ = (mass >= 0.0f) ? mass : 1.0f; }
         void setUseGravity(bool use_gravity) { use_gravity_ = use_gravity; }
         void setVelocity(const glm::vec2 &velocity) { velocity_ = velocity; }
+
+        // 碰撞状态的访问和修改（供 PhysicsEngine 使用）
+        void resetCollisionFlags(){
+            collided_above_ = false;
+            collided_below_ = false;
+            collided_left_ = false;
+            collided_right_ = false;
+        }
+
+        void setCollidedAbove(bool collided_above) { collided_above_ = collided_above; }
+        void setCollidedBelow(bool collided_below) { collided_below_ = collided_below; }
+        void setCollidedLeft(bool collided_left) { collided_left_ = collided_left; }
+        void setCollidedRight(bool collided_right) { collided_right_ = collided_right; }
+
+        bool hasCollidedAbove() const { return collided_above_; }
+        bool hasCollidedBelow() const { return collided_below_; }
+        bool hasCollidedLeft() const { return collided_left_; }
+        bool hasCollidedRight() const { return collided_right_; }
+
 
     private:
         // 核心逻辑

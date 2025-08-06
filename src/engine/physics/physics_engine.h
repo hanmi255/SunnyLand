@@ -227,7 +227,9 @@ namespace engine::physics {
          */
         void handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
                                    engine::component::TileType tile_type_bottom,
-                                   const glm::vec2 &tile_size, TileCollisionContext &context) const;
+                                   const glm::vec2 &tile_size,
+                                   engine::component::PhysicsComponent* pc,
+                                   TileCollisionContext &context) const;
 
         /**
          * @brief 处理Y轴地面碰撞

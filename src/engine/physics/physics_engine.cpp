@@ -116,6 +116,8 @@ namespace engine::physics {
                 continue;
             }
 
+            pc->resetCollisionFlags(); // 重置碰撞标志
+
             // 应用重力 (如果组件受重力影响)：F = m * g
             if (pc->isUseGravity()) {
                 pc->addForce(gravity_ * pc->getMass());
@@ -404,7 +406,7 @@ namespace engine::physics {
         }
 
         // 检查斜坡瓦片碰撞（仅检查底部角点）
-        handleSlopeCollisionX(moving_right, tile_x, tile_y_bottom, tile_type_bottom, tile_size,
+        handleSlopeCollisionX(moving_right, tile_x, tile_y_bottom, tile_type_bottom, tile_size, pc,
                               context);
     }
 
@@ -418,7 +420,7 @@ namespace engine::physics {
             return;
         }
 
-        constexpr float TOLERANCE = 1.0f; // 检查边缘时的容差值
+        constexpr float TOLERANCE = 1.0f;            // 检查边缘时的容差值
         const auto tile_size = glm::vec2(layer->getTileSize());
         const auto inv_tile_size = 1.0f / tile_size; // 预计算倒数，避免重复除法
 
@@ -523,9 +525,11 @@ namespace engine::physics {
             // 撞到右侧墙壁
             context.new_position.x = static_cast<float>(tile_x) * tile_size.x -
                                      context.world_aabb_size.x;
+            pc->setCollidedRight(true);
         } else {
             // 撞到左侧墙壁
             context.new_position.x = static_cast<float>(tile_x + 1) * tile_size.x;
+            pc->setCollidedLeft(true);
         }
         pc->velocity_.x = 0.0f;
         context.has_x_collision = true;
@@ -534,6 +538,7 @@ namespace engine::physics {
     void PhysicsEngine::handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
                                               engine::component::TileType tile_type_bottom,
                                               const glm::vec2 &tile_size,
+                                              engine::component::PhysicsComponent *pc,
                                               TileCollisionContext &context) const
     {
         if (!isSlopeTile(tile_type_bottom)) {
@@ -553,6 +558,7 @@ namespace engine::physics {
 
             if (object_bottom_y > slope_surface_y) {
                 context.new_position.y = slope_surface_y - context.world_aabb_size.y;
+                pc->setCollidedBelow(true);
             }
         }
     }
@@ -565,6 +571,7 @@ namespace engine::physics {
         context.new_position.y = static_cast<float>(tile_y) * tile_size.y -
                                  context.world_aabb_size.y;
         pc->velocity_.y = 0.0f;
+        pc->setCollidedBelow(true);
         context.has_y_collision = true;
     }
 
@@ -575,6 +582,7 @@ namespace engine::physics {
         // 撞到天花板！速度归零，y方向移动到贴着天花板的位置
         context.new_position.y = static_cast<float>(tile_y + 1) * tile_size.y;
         pc->velocity_.y = 0.0f;
+        pc->setCollidedAbove(true);
         context.has_y_collision = true;
     }
 
@@ -595,13 +603,14 @@ namespace engine::physics {
         const float height_right = getTileHeightAtWidth(width_right, tile_type_right, tile_size);
         const float height = std::max(height_left, height_right); // 找到两个角点的最高点进行检测
 
-        if (height > 0.0f) { // 说明至少有一个角点处于斜坡瓦片
+        if (height > 0.0f) {                                      // 说明至少有一个角点处于斜坡瓦片
             const float slope_surface_y = static_cast<float>(tile_y + 1) * tile_size.y - height;
             const float object_bottom_y = context.new_position.y + context.world_aabb_size.y;
 
             if (object_bottom_y > slope_surface_y) {
                 context.new_position.y = slope_surface_y - context.world_aabb_size.y;
                 pc->velocity_.y = 0.0f; // 只有向下运动时才需要让 y 速度归零
+                pc->setCollidedBelow(true);
                 context.has_y_collision = true;
             }
         }
@@ -685,38 +694,47 @@ namespace engine::physics {
         constexpr float EPSILON = 0.01f;
 
         // 选择最小重叠方向进行分离
+        glm::vec2 translation(0.0f);
         if (context.overlap.x < context.overlap.y) {
             // X轴分离
+            float dx = context.overlap.x + EPSILON;
             if (context.move_center.x < context.solid_center.x) {
                 // 移动物体在左边，向左推出
-                move_tc->translate(glm::vec2(-context.overlap.x - EPSILON, 0.0f));
+                translation.x = -dx;
                 // 只有当速度朝向碰撞方向时才清零
                 if (move_pc->velocity_.x > 0.0f) {
                     move_pc->velocity_.x = 0.0f;
+                    move_pc->setCollidedRight(true);
                 }
             } else {
                 // 移动物体在右边，向右推出
-                move_tc->translate(glm::vec2(context.overlap.x + EPSILON, 0.0f));
+                translation.x = dx;
                 if (move_pc->velocity_.x < 0.0f) {
                     move_pc->velocity_.x = 0.0f;
+                    move_pc->setCollidedLeft(true);
                 }
             }
         } else {
             // Y轴分离
+            float dy = context.overlap.y + EPSILON;
             if (context.move_center.y < context.solid_center.y) {
                 // 移动物体在上面，向上推出
-                move_tc->translate(glm::vec2(0.0f, -context.overlap.y - EPSILON));
+                translation.y = -dy;
                 if (move_pc->velocity_.y > 0.0f) {
                     move_pc->velocity_.y = 0.0f;
+                    move_pc->setCollidedBelow(true);
                 }
             } else {
                 // 移动物体在下面，向下推出
-                move_tc->translate(glm::vec2(0.0f, context.overlap.y + EPSILON));
+                translation.y = dy;
                 if (move_pc->velocity_.y < 0.0f) {
                     move_pc->velocity_.y = 0.0f;
+                    move_pc->setCollidedAbove(true);
                 }
             }
         }
+        
+        move_tc->translate(translation);
 
         // 应用速度限制（与瓦片碰撞保持一致）
         move_pc->velocity_.x = std::clamp(move_pc->velocity_.x, -max_speed_, max_speed_);

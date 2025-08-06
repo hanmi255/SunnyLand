@@ -55,6 +55,11 @@ set ( SOURCES
     src/engine/scene/level_loader.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
+    src/game/component/player_component.cpp
+    src/game/component/state/fall_state.cpp
+    src/game/component/state/idle_state.cpp
+    src/game/component/state/jump_state.cpp
+    src/game/component/state/walk_state.cpp
     src/game/scene/game_scene.cpp
 )
 
@@ -79,5 +84,5 @@ target_link_libraries ( ${TARGET}
 
 # # 不要弹出控制台窗口
 # if ( MSVC )
-#     target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
+# target_link_options ( ${TARGET} PRIVATE "/SUBSYSTEM:WINDOWS" )
 # endif ()
