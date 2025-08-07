@@ -31,7 +31,7 @@ namespace game::component {
 
         // 检查必要组件是否存在
         if (!transform_component_ || !physics_component_ || !sprite_component_ ||
-            !animation_component_) {
+            !animation_component_ || !health_component_) {
             spdlog::error("Player 对象缺少必要组件！");
         }
 
