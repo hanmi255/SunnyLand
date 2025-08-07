@@ -4,7 +4,7 @@
 #include "../../../engine/object/game_object.h"
 #include <spdlog/spdlog.h>
 
-namespace game::component::state {
+namespace game::component::player_state {
 
 void PlayerState::playAnimation(const std::string& name) {
     if (!player_component_) {
@@ -22,4 +22,4 @@ void PlayerState::playAnimation(const std::string& name) {
     animation_component->playAnimation(name);
 }
 
-} // namespace game::component::state
+} // namespace game::component::player_state

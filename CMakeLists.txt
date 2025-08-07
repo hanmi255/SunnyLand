@@ -59,13 +59,13 @@ set ( SOURCES
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
     src/game/component/player_component.cpp
-    src/game/component/state/player_state.cpp
-    src/game/component/state/dead_state.cpp
-    src/game/component/state/fall_state.cpp
-    src/game/component/state/hurt_state.cpp
-    src/game/component/state/idle_state.cpp
-    src/game/component/state/jump_state.cpp
-    src/game/component/state/walk_state.cpp
+    src/game/component/player_state/player_state.cpp
+    src/game/component/player_state/dead_state.cpp
+    src/game/component/player_state/fall_state.cpp
+    src/game/component/player_state/hurt_state.cpp
+    src/game/component/player_state/idle_state.cpp
+    src/game/component/player_state/jump_state.cpp
+    src/game/component/player_state/walk_state.cpp
     src/game/scene/game_scene.cpp
 )
 

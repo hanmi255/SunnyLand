@@ -1,6 +1,6 @@
 #pragma once
 #include "../../engine/component/component.h"
-#include "state/player_state.h"
+#include "player_state/player_state.h"
 #include <memory>
 
 namespace engine::component {
@@ -15,9 +15,9 @@ namespace engine::input {
     class InputManager;
 } // namespace engine::input
 
-namespace game::component::state {
+namespace game::component::player_state {
     class PlayerState;
-} // namespace game::component::state
+} // namespace game::component::player_state
 
 namespace game::component {
 
@@ -35,7 +35,7 @@ namespace game::component {
         engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
         engine::component::TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
 
-        std::unique_ptr<state::PlayerState> current_state_;                    ///< @brief 当前状态
+        std::unique_ptr<player_state::PlayerState> current_state_;                    ///< @brief 当前状态
         bool is_dead_ = false;                                                 ///< @brief 是否死亡
 
         // --- 移动相关参数 ---
@@ -89,7 +89,7 @@ namespace game::component {
         void setJumpForce(float jump_force) { jump_force_ = jump_force; }
         void setStunnedDuration(float duration) { stunned_duration_ = duration; }
 
-        void setState(std::unique_ptr<state::PlayerState> new_state);
+        void setState(std::unique_ptr<player_state::PlayerState> new_state);
 
     private:
         // 核心逻辑

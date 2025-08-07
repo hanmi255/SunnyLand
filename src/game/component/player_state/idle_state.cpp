@@ -8,7 +8,7 @@
 #include "walk_state.h"
 #include <spdlog/spdlog.h>
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     void IdleState::enter() {
         playAnimation("idle");
@@ -46,4 +46,4 @@ namespace game::component::state {
         return nullptr;
     }
 
-} // namespace game::component::state
+} // namespace game::component::player_state

@@ -10,7 +10,7 @@ namespace game::component {
     class PlayerComponent;
 }
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     /**
      * @brief 玩家状态机的抽象基类。
@@ -42,4 +42,4 @@ namespace game::component::state {
         /* handleInput 和 update 返回值为下一个状态，如果不需要切换状态，则返回 nullptr */
     };
 
-} // namespace game::component::state
+} // namespace game::component::player_state

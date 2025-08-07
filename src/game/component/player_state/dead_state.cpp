@@ -5,7 +5,7 @@
 #include "../../../engine/object/game_object.h"
 #include "../player_component.h"
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     void DeadState::enter()
     {
@@ -36,4 +36,4 @@ namespace game::component::state {
         return nullptr;
     }
 
-} // namespace game::component::state
+} // namespace game::component::player_state

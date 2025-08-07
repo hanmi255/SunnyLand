@@ -1,14 +1,14 @@
 #pragma once
 #include "player_state.h"
 
-namespace game::component::state {
+namespace game::component::player_state {
 
-    class FallState final : public PlayerState {
+    class WalkState final : public PlayerState {
         friend class game::component::PlayerComponent;
 
     public:
-        FallState(PlayerComponent* player_component) : PlayerState(player_component) {}
-        ~FallState() override = default;
+        WalkState(PlayerComponent* player_component) : PlayerState(player_component) {}
+        ~WalkState() override = default;
 
     private:
         void enter() override;
@@ -17,4 +17,4 @@ namespace game::component::state {
         std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context &) override;
     };
 
-} // namespace game::component::state
+} // namespace game::component::player_state

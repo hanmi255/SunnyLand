@@ -1,7 +1,7 @@
 #pragma once
 #include "player_state.h"
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     class DeadState final : public PlayerState {
         friend class game::component::PlayerComponent;
@@ -17,4 +17,4 @@ namespace game::component::state {
         std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context &) override;
     };
 
-} // namespace game::component::state
+} // namespace game::component::player_state

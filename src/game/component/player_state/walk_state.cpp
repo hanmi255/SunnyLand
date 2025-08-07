@@ -10,7 +10,7 @@
 #include "jump_state.h"
 #include <glm/common.hpp>
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     void WalkState::enter() {
         playAnimation("walk");
@@ -67,4 +67,4 @@ namespace game::component::state {
         return nullptr;
     }
 
-} // namespace game::component::state
+} // namespace game::component::player_state

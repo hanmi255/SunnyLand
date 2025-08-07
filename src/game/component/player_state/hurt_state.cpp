@@ -8,7 +8,7 @@
 #include "walk_state.h"
 #include <glm/common.hpp>
 
-namespace game::component::state {
+namespace game::component::player_state {
 
     void HurtState::enter()
     {
@@ -58,4 +58,4 @@ namespace game::component::state {
         return nullptr;
     }
 
-} // namespace game::component::state
+} // namespace game::component::player_state

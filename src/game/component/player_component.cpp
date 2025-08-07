@@ -6,9 +6,9 @@
 #include "../../engine/component/transform_component.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/object/game_object.h"
-#include "state/dead_state.h"
-#include "state/hurt_state.h"
-#include "state/idle_state.h"
+#include "player_state/dead_state.h"
+#include "player_state/hurt_state.h"
+#include "player_state/idle_state.h"
 #include <spdlog/spdlog.h>
 #include <typeinfo>
 #include <utility>
@@ -36,7 +36,7 @@ namespace game::component {
         }
 
         // 初始化状态机
-        current_state_ = std::make_unique<state::IdleState>(this);
+        current_state_ = std::make_unique<player_state::IdleState>(this);
         if (current_state_) {
             setState(std::move(current_state_));
         } else {
@@ -45,7 +45,7 @@ namespace game::component {
         spdlog::debug("PlayerComponent 初始化完成。");
     }
 
-    void PlayerComponent::setState(std::unique_ptr<state::PlayerState> new_state)
+    void PlayerComponent::setState(std::unique_ptr<player_state::PlayerState> new_state)
     {
         if (!new_state) {
             spdlog::warn("尝试设置空的玩家状态！");
@@ -93,11 +93,11 @@ namespace game::component {
         if (health_component_->isAlive()) {
             spdlog::debug("玩家受到了 {} 点伤害，当前生命值: {}/{}。", damage_amount,
                           health_component_->getCurrentHealth(), health_component_->getMaxHealth());
-            setState(std::make_unique<state::HurtState>(this));
+            setState(std::make_unique<player_state::HurtState>(this));
         } else {
             spdlog::debug("玩家死亡。");
             is_dead_ = true;
-            setState(std::make_unique<state::DeadState>(this));
+            setState(std::make_unique<player_state::DeadState>(this));
         }
         return true;
     }

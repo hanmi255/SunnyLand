@@ -1,17 +1,14 @@
 #pragma once
 #include "player_state.h"
 
-namespace game::component::state {
+namespace game::component::player_state {
 
-    class HurtState final : public PlayerState {
+    class FallState final : public PlayerState {
         friend class game::component::PlayerComponent;
 
-    private:
-        float stunned_timer_ = 0.0f; ///< @brief 硬直计时器，单位为秒
-
     public:
-        HurtState(PlayerComponent* player_component) : PlayerState(player_component) {}
-        ~HurtState() override = default;
+        FallState(PlayerComponent* player_component) : PlayerState(player_component) {}
+        ~FallState() override = default;
 
     private:
         void enter() override;
@@ -20,4 +17,4 @@ namespace game::component::state {
         std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context &) override;
     };
 
-} // namespace game::component::state
+} // namespace game::component::player_state
