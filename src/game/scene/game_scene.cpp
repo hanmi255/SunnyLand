@@ -65,6 +65,7 @@ namespace game::scene {
 
     void GameScene::handleInput()
     {
+        testHealth();
         Scene::handleInput();
     }
 
@@ -140,10 +141,7 @@ namespace game::scene {
     {
         // 定义敌人类型到动画名称的映射
         static const std::unordered_map<std::string_view, std::string_view> enemy_animations = {
-            {"eagle", "fly"},
-            {"frog", "idle"},
-            {"opossum", "walk"}
-        };
+            {"eagle", "fly"}, {"frog", "idle"}, {"opossum", "walk"}};
 
         bool success = true;
         for (auto &game_object : game_objects_) {
@@ -171,6 +169,14 @@ namespace game::scene {
             }
         }
         return success;
+    }
+
+    void GameScene::testHealth()
+    {
+        auto input_manager = context_.getInputManager();
+        if (input_manager.isActionJustPressed("attack")) {
+            player_->getComponent<game::component::PlayerComponent>()->takeDamage(1);
+        }
     }
 
 } // namespace game::scene

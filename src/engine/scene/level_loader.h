@@ -96,7 +96,6 @@ namespace engine::scene {
             glm::vec2 position;
             glm::vec2 scale;
             float rotation;
-            std::string name;
         };
         [[nodiscard]] std::optional<ObjectTransformData>
         parseObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size);

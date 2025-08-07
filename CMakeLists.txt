@@ -34,6 +34,7 @@ set ( SOURCES
     src/main.cpp
     src/engine/component/animation_component.cpp
     src/engine/component/collider_component.cpp
+    src/engine/component/health_component.cpp
     src/engine/component/parallax_component.cpp
     src/engine/component/physics_component.cpp
     src/engine/component/sprite_component.cpp
@@ -59,7 +60,9 @@ set ( SOURCES
     src/engine/scene/scene_manager.cpp
     src/game/component/player_component.cpp
     src/game/component/state/player_state.cpp
+    src/game/component/state/dead_state.cpp
     src/game/component/state/fall_state.cpp
+    src/game/component/state/hurt_state.cpp
     src/game/component/state/idle_state.cpp
     src/game/component/state/jump_state.cpp
     src/game/component/state/walk_state.cpp

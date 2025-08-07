@@ -220,7 +220,7 @@ namespace engine::physics {
         }
 
         // 2. 计算位移
-        if (!calculateTileDisplacement(pc, delta_time, context)) {
+        if (!calculateTileDisplacement(pc, tc, cc,delta_time, context)) {
             return; // 位移太小，跳过处理
         }
 
@@ -346,7 +346,7 @@ namespace engine::physics {
 
         tc = obj->getComponent<engine::component::TransformComponent>();
         cc = obj->getComponent<engine::component::ColliderComponent>();
-        if (!tc || !cc || !cc->isActive() || cc->isTrigger()) return false;
+        if (!tc || !cc || cc->isTrigger()) return false;
 
         auto world_aabb = cc->getWorldAABB(); // 使用最小包围盒进行碰撞检测（简化）
         if (world_aabb.size.x <= 0.0f || world_aabb.size.y <= 0.0f) return false;
@@ -359,11 +359,19 @@ namespace engine::physics {
     }
 
     bool PhysicsEngine::calculateTileDisplacement(engine::component::PhysicsComponent* pc,
+                                                  engine::component::TransformComponent*&tc,
+                                                  engine::component::ColliderComponent*&cc,
                                                   float delta_time,
                                                   TileCollisionContext &context) const
     {
         context.displacement = pc->velocity_ * delta_time;
         context.new_position = context.world_aabb_position + context.displacement;
+
+        if (!cc->isActive()) {
+            tc->translate(context.displacement);
+            pc->velocity_ = glm::clamp(pc->velocity_, -max_speed_, max_speed_);
+            return false;
+        }
 
         return true;
     }
@@ -538,7 +546,7 @@ namespace engine::physics {
     void PhysicsEngine::handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
                                               engine::component::TileType tile_type_bottom,
                                               const glm::vec2 &tile_size,
-                                              engine::component::PhysicsComponent *pc,
+                                              engine::component::PhysicsComponent* pc,
                                               TileCollisionContext &context) const
     {
         if (!isSlopeTile(tile_type_bottom)) {
@@ -733,7 +741,7 @@ namespace engine::physics {
                 }
             }
         }
-        
+
         move_tc->translate(translation);
 
         // 应用速度限制（与瓦片碰撞保持一致）

@@ -1,10 +1,13 @@
 #include "player_component.h"
 #include "../../engine/component/animation_component.h"
+#include "../../engine/component/health_component.h"
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/transform_component.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/object/game_object.h"
+#include "state/dead_state.h"
+#include "state/hurt_state.h"
 #include "state/idle_state.h"
 #include <spdlog/spdlog.h>
 #include <typeinfo>
@@ -24,9 +27,11 @@ namespace game::component {
         physics_component_ = owner_->getComponent<engine::component::PhysicsComponent>();
         sprite_component_ = owner_->getComponent<engine::component::SpriteComponent>();
         animation_component_ = owner_->getComponent<engine::component::AnimationComponent>();
+        health_component_ = owner_->getComponent<engine::component::HealthComponent>();
 
         // 检查必要组件是否存在
-        if (!transform_component_ || !physics_component_ || !sprite_component_ || !animation_component_) {
+        if (!transform_component_ || !physics_component_ || !sprite_component_ ||
+            !animation_component_) {
             spdlog::error("Player 对象缺少必要组件！");
         }
 
@@ -73,6 +78,28 @@ namespace game::component {
         if (next_state) {
             setState(std::move(next_state));
         }
+    }
+
+    bool PlayerComponent::takeDamage(int damage_amount)
+    {
+        if (is_dead_ || !health_component_ || damage_amount <= 0) {
+            spdlog::warn("玩家已死亡或缺少必要组件，并未造成伤害。");
+            return false;
+        }
+
+        bool success = health_component_->takeDamage(damage_amount);
+        if (!success) return false;
+
+        if (health_component_->isAlive()) {
+            spdlog::debug("玩家受到了 {} 点伤害，当前生命值: {}/{}。", damage_amount,
+                          health_component_->getCurrentHealth(), health_component_->getMaxHealth());
+            setState(std::make_unique<state::HurtState>(this));
+        } else {
+            spdlog::debug("玩家死亡。");
+            is_dead_ = true;
+            setState(std::make_unique<state::DeadState>(this));
+        }
+        return true;
     }
 
 } // namespace game::component

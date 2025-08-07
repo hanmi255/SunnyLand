@@ -5,6 +5,7 @@
 
 namespace engine::component {
     class AnimationComponent;
+    class HealthComponent;
     class PhysicsComponent;
     class SpriteComponent;
     class TransformComponent;
@@ -29,6 +30,7 @@ namespace game::component {
 
     private:
         engine::component::AnimationComponent* animation_component_ = nullptr; ///< @brief 动画组件
+        engine::component::HealthComponent* health_component_ = nullptr;       ///< @brief 生命组件
         engine::component::PhysicsComponent* physics_component_ = nullptr;     ///< @brief 物理组件
         engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
         engine::component::TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
@@ -42,6 +44,9 @@ namespace game::component {
         float friction_factor_ = 0.85f; ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
         float jump_force_ = 350.0f;     ///< @brief 跳跃力 (按下"jump"键给的瞬间向上的力)
 
+        // --- 状态相关参数 ---
+        float stunned_duration_ = 0.4f; ///< @brief 击退硬直效果持续时间
+
     public:
         PlayerComponent() = default;
         ~PlayerComponent() override = default;
@@ -51,6 +56,8 @@ namespace game::component {
         PlayerComponent &operator=(const PlayerComponent &) = delete;
         PlayerComponent(PlayerComponent &&) = delete;
         PlayerComponent &operator=(PlayerComponent &&) = delete;
+
+        bool takeDamage(int damage_amount);
 
         // --- getters ---
         engine::component::AnimationComponent* getAnimationComponent() const
@@ -72,6 +79,7 @@ namespace game::component {
         float getMaxSpeed() const { return max_speed_; }
         float getFrictionFactor() const { return friction_factor_; }
         float getJumpForce() const { return jump_force_; }
+        float getStunnedDuration() const { return stunned_duration_; }
 
         // --- setters ---
         void setIsDead(bool is_dead) { is_dead_ = is_dead; }
@@ -79,6 +87,7 @@ namespace game::component {
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
         void setFrictionFactor(float friction_factor) { friction_factor_ = friction_factor; }
         void setJumpForce(float jump_force) { jump_force_ = jump_force; }
+        void setStunnedDuration(float duration) { stunned_duration_ = duration; }
 
         void setState(std::unique_ptr<state::PlayerState> new_state);
 

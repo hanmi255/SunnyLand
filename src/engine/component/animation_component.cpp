@@ -52,7 +52,7 @@ namespace engine::component {
         std::string name = animation->getName();
         animations_[name] = std::move(animation);
         spdlog::debug("已将动画 '{}' 添加到 GameObject '{}'", name,
-                      owner_ ? owner_->getName() : "未知");
+                      owner_ ? owner_->getName() : "Unknown");
     }
 
     void AnimationComponent::playAnimation(const std::string &name)
@@ -60,7 +60,7 @@ namespace engine::component {
         auto it = animations_.find(name);
         if (it == animations_.end() || !it->second) {
             spdlog::warn("未找到 GameObject '{}' 的动画 '{}'", name,
-                         owner_ ? owner_->getName() : "未知");
+                         owner_ ? owner_->getName() : "Unknown");
             return;
         }
 
@@ -77,7 +77,7 @@ namespace engine::component {
         if (sprite_component_ && !current_animation_->isEmpty()) {
             const auto &first_frame = current_animation_->getFrame(0.0f);
             sprite_component_->setSrcRect(first_frame.source_rect);
-            spdlog::debug("GameObject '{}' 播放动画 '{}'", owner_ ? owner_->getName() : "未知",
+            spdlog::debug("GameObject '{}' 播放动画 '{}'", owner_ ? owner_->getName() : "Unknown",
                           name);
         }
     }

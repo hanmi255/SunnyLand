@@ -21,7 +21,7 @@
     "move_down": ["S", "Down"],
     "move_up": ["W", "Up"],
     "pause": ["P", "Escape"],
-    "jump": ["J", "Space"],
-    "attack": ["K", "MouseLeft"]
+    "jump": ["K", "Space"],
+    "attack": ["J", "MouseLeft"]
   }
 }

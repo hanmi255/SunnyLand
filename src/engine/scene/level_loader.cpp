@@ -1,6 +1,7 @@
 #include "level_loader.h"
 #include "../component/animation_component.h"
 #include "../component/collider_component.h"
+#include "../component/health_component.h"
 #include "../component/parallax_component.h"
 #include "../component/physics_component.h"
 #include "../component/sprite_component.h"
@@ -269,7 +270,8 @@ namespace engine::scene {
         }
 
         // 创建游戏对象
-        auto game_object = std::make_unique<engine::object::GameObject>(transform_data->name);
+        auto object_name = object_json.value("name", "Unnamed");
+        auto game_object = std::make_unique<engine::object::GameObject>(object_name);
 
         // 添加基础组件
         game_object->addComponent<engine::component::TransformComponent>(
@@ -284,9 +286,9 @@ namespace engine::scene {
         setupObjectCollision(*game_object, tile_info, tile_json, src_size, scene);
 
         // 应用对象属性
-        applyObjectProperties(*game_object, tile_json, src_size,scene);
+        applyObjectProperties(*game_object, tile_json, src_size, scene);
 
-        spdlog::debug("加载对象: '{}' 完成", transform_data->name);
+        spdlog::debug("加载对象: '{}' 完成", object_name);
         return game_object;
     }
 
@@ -298,13 +300,6 @@ namespace engine::scene {
         auto dst_size =
             glm::vec2(object_json.value("width", 0.0f), object_json.value("height", 0.0f));
         auto rotation = object_json.value("rotation", 0.0f);
-        auto object_name = object_json.value("name", std::string("Unnamed"));
-
-        // 验证尺寸
-        if (src_size.x <= 0.0f || src_size.y <= 0.0f) {
-            spdlog::warn("对象 '{}' 的源尺寸无效: ({}, {})", object_name, src_size.x, src_size.y);
-            return std::nullopt;
-        }
 
         // 调整位置（从左下角到左上角）
         position.y -= dst_size.y;
@@ -313,7 +308,7 @@ namespace engine::scene {
         const auto scale = dst_size / src_size;
 
         return ObjectTransformData{
-            .position = position, .scale = scale, .rotation = rotation, .name = object_name};
+            .position = position, .scale = scale, .rotation = rotation};
     }
 
     void LevelLoader::setupObjectCollision(engine::object::GameObject &game_object,
@@ -396,6 +391,12 @@ namespace engine::scene {
             }
             auto ac = game_object.addComponent<engine::component::AnimationComponent>();
             addAnimation(anim_json, ac, src_size);
+        }
+
+        // 获取生命值信息并设置
+        auto health = getTileProperty<int>(tile_json, "health");
+        if (health) {
+            game_object.addComponent<engine::component::HealthComponent>(health.value());
         }
     }
 

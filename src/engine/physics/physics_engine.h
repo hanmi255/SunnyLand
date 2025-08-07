@@ -168,7 +168,10 @@ namespace engine::physics {
         /**
          * @brief 计算瓦片图层对象在指定时间间隔内的位移
          */
-        bool calculateTileDisplacement(engine::component::PhysicsComponent* pc, float delta_time,
+        bool calculateTileDisplacement(engine::component::PhysicsComponent* pc,
+                                       engine::component::TransformComponent*&tc,
+                                       engine::component::ColliderComponent*&cc,
+                                       float delta_time,
                                        TileCollisionContext &context) const;
 
         /**

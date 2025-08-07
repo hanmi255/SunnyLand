@@ -28,6 +28,9 @@ namespace game::scene {
         [[nodiscard]] bool initLevel();
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
+
+        // 测试函数
+        void testHealth();
     };
 
 } // namespace game::scene
