@@ -371,7 +371,7 @@ namespace engine::scene {
         // 获取重力信息并设置
         auto gravity = getTileProperty<bool>(tile_json.value(), "gravity");
         if (gravity) {
-            auto pc = game_object.getComponent<engine::component::PhysicsComponent>();
+            auto* pc = game_object.getComponent<engine::component::PhysicsComponent>();
             if (pc) {
                 pc->setUseGravity(gravity.value());
             } else {
@@ -393,7 +393,7 @@ namespace engine::scene {
                 spdlog::error("解析动画 JSON 字符串失败: {}", e.what());
                 return;
             }
-            auto ac = game_object.addComponent<engine::component::AnimationComponent>();
+            auto* ac = game_object.addComponent<engine::component::AnimationComponent>();
             addAnimation(anim_json, ac, src_size);
         }
 

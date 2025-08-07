@@ -21,7 +21,7 @@ namespace game::component::ai_behavior {
 
     void PatrolBehavior::enter(AIComponent &ai_component)
     {
-        if (auto animation_component = ai_component.getAnimationComponent(); animation_component) {
+        if (auto* animation_component = ai_component.getAnimationComponent(); animation_component) {
             animation_component->playAnimation("walk");
         }
     }
@@ -29,9 +29,9 @@ namespace game::component::ai_behavior {
     void PatrolBehavior::update(float /*delta_time*/, AIComponent &ai_component)
     {
         // 获取必要的组件
-        auto physics_component = ai_component.getPhysicsComponent();
-        auto transform_component = ai_component.getTransformComponent();
-        auto sprite_component = ai_component.getSpriteComponent();
+        auto* physics_component = ai_component.getPhysicsComponent();
+        auto* transform_component = ai_component.getTransformComponent();
+        auto* sprite_component = ai_component.getSpriteComponent();
 
         // 使用卫语句检查组件是否存在
         if (!physics_component || !transform_component || !sprite_component) {

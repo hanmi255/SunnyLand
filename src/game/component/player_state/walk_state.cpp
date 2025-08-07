@@ -12,7 +12,8 @@
 
 namespace game::component::player_state {
 
-    void WalkState::enter() {
+    void WalkState::enter()
+    {
         playAnimation("walk");
     }
 
@@ -21,8 +22,8 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> WalkState::handleInput(engine::core::Context &context)
     {
         auto input_manager = context.getInputManager();
-        auto physics_component = player_component_->getPhysicsComponent();
-        auto sprite_component = player_component_->getSpriteComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
+        auto* sprite_component = player_component_->getSpriteComponent();
 
         // 如果按下“jump”则切换到 JumpState
         if (input_manager.isActionJustPressed("jump")) {
@@ -54,7 +55,7 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> WalkState::update(float, engine::core::Context &)
     {
         // 限制最大速度
-        auto physics_component = player_component_->getPhysicsComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
         auto max_speed = player_component_->getMaxSpeed();
         physics_component->velocity_.x =
             glm::clamp(physics_component->velocity_.x, -max_speed, max_speed);

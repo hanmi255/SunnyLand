@@ -20,12 +20,12 @@ namespace game::component::ai_behavior {
 
     void UpDownBehavior::enter(AIComponent &ai_component)
     {
-        if (auto animation_component = ai_component.getAnimationComponent(); animation_component) {
+        if (auto* animation_component = ai_component.getAnimationComponent(); animation_component) {
             animation_component->playAnimation("fly");
         }
 
         // 禁用重力
-        if (auto physics_component = ai_component.getPhysicsComponent(); physics_component) {
+        if (auto* physics_component = ai_component.getPhysicsComponent(); physics_component) {
             physics_component->setUseGravity(false);
         }
     }
@@ -33,8 +33,8 @@ namespace game::component::ai_behavior {
     void UpDownBehavior::update(float /*delta_time*/, AIComponent &ai_component)
     {
         // 获取必要的组件
-        auto physics_component = ai_component.getPhysicsComponent();
-        auto transform_component = ai_component.getTransformComponent();
+        auto* physics_component = ai_component.getPhysicsComponent();
+        auto* transform_component = ai_component.getTransformComponent();
 
         if (!physics_component || !transform_component) {
             spdlog::error("UpdownBehavior：缺少必要的组件，无法执行巡逻行为。");

@@ -53,7 +53,7 @@ namespace game::component {
     bool AIComponent::takeDamage(int damage_amount)
     {
         bool success = false;
-        if (auto health_component = getOwner()->getComponent<engine::component::HealthComponent>();
+        if (auto* health_component = getOwner()->getComponent<engine::component::HealthComponent>();
             health_component) {
             success = health_component->takeDamage(damage_amount);
             // TODO: 可以设置受伤/死亡后的行为
@@ -63,7 +63,7 @@ namespace game::component {
 
     bool AIComponent::isAlive() const
     {
-        if (auto health_component = getOwner()->getComponent<engine::component::HealthComponent>();
+        if (auto* health_component = getOwner()->getComponent<engine::component::HealthComponent>();
             health_component) {
             return health_component->isAlive();
         }

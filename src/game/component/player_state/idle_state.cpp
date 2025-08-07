@@ -10,7 +10,8 @@
 
 namespace game::component::player_state {
 
-    void IdleState::enter() {
+    void IdleState::enter()
+    {
         playAnimation("idle");
     }
 
@@ -35,7 +36,7 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> IdleState::update(float, engine::core::Context &)
     {
         // 应用摩擦力(水平方向)
-        auto physics_component = player_component_->getPhysicsComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
         auto friction_factor = player_component_->getFrictionFactor();
         physics_component->velocity_.x *= friction_factor;
 

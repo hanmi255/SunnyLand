@@ -15,8 +15,8 @@ namespace game::component::player_state {
     void JumpState::enter()
     {
         playAnimation("jump");
-        auto physics_component = player_component_->getPhysicsComponent();
-        physics_component->velocity_.y = -player_component_->getJumpForce(); // 向上跳跃
+        auto* physics_component = player_component_->getPhysicsComponent();
+        physics_component->velocity_.y = -player_component_->getJumpVelocity(); // 向上跳跃
         spdlog::debug("PlayerComponent 进入 JumpState，设置初始垂直速度为: {}",
                       physics_component->velocity_.y);
     }
@@ -26,8 +26,8 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> JumpState::handleInput(engine::core::Context &context)
     {
         auto input_manager = context.getInputManager();
-        auto physics_component = player_component_->getPhysicsComponent();
-        auto sprite_component = player_component_->getSpriteComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
+        auto* sprite_component = player_component_->getSpriteComponent();
 
         // 跳跃状态下可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {
@@ -45,7 +45,7 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> JumpState::update(float, engine::core::Context &)
     {
         // 限制最大速度(水平方向)
-        auto physics_component = player_component_->getPhysicsComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
         auto max_speed = player_component_->getMaxSpeed();
         physics_component->velocity_.x =
             glm::clamp(physics_component->velocity_.x, -max_speed, max_speed);

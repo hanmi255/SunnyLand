@@ -132,14 +132,14 @@ namespace game::scene {
         }
 
         // 添加PlayerComponent到玩家对象
-        auto player_component = player_->addComponent<game::component::PlayerComponent>();
+        auto* player_component = player_->addComponent<game::component::PlayerComponent>();
         if (!player_component) {
             spdlog::error("无法添加 PlayerComponent 到玩家对象");
             return false;
         }
 
         // 相机跟随玩家
-        auto player_transform = player_->getComponent<engine::component::TransformComponent>();
+        auto* player_transform = player_->getComponent<engine::component::TransformComponent>();
         if (!player_transform) {
             spdlog::error("玩家对象没有 TransformComponent 组件, 无法设置相机目标");
             return false;
@@ -158,8 +158,8 @@ namespace game::scene {
 
             // 初始化敌人AI
             if (name == "eagle" || name == "frog" || name == "opossum") {
-                auto ai = obj->addComponent<game::component::AIComponent>();
-                auto transform = obj->getComponent<engine::component::TransformComponent>();
+                auto* ai = obj->addComponent<game::component::AIComponent>();
+                auto* transform = obj->getComponent<engine::component::TransformComponent>();
 
                 if (!ai || !transform) {
                     spdlog::error("{}缺少必要组件", name);
@@ -191,9 +191,9 @@ namespace game::scene {
 
             // 初始化道具动画
             if (obj->getTag() == "item") {
-                auto anim = obj->getComponent<engine::component::AnimationComponent>();
-                if (anim) {
-                    anim->playAnimation("idle");
+                auto* ac = obj->getComponent<engine::component::AnimationComponent>();
+                if (ac) {
+                    ac->playAnimation("idle");
                 } else {
                     spdlog::error("Item对象'{}'缺少AnimationComponent", obj->getName());
                     success = false;
@@ -264,8 +264,8 @@ namespace game::scene {
         }
 
         // 获取碰撞组件
-        auto player_collider = player->getComponent<engine::component::ColliderComponent>();
-        auto enemy_collider = enemy->getComponent<engine::component::ColliderComponent>();
+        auto* player_collider = player->getComponent<engine::component::ColliderComponent>();
+        auto* enemy_collider = enemy->getComponent<engine::component::ColliderComponent>();
 
         if (!player_collider) {
             spdlog::error("玩家 {} 没有 ColliderComponent 组件", player->getName());
@@ -291,7 +291,7 @@ namespace game::scene {
         if (overlap.x > overlap.y && player_center.y < enemy_center.y) {
             spdlog::info("玩家 {} 踩踏了敌人 {}", player->getName(), enemy->getName());
 
-            auto enemy_health = enemy->getComponent<engine::component::HealthComponent>();
+            auto* enemy_health = enemy->getComponent<engine::component::HealthComponent>();
             if (!enemy_health) {
                 spdlog::error("敌人 {} 没有 HealthComponent 组件，无法处理踩踏伤害",
                               enemy->getName());
@@ -307,7 +307,7 @@ namespace game::scene {
             }
 
             // 玩家跳起效果
-            auto player_physics = player->getComponent<engine::component::PhysicsComponent>();
+            auto* player_physics = player->getComponent<engine::component::PhysicsComponent>();
             if (player_physics) {
                 player_physics->velocity_.y = -300.0f; // 向上跳起
             } else {
@@ -319,7 +319,7 @@ namespace game::scene {
         else {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->getName(), player->getName());
 
-            auto player_component = player->getComponent<game::component::PlayerComponent>();
+            auto* player_component = player->getComponent<game::component::PlayerComponent>();
             if (player_component) {
                 player_component->takeDamage(1);
             } else {

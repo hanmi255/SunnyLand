@@ -32,7 +32,7 @@ namespace engine::render {
             return;
         }
 
-        auto texture = resource_manager_->getTexture(sprite.getTextureId());
+        auto* texture = resource_manager_->getTexture(sprite.getTextureId());
         if (!texture) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
@@ -75,7 +75,7 @@ namespace engine::render {
             return;
         }
 
-        auto texture = resource_manager_->getTexture(sprite.getTextureId());
+        auto* texture = resource_manager_->getTexture(sprite.getTextureId());
         if (!texture) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
@@ -179,7 +179,7 @@ namespace engine::render {
     void Renderer::drawUISprite(const Sprite &sprite, const glm::vec2 &position,
                                 const std::optional<glm::vec2> &size)
     {
-        auto texture = resource_manager_->getTexture(sprite.getTextureId());
+        auto* texture = resource_manager_->getTexture(sprite.getTextureId());
         if (!texture) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
@@ -248,7 +248,7 @@ namespace engine::render {
 
     std::optional<SDL_FRect> Renderer::getSpriteSrcRect(const Sprite &sprite)
     {
-        auto texture = resource_manager_->getTexture(sprite.getTextureId());
+        auto* texture = resource_manager_->getTexture(sprite.getTextureId());
         if (!texture) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return std::nullopt;

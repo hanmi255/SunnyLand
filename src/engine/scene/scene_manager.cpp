@@ -21,7 +21,7 @@ namespace engine::scene {
         processPendingActions();
 
         // 只更新栈顶场景
-        if (auto current_scene = getCurrentScene(); current_scene) {
+        if (auto* current_scene = getCurrentScene(); current_scene) {
             current_scene->update(delta_time);
         }
     }
@@ -39,7 +39,7 @@ namespace engine::scene {
     void SceneManager::handleInput()
     {
         // 只处理栈顶场景的输入
-        if (auto current_scene = getCurrentScene(); current_scene) {
+        if (auto* current_scene = getCurrentScene(); current_scene) {
             current_scene->handleInput();
         }
     }

@@ -11,8 +11,8 @@ namespace engine::physics::collision {
 
     CollisionData::CollisionData(const engine::component::ColliderComponent &component)
     {
-        auto collider = component.getCollider();
-        auto transform = component.getTransform();
+        auto* collider = component.getCollider();
+        auto* transform = component.getTransform();
 
         size = collider->getAABBSize() * transform->getScale();
         position = transform->getPosition() + component.getOffset();

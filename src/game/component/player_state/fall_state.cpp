@@ -10,7 +10,8 @@
 
 namespace game::component::player_state {
 
-    void FallState::enter() {
+    void FallState::enter()
+    {
         playAnimation("fall");
     }
 
@@ -19,8 +20,8 @@ namespace game::component::player_state {
     std::unique_ptr<PlayerState> FallState::handleInput(engine::core::Context &context)
     {
         auto input_manager = context.getInputManager();
-        auto physics_component = player_component_->getPhysicsComponent();
-        auto sprite_component = player_component_->getSpriteComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
+        auto* sprite_component = player_component_->getSpriteComponent();
 
         // 下落状态下可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {

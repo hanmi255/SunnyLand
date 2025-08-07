@@ -13,11 +13,11 @@ namespace game::component::player_state {
         playAnimation("hurt");
 
         // 应用击退力（只向上）
-        auto physics_component = player_component_->getPhysicsComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
         physics_component->velocity_ = glm::vec2(0.0f, -200.0f); // 向上击退
 
         // 禁用碰撞(自动掉出屏幕)
-        auto collider_component =
+        auto* collider_component =
             player_component_->getOwner()->getComponent<engine::component::ColliderComponent>();
         if (collider_component) {
             collider_component->setActive(false);

@@ -15,8 +15,8 @@ namespace game::component::player_state {
         playAnimation("hurt");
 
         // --- 造成击退效果 ---
-        auto physics_component = player_component_->getPhysicsComponent();
-        auto sprite_component = player_component_->getSpriteComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
+        auto* sprite_component = player_component_->getSpriteComponent();
         auto knockback_velocity = glm::vec2(-100.0f, -150.0f); // 默认左上方击退效果
         // 根据当前精灵的朝向状态决定是否改成右上方
         if (sprite_component->isFlipped()) {
@@ -36,7 +36,7 @@ namespace game::component::player_state {
     {
         stunned_timer_ += delta_time;
 
-        auto physics_component = player_component_->getPhysicsComponent();
+        auto* physics_component = player_component_->getPhysicsComponent();
 
         // 如果角色已经落地
         if (physics_component->hasCollidedBelow()) {

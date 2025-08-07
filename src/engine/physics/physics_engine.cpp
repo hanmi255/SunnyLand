@@ -178,11 +178,11 @@ namespace engine::physics {
         std::set<std::pair<engine::object::GameObject*, engine::component::TileType>>
             triggered_pairs;
 
-        for (auto pc : components_) {
+        for (auto* pc : components_) {
             if (!pc || !pc->isEnabled()) continue; // 检查组件是否有效和启用
-            auto obj = pc->getOwner();
+            auto* obj = pc->getOwner();
             if (!obj) continue;
-            auto cc = obj->getComponent<engine::component::ColliderComponent>();
+            auto* cc = obj->getComponent<engine::component::ColliderComponent>();
             if (!cc || !cc->isActive() || cc->isTrigger())
                 continue; // 如果游戏对象本就是触发器，则不需要检查瓦片触发事件
 
@@ -195,7 +195,7 @@ namespace engine::physics {
                 auto tile_size = layer->getTileSize();
                 glm::vec2 layer_offset = layer->getOffset();
 
-                constexpr float TOLERANCE = 1.0f;            // 检查边缘时的容差值
+                constexpr float TOLERANCE = 1.0f; // 检查边缘时的容差值
                 // 获取瓦片坐标范围
                 auto start_x =
                     static_cast<int>(floor((world_aabb.position.x - layer_offset.x) / tile_size.x));
@@ -812,4 +812,4 @@ namespace engine::physics {
         move_pc->velocity_.x = std::clamp(move_pc->velocity_.x, -max_speed_, max_speed_);
         move_pc->velocity_.y = std::clamp(move_pc->velocity_.y, -max_speed_, max_speed_);
     }
-}
+} // namespace engine::physics

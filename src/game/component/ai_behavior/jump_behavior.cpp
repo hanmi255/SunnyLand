@@ -35,10 +35,10 @@ namespace game::component::ai_behavior {
     void JumpBehavior::update(float delta_time, AIComponent &ai_component)
     {
         // 获取必要的组件
-        auto physics_component = ai_component.getPhysicsComponent();
-        auto transform_component = ai_component.getTransformComponent();
-        auto sprite_component = ai_component.getSpriteComponent();
-        auto animation_component = ai_component.getAnimationComponent();
+        auto* physics_component = ai_component.getPhysicsComponent();
+        auto* transform_component = ai_component.getTransformComponent();
+        auto* sprite_component = ai_component.getSpriteComponent();
+        auto* animation_component = ai_component.getAnimationComponent();
 
         if (!physics_component || !transform_component || !sprite_component ||
             !animation_component) {
