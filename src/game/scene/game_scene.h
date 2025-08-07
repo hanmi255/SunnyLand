@@ -1,6 +1,9 @@
 #pragma once
 #include "../../engine/scene/scene.h"
+#include <glm/vec2.hpp>
 #include <memory>
+#include <string_view>
+
 
 namespace engine::object {
     class GameObject;
@@ -29,8 +32,14 @@ namespace game::scene {
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
 
-        // 测试函数
-        void testHealth();
+        void handleObjectCollisions();
+        void handleTileTriggers();
+        void PlayerVSEnemyCollision(engine::object::GameObject* player,
+                                    engine::object::GameObject* enemy);
+        void PlayerVSItemCollision(engine::object::GameObject* player,
+                                   engine::object::GameObject* item);
+
+        void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
     };
 
 } // namespace game::scene

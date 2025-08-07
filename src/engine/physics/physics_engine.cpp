@@ -107,8 +107,9 @@ namespace engine::physics {
 
     void PhysicsEngine::update(float delta_time)
     {
-        // 每帧开始时先清空碰撞对列表
+        // 每帧开始时先清空碰撞对和瓦片触发事件列表
         collision_pairs_.clear();
+        tile_trigger_events_.clear();
 
         // 遍历所有注册的物理组件
         for (auto* pc : components_) {
@@ -135,8 +136,11 @@ namespace engine::physics {
             applyWorldBounds(pc);
         }
 
-        // 处理对象间碰撞
+        // 检查对象间碰撞
         checkObjectCollisions();
+
+        // 检查瓦片触发事件
+        checkTileTriggers();
     }
 
     void PhysicsEngine::checkObjectCollisions()
@@ -163,6 +167,66 @@ namespace engine::physics {
             if (objects.size() < 2) continue; // 单个对象无需检查
 
             checkCollisionsInCell(objects, checked_pairs);
+        }
+    }
+
+    void PhysicsEngine::checkTileTriggers()
+    {
+        tile_trigger_events_.clear();
+
+        // 使用 GameObject* 和 TileType 的组合来避免重复触发
+        std::set<std::pair<engine::object::GameObject*, engine::component::TileType>>
+            triggered_pairs;
+
+        for (auto pc : components_) {
+            if (!pc || !pc->isEnabled()) continue; // 检查组件是否有效和启用
+            auto obj = pc->getOwner();
+            if (!obj) continue;
+            auto cc = obj->getComponent<engine::component::ColliderComponent>();
+            if (!cc || !cc->isActive() || cc->isTrigger())
+                continue; // 如果游戏对象本就是触发器，则不需要检查瓦片触发事件
+
+            // 获取物体的世界AABB
+            auto world_aabb = cc->getWorldAABB();
+
+            // 遍历所有注册的碰撞瓦片层分别进行检测
+            for (auto* layer : collision_tile_layers_) {
+                if (!layer) continue;
+                auto tile_size = layer->getTileSize();
+                glm::vec2 layer_offset = layer->getOffset();
+
+                constexpr float TOLERANCE = 1.0f;            // 检查边缘时的容差值
+                // 获取瓦片坐标范围
+                auto start_x =
+                    static_cast<int>(floor((world_aabb.position.x - layer_offset.x) / tile_size.x));
+                auto end_x = static_cast<int>(
+                    ceil((world_aabb.position.x + world_aabb.size.x - layer_offset.x - TOLERANCE) /
+                         tile_size.x));
+                auto start_y =
+                    static_cast<int>(floor((world_aabb.position.y - layer_offset.y) / tile_size.y));
+                auto end_y = static_cast<int>(
+                    ceil((world_aabb.position.y + world_aabb.size.y - layer_offset.y - TOLERANCE) /
+                         tile_size.y));
+
+                // 遍历瓦片坐标范围进行检测
+                for (int x = start_x; x < end_x; ++x) {
+                    for (int y = start_y; y < end_y; ++y) {
+                        auto tile_type = layer->getTileTypeAt({x, y});
+                        // 未来可以添加更多触发器类型的瓦片，目前只有 HAZARD 类型
+                        if (tile_type == engine::component::TileType::HAZARD) {
+                            // 检查是否已经触发过该对象和瓦片类型的组合
+                            auto trigger_pair = std::make_pair(obj, tile_type);
+                            if (triggered_pairs.find(trigger_pair) == triggered_pairs.end()) {
+                                triggered_pairs.insert(trigger_pair);
+                                tile_trigger_events_.emplace_back(obj, tile_type);
+                                spdlog::trace("tile_trigger_events_中 添加了 GameObject {} "
+                                              "和瓦片触发类型: {}",
+                                              obj->getName(), static_cast<int>(tile_type));
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -220,7 +284,7 @@ namespace engine::physics {
         }
 
         // 2. 计算位移
-        if (!calculateTileDisplacement(pc, tc, cc,delta_time, context)) {
+        if (!calculateTileDisplacement(pc, tc, cc, delta_time, context)) {
             return; // 位移太小，跳过处理
         }
 
@@ -748,5 +812,4 @@ namespace engine::physics {
         move_pc->velocity_.x = std::clamp(move_pc->velocity_.x, -max_speed_, max_speed_);
         move_pc->velocity_.y = std::clamp(move_pc->velocity_.y, -max_speed_, max_speed_);
     }
-
-} // namespace engine::physics
+}

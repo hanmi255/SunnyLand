@@ -106,6 +106,7 @@ namespace engine::scene {
                                   const glm::vec2 &src_size, Scene &scene);
 
         void applyObjectProperties(engine::object::GameObject &game_object,
+                                   const engine::component::TileInfo &tile_info,
                                    const std::optional<nlohmann::json> &tile_json,
                                    const glm::vec2 &src_size, Scene &scene);
 

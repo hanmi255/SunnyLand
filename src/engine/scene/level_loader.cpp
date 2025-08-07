@@ -160,7 +160,7 @@ namespace engine::scene {
         const auto texture_id = resolvePath(image_path, map_path_);
         const auto layer_name = getLayerName(layer_json);
 
-        // 获取图层属性（使用结构化绑定会更清晰，但为了兼容性使用传统方式）
+        // 获取图层属性
         const glm::vec2 offset(getJsonValue(layer_json, "offsetx", 0.0f),
                                getJsonValue(layer_json, "offsety", 0.0f));
 
@@ -286,7 +286,7 @@ namespace engine::scene {
         setupObjectCollision(*game_object, tile_info, tile_json, src_size, scene);
 
         // 应用对象属性
-        applyObjectProperties(*game_object, tile_json, src_size, scene);
+        applyObjectProperties(*game_object, tile_info, tile_json, src_size, scene);
 
         spdlog::debug("加载对象: '{}' 完成", object_name);
         return game_object;
@@ -307,8 +307,7 @@ namespace engine::scene {
         // 计算缩放比例
         const auto scale = dst_size / src_size;
 
-        return ObjectTransformData{
-            .position = position, .scale = scale, .rotation = rotation};
+        return ObjectTransformData{.position = position, .scale = scale, .rotation = rotation};
     }
 
     void LevelLoader::setupObjectCollision(engine::object::GameObject &game_object,
@@ -351,6 +350,7 @@ namespace engine::scene {
     }
 
     void LevelLoader::applyObjectProperties(engine::object::GameObject &game_object,
+                                            const engine::component::TileInfo &tile_info,
                                             const std::optional<nlohmann::json> &tile_json,
                                             const glm::vec2 &src_size, Scene &scene)
     {
@@ -362,6 +362,10 @@ namespace engine::scene {
         auto tag = getTileProperty<std::string>(tile_json.value(), "tag");
         if (tag) {
             game_object.setTag(tag.value());
+        }
+        // 如果是危险瓦片，且没有手动设置标签，则自动设置标签为 "hazard"
+        else if (tile_info.type == engine::component::TileType::HAZARD) {
+            game_object.setTag("hazard");
         }
 
         // 获取重力信息并设置
@@ -595,6 +599,10 @@ namespace engine::scene {
                         const auto is_unisolid = getJsonValue(property, "value", false);
                         return is_unisolid ? engine::component::TileType::UNISOLID
                                            : engine::component::TileType::NORMAL;
+                    } else if (property_name == "hazard") {
+                        const auto is_hazard = getJsonValue(property, "value", false);
+                        return is_hazard ? engine::component::TileType::HAZARD
+                                         : engine::component::TileType::NORMAL;
                     }
                     // TODO: 可以在这里添加更多的自定义属性处理逻辑
                 }

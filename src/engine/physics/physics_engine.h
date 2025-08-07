@@ -90,6 +90,8 @@ namespace engine::physics {
 
         std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>>
             collision_pairs_;      ///< @brief 物体碰撞对（每次 update 都会清空）
+        std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>>
+            tile_trigger_events_;  ///< @brief 瓦片图层触发事件（每次 update 都会清空）
         SpatialGrid spatial_grid_; ///< @brief 空间网格
 
     public:
@@ -118,6 +120,11 @@ namespace engine::physics {
         {
             return collision_pairs_;
         }
+        const std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>> &
+        getTileTriggerEvents() const
+        {
+            return tile_trigger_events_;
+        }
 
         // --- setters ---
         void setGravity(const glm::vec2 &gravity) { gravity_ = gravity; }
@@ -129,6 +136,11 @@ namespace engine::physics {
          * @brief 检查物体之间的碰撞
          */
         void checkObjectCollisions();
+
+        /**
+         * @brief 检查瓦片触发事件
+         */
+        void checkTileTriggers();
 
         /**
          * @brief 检查指定空间网格中的物体之间的碰撞
@@ -170,8 +182,7 @@ namespace engine::physics {
          */
         bool calculateTileDisplacement(engine::component::PhysicsComponent* pc,
                                        engine::component::TransformComponent*&tc,
-                                       engine::component::ColliderComponent*&cc,
-                                       float delta_time,
+                                       engine::component::ColliderComponent*&cc, float delta_time,
                                        TileCollisionContext &context) const;
 
         /**
