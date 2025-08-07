@@ -1,6 +1,6 @@
 #pragma once
 #include "../../engine/component/component.h"
-#include "state/player_state.h"
+#include "player_state/player_state.h"
 #include <memory>
 
 namespace engine::component {

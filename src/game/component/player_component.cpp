@@ -6,9 +6,9 @@
 #include "../../engine/component/transform_component.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/object/game_object.h"
-#include "state/dead_state.h"
-#include "state/hurt_state.h"
-#include "state/idle_state.h"
+#include "player_state/dead_state.h"
+#include "player_state/hurt_state.h"
+#include "player_state/idle_state.h"
 #include <spdlog/spdlog.h>
 #include <typeinfo>
 #include <utility>
