@@ -35,7 +35,7 @@ namespace game::component {
         engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
         engine::component::TransformComponent* transform_component_ = nullptr; ///< @brief 变换组件
 
-        std::unique_ptr<player_state::PlayerState> current_state_;                    ///< @brief 当前状态
+        std::unique_ptr<player_state::PlayerState> current_state_;             ///< @brief 当前状态
         bool is_dead_ = false;                                                 ///< @brief 是否死亡
 
         // --- 移动相关参数 ---
@@ -64,6 +64,7 @@ namespace game::component {
         {
             return animation_component_;
         }
+        engine::component::HealthComponent* getHealthComponent() const { return health_component_; }
         engine::component::PhysicsComponent* getPhysicsComponent() const
         {
             return physics_component_;

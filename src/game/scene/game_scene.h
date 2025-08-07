@@ -4,7 +4,6 @@
 #include <memory>
 #include <string_view>
 
-
 namespace engine::object {
     class GameObject;
 } // namespace engine::object
@@ -16,6 +15,35 @@ namespace game::scene {
      */
     class GameScene final : public engine::scene::Scene {
         engine::object::GameObject* player_ = nullptr;
+
+    private:
+        struct EnemyConfig {
+            static constexpr float EAGLE_FLIGHT_RANGE = 80.0f;
+            static constexpr float FROG_JUMP_RANGE = 90.0f;
+            static constexpr float FROG_OFFSET = 10.0f;
+            static constexpr float OPOSSUM_PATROL_RANGE = 200.0f;
+        };
+
+        struct EffectConfig {
+            std::string_view texture_path;
+            int frame_count;
+            float frame_width;
+            float frame_height;
+            float frame_duration;
+
+            constexpr EffectConfig(std::string_view path, int count, float w, float h,
+                                   float duration)
+                : texture_path(path)
+                , frame_count(count)
+                , frame_width(w)
+                , frame_height(h)
+                , frame_duration(duration)
+            {}
+
+            // 预定义的特效配置
+            static const EffectConfig ENEMY;
+            static const EffectConfig ITEM;
+        };
 
     public:
         GameScene(const std::string_view &name, engine::core::Context &context,

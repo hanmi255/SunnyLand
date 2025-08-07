@@ -13,12 +13,22 @@
 #include "../../engine/render/animation.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/scene/level_loader.h"
+#include "../component/ai_behavior/jump_behavior.h"
+#include "../component/ai_behavior/patrol_behavior.h"
+#include "../component/ai_behavior/updown_behavior.h"
+#include "../component/ai_component.h"
 #include "../component/player_component.h"
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
 
 namespace game::scene {
+    // 定义EffectConfig的静态成员
+    const GameScene::EffectConfig GameScene::EffectConfig::ENEMY{
+        "assets/textures/FX/enemy-deadth.png", 5, 40.0f, 41.0f, 0.1f};
+    const GameScene::EffectConfig GameScene::EffectConfig::ITEM{
+        "assets/textures/FX/item-feedback.png", 4, 32.0f, 32.0f, 0.1f};
+
     GameScene::GameScene(const std::string_view &name, engine::core::Context &context,
                          engine::scene::SceneManager &scene_manager)
         : Scene(name, context, scene_manager)
@@ -122,14 +132,14 @@ namespace game::scene {
         }
 
         // 添加PlayerComponent到玩家对象
-        auto* player_component = player_->addComponent<game::component::PlayerComponent>();
+        auto player_component = player_->addComponent<game::component::PlayerComponent>();
         if (!player_component) {
             spdlog::error("无法添加 PlayerComponent 到玩家对象");
             return false;
         }
 
         // 相机跟随玩家
-        auto* player_transform = player_->getComponent<engine::component::TransformComponent>();
+        auto player_transform = player_->getComponent<engine::component::TransformComponent>();
         if (!player_transform) {
             spdlog::error("玩家对象没有 TransformComponent 组件, 无法设置相机目标");
             return false;
@@ -141,38 +151,58 @@ namespace game::scene {
 
     bool GameScene::initEnemyAndItem()
     {
-        // 定义敌人类型到动画名称的映射
-        static const std::unordered_map<std::string_view, std::string_view> enemy_animations = {
-            {"eagle", "fly"}, {"frog", "idle"}, {"opossum", "walk"}};
-
         bool success = true;
-        for (auto &game_object : game_objects_) {
-            // 检查是否为敌人类型
-            const auto enemy_it = enemy_animations.find(game_object->getName());
-            if (enemy_it != enemy_animations.end()) {
-                if (auto ac = game_object->getComponent<engine::component::AnimationComponent>();
-                    ac) {
-                    ac->playAnimation(std::string(enemy_it->second));
-                } else {
-                    spdlog::error("{}对象缺少 AnimationComponent，无法播放动画。",
-                                  game_object->getName());
+
+        for (const auto &obj : game_objects_) {
+            const auto &name = obj->getName();
+
+            // 初始化敌人AI
+            if (name == "eagle" || name == "frog" || name == "opossum") {
+                auto ai = obj->addComponent<game::component::AIComponent>();
+                auto transform = obj->getComponent<engine::component::TransformComponent>();
+
+                if (!ai || !transform) {
+                    spdlog::error("{}缺少必要组件", name);
                     success = false;
+                    continue;
+                }
+
+                const auto pos = transform->getPosition();
+
+                if (name == "eagle") {
+                    float y_max = pos.y;
+                    float y_min = y_max - EnemyConfig::EAGLE_FLIGHT_RANGE;
+                    ai->setBehavior(std::make_unique<game::component::ai_behavior::UpDownBehavior>(
+                        y_min, y_max));
+
+                } else if (name == "frog") {
+                    float x_max = pos.x - EnemyConfig::FROG_OFFSET;
+                    float x_min = x_max - EnemyConfig::FROG_JUMP_RANGE;
+                    ai->setBehavior(
+                        std::make_unique<game::component::ai_behavior::JumpBehavior>(x_min, x_max));
+
+                } else if (name == "opossum") {
+                    float x_max = pos.x;
+                    float x_min = x_max - EnemyConfig::OPOSSUM_PATROL_RANGE;
+                    ai->setBehavior(std::make_unique<game::component::ai_behavior::PatrolBehavior>(
+                        x_min, x_max));
                 }
             }
-            // 检查是否为道具
-            else if (game_object->getTag() == "item") {
-                if (auto ac = game_object->getComponent<engine::component::AnimationComponent>();
-                    ac) {
-                    ac->playAnimation("idle");
+
+            // 初始化道具动画
+            if (obj->getTag() == "item") {
+                auto anim = obj->getComponent<engine::component::AnimationComponent>();
+                if (anim) {
+                    anim->playAnimation("idle");
                 } else {
-                    spdlog::error("Item对象缺少 AnimationComponent，无法播放动画。");
+                    spdlog::error("Item对象'{}'缺少AnimationComponent", obj->getName());
                     success = false;
                 }
             }
         }
+
         return success;
     }
-
     void GameScene::handleObjectCollisions()
     {
         // 从物理引擎中获取碰撞对
@@ -209,14 +239,15 @@ namespace game::scene {
     void GameScene::handleTileTriggers()
     {
         const auto &tile_trigger_events = context_.getPhysicsEngine().getTileTriggerEvents();
-        for (const auto &event : tile_trigger_events) {
-            auto obj = event.first;
-            auto tile_type = event.second;
+        for (const auto &[obj, tile_type] : tile_trigger_events) {
             if (tile_type == engine::component::TileType::HAZARD) {
                 // 玩家碰到到危险瓦片，受伤
                 if (obj->getName() == "player") {
-                    obj->getComponent<game::component::PlayerComponent>()->takeDamage(1);
-                    spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->getName());
+                    if (auto* player_component =
+                            obj->getComponent<game::component::PlayerComponent>()) {
+                        player_component->takeDamage(1);
+                        spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->getName());
+                    }
                 }
                 // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
             }
@@ -226,39 +257,74 @@ namespace game::scene {
     void GameScene::PlayerVSEnemyCollision(engine::object::GameObject* player,
                                            engine::object::GameObject* enemy)
     {
+        // 空指针检查
+        if (!player || !enemy) {
+            spdlog::error("PlayerVSEnemyCollision: player或enemy为nullptr");
+            return;
+        }
+
+        // 获取碰撞组件
+        auto player_collider = player->getComponent<engine::component::ColliderComponent>();
+        auto enemy_collider = enemy->getComponent<engine::component::ColliderComponent>();
+
+        if (!player_collider) {
+            spdlog::error("玩家 {} 没有 ColliderComponent 组件", player->getName());
+            return;
+        }
+
+        if (!enemy_collider) {
+            spdlog::error("敌人 {} 没有 ColliderComponent 组件", enemy->getName());
+            return;
+        }
+
         // --- 踩踏判断逻辑：1. 玩家中心点在敌人上方    2. 重叠区域：overlap.x > overlap.y ---
-        auto player_aabb =
-            player->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
-        auto enemy_aabb =
-            enemy->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
-        auto player_center = player_aabb.position + player_aabb.size / 2.0f;
-        auto enemy_center = enemy_aabb.position + enemy_aabb.size / 2.0f;
-        auto overlap = glm::vec2(player_aabb.size / 2.0f + enemy_aabb.size / 2.0f) -
-                       glm::abs(player_center - enemy_center);
+        const auto player_aabb = player_collider->getWorldAABB();
+        const auto enemy_aabb = enemy_collider->getWorldAABB();
+
+        const auto player_center = player_aabb.position + player_aabb.size / 2.0f;
+        const auto enemy_center = enemy_aabb.position + enemy_aabb.size / 2.0f;
+
+        const auto overlap = glm::vec2(player_aabb.size / 2.0f + enemy_aabb.size / 2.0f) -
+                             glm::abs(player_center - enemy_center);
 
         // 踩踏判断成功，敌人受伤
         if (overlap.x > overlap.y && player_center.y < enemy_center.y) {
             spdlog::info("玩家 {} 踩踏了敌人 {}", player->getName(), enemy->getName());
+
             auto enemy_health = enemy->getComponent<engine::component::HealthComponent>();
             if (!enemy_health) {
                 spdlog::error("敌人 {} 没有 HealthComponent 组件，无法处理踩踏伤害",
                               enemy->getName());
                 return;
             }
+
             enemy_health->takeDamage(1); // 造成1点伤害
+
             if (!enemy_health->isAlive()) {
                 spdlog::info("敌人 {} 被踩踏后死亡", enemy->getName());
                 enemy->setNeedRemove(true);                  // 标记敌人为待删除状态
                 createEffect(enemy_center, enemy->getTag()); // 创建（死亡）特效
             }
+
             // 玩家跳起效果
-            player->getComponent<engine::component::PhysicsComponent>()->velocity_.y =
-                -300.0f; // 向上跳起
+            auto player_physics = player->getComponent<engine::component::PhysicsComponent>();
+            if (player_physics) {
+                player_physics->velocity_.y = -300.0f; // 向上跳起
+            } else {
+                spdlog::warn("玩家 {} 没有 PhysicsComponent 组件，无法执行跳起效果",
+                             player->getName());
+            }
         }
         // 踩踏判断失败，玩家受伤
         else {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->getName(), player->getName());
-            player->getComponent<game::component::PlayerComponent>()->takeDamage(1);
+
+            auto player_component = player->getComponent<game::component::PlayerComponent>();
+            if (player_component) {
+                player_component->takeDamage(1);
+            } else {
+                spdlog::error("玩家 {} 没有 PlayerComponent 组件，无法处理受伤", player->getName());
+            }
             // TODO: 其他受伤逻辑
         }
     }
@@ -278,40 +344,42 @@ namespace game::scene {
 
     void GameScene::createEffect(const glm::vec2 &center_pos, const std::string_view &tag)
     {
-        // --- 创建游戏对象和变换组件 ---
-        auto effect_obj =
-            std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
-        effect_obj->addComponent<engine::component::TransformComponent>(center_pos);
-
-        // --- 根据标签创建不同的精灵组件和动画---
-        auto animation = std::make_unique<engine::render::Animation>("effect", false);
+        // 根据标签获取配置
+        const EffectConfig* config = nullptr;
         if (tag == "enemy") {
-            effect_obj->addComponent<engine::component::SpriteComponent>(
-                "assets/textures/FX/enemy-deadth.png", context_.getResourceManager(),
-                engine::utils::Alignment::CENTER);
-            for (auto i = 0; i < 5; ++i) {
-                animation->addFrame({static_cast<float>(i * 40), 0.0f, 40.0f, 41.0f}, 0.1f);
-            }
+            config = &EffectConfig::ENEMY;
         } else if (tag == "item") {
-            effect_obj->addComponent<engine::component::SpriteComponent>(
-                "assets/textures/FX/item-feedback.png", context_.getResourceManager(),
-                engine::utils::Alignment::CENTER);
-            for (auto i = 0; i < 4; ++i) {
-                animation->addFrame({static_cast<float>(i * 32), 0.0f, 32.0f, 32.0f}, 0.1f);
-            }
+            config = &EffectConfig::ITEM;
         } else {
             spdlog::warn("未知特效类型: {}", tag);
             return;
         }
 
+        // 创建游戏对象
+        auto effect_obj =
+            std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
+        effect_obj->addComponent<engine::component::TransformComponent>(center_pos);
+
+        // 添加精灵组件
+        effect_obj->addComponent<engine::component::SpriteComponent>(
+            std::string(config->texture_path), context_.getResourceManager(),
+            engine::utils::Alignment::CENTER);
+
+        // 创建动画
+        auto animation = std::make_unique<engine::render::Animation>("effect", false);
+        for (int i = 0; i < config->frame_count; ++i) {
+            animation->addFrame({static_cast<float>(i) * config->frame_width, 0.0f,
+                                 config->frame_width, config->frame_height},
+                                config->frame_duration);
+        }
+
         // --- 根据创建的动画，添加动画组件，并设置为单次播放 ---
-        auto animation_component =
+        auto* animation_component =
             effect_obj->addComponent<engine::component::AnimationComponent>();
         animation_component->addAnimation(std::move(animation));
         animation_component->setOneShotRemoval(true);
         animation_component->playAnimation("effect");
         safelyAddGameObject(std::move(effect_obj));
         spdlog::debug("创建特效: {}", tag);
-    }
-
+    };
 } // namespace game::scene
