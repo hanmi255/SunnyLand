@@ -10,7 +10,6 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <memory>      // 用于 std::shared_ptr
-#include <string>      // 用于 std::string
 #include <string_view> // 用于 std::string_view
 
 // 前向声明 SDL 类型

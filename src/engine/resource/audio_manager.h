@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL3_mixer/SDL_mixer.h> // SDL_mixer 主头文件
 #include <memory>                 // 用于 std::unique_ptr
-#include <stdexcept>              // 用于 std::runtime_error
 #include <string>                 // 用于 std::string
 #include <string_view>            // 用于 std::string_view
 #include <unordered_map>          // 用于 std::unordered_map

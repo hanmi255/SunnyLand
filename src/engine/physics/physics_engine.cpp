@@ -356,7 +356,6 @@ namespace engine::physics {
 
         glm::vec2 new_position = world_aabb.position;
         bool position_changed = false;
-        bool velocity_changed = false;
 
         // 预计算边界值以提高性能
         const float bounds_left = world_bounds_->position.x;
@@ -369,7 +368,6 @@ namespace engine::physics {
             position_changed = true;
             if (pc->velocity_.x < 0.0f) {
                 pc->velocity_.x = 0.0f;
-                velocity_changed = true;
             }
         }
 
@@ -379,7 +377,6 @@ namespace engine::physics {
             position_changed = true;
             if (pc->velocity_.x > 0.0f) {
                 pc->velocity_.x = 0.0f;
-                velocity_changed = true;
             }
         }
 
@@ -389,7 +386,6 @@ namespace engine::physics {
             position_changed = true;
             if (pc->velocity_.y < 0.0f) {
                 pc->velocity_.y = 0.0f;
-                velocity_changed = true;
             }
         }
 

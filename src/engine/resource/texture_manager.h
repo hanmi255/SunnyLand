@@ -11,7 +11,6 @@
 #include <SDL3/SDL_render.h> // 用于 SDL_Texture 和 SDL_Renderer
 #include <glm/glm.hpp>
 #include <memory>            // 用于 std::shared_ptr
-#include <stdexcept>         // 用于 std::runtime_error
 #include <string>            // 用于 std::string
 #include <string_view>       // 用于 std::string_view
 #include <unordered_map>     // 用于 std::unordered_map

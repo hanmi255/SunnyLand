@@ -2,7 +2,6 @@
 #include "../../../engine/component/animation_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/transform_component.h"
-#include "../../../engine/object/game_object.h"
 #include "../ai_component.h"
 #include <spdlog/spdlog.h>
 

@@ -181,7 +181,7 @@ namespace engine::object {
 
     private:
         // 辅助函数：获取类型索引（避免重复代码）
-        template <typename T> static constexpr std::type_index getTypeIndex()
+        template <typename T> static std::type_index getTypeIndex()
         {
             return std::type_index(typeid(T));
         }

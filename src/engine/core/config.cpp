@@ -63,32 +63,32 @@ namespace engine::core {
         return window_title_;
     }
 
-    const int Config::getWindowWidth() const
+    int Config::getWindowWidth() const
     {
         return window_width_;
     }
 
-    const int Config::getWindowHeight() const
+    int Config::getWindowHeight() const
     {
         return window_height_;
     }
 
-    const bool Config::isVSyncEnabled() const
+    bool Config::isVSyncEnabled() const
     {
         return vsync_enabled_;
     }
 
-    const int Config::getTargetFps() const
+    int Config::getTargetFps() const
     {
         return target_fps_;
     }
 
-    const float Config::getMusicVolume() const
+    float Config::getMusicVolume() const
     {
         return music_volume_;
     }
 
-    const float Config::getSoundVolume() const
+    float Config::getSoundVolume() const
     {
         return sound_volume_;
     }

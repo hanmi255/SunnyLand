@@ -2,7 +2,6 @@
 #include <SDL3_ttf/SDL_ttf.h> // SDL_ttf 主头文件
 #include <functional>         // 用于 std::hash
 #include <memory>             // 用于 std::unique_ptr
-#include <stdexcept>          // 用于 std::runtime_error
 #include <string>             // 用于 std::string
 #include <string_view>        // 用于 std::string_view
 #include <unordered_map>      // 用于 std::unordered_map

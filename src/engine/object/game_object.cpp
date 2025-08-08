@@ -1,7 +1,4 @@
 #include "game_object.h"
-#include "../input/input_manager.h"
-#include "../render/camera.h"
-#include "../render/renderer.h"
 #include <spdlog/spdlog.h>
 
 namespace engine::object {

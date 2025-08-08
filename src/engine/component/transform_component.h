@@ -22,10 +22,11 @@ namespace engine::component {
          * @param scale 缩放
          * @param rotation 旋转
          */
-        TransformComponent(glm::vec2 position = {0.0f, 0.0f},
-                           glm::vec2 scale = {1.0f, 1.0f},
+        TransformComponent(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 scale = {1.0f, 1.0f},
                            float rotation = 0.0f)
-            : position_(position), scale_(scale), rotation_(rotation){}
+            : position_(position), scale_(scale), rotation_(rotation)
+        {
+        }
 
         // 禁止拷贝和移动语义
         TransformComponent(const TransformComponent &) = delete;
@@ -36,7 +37,7 @@ namespace engine::component {
         // --- getters ---
         const glm::vec2 &getPosition() const { return position_; }
         const glm::vec2 &getScale() const { return scale_; }
-        const float getRotation() const { return rotation_; }
+        float getRotation() const { return rotation_; }
 
         // --- setters ---
         void setPosition(const glm::vec2 &position) { position_ = position; }

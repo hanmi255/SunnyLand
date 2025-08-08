@@ -1,7 +1,6 @@
 #pragma once
 #include "../../engine/scene/scene.h"
 #include <glm/vec2.hpp>
-#include <memory>
 #include <string_view>
 
 namespace engine::object {
@@ -38,7 +37,8 @@ namespace game::scene {
                 , frame_width(w)
                 , frame_height(h)
                 , frame_duration(duration)
-            {}
+            {
+            }
 
             // 预定义的特效配置
             static const EffectConfig ENEMY;

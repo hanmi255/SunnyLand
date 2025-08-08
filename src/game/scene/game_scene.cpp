@@ -20,7 +20,6 @@
 #include "../component/player_component.h"
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
-#include <unordered_map>
 
 namespace game::scene {
     // 定义EffectConfig的静态成员

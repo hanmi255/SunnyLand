@@ -36,12 +36,12 @@ namespace engine::core {
 
         // --- getters ---
         const std::string &getWindowTitle() const;
-        const int getWindowWidth() const;
-        const int getWindowHeight() const;
-        const bool isVSyncEnabled() const;
-        const int getTargetFps() const;
-        const float getMusicVolume() const;
-        const float getSoundVolume() const;
+        int getWindowWidth() const;
+        int getWindowHeight() const;
+        bool isVSyncEnabled() const;
+        int getTargetFps() const;
+        float getMusicVolume() const;
+        float getSoundVolume() const;
         const std::unordered_map<std::string, std::vector<std::string>> &getInputMappings() const;
 
     private:

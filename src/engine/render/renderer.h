@@ -11,7 +11,6 @@
 #include "../utils/math.h"
 #include "sprite.h"
 #include <optional> // 用于 std::optional
-#include <string>
 
 struct SDL_Renderer;
 struct SDL_FRect;

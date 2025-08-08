@@ -72,7 +72,7 @@ namespace engine::component {
 
         // --- getters ---
         const engine::render::Sprite &getSprite() const { return sprite_; }
-        const std::string_view &getTextureId() const { return sprite_.getTextureId(); }
+        std::string_view getTextureId() const { return sprite_.getTextureId(); }
         bool isFlipped() const { return sprite_.isFlipped(); }
         bool isVisible() const { return is_visible_; }
         const glm::vec2 &getSpriteSize() const { return sprite_size_; }

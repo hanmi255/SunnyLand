@@ -4,13 +4,11 @@
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/sprite_component.h"
 #include "../../engine/component/transform_component.h"
-#include "../../engine/input/input_manager.h"
 #include "../../engine/object/game_object.h"
 #include "player_state/dead_state.h"
 #include "player_state/hurt_state.h"
 #include "player_state/idle_state.h"
 #include <spdlog/spdlog.h>
-#include <typeinfo>
 #include <utility>
 
 namespace game::component {
@@ -55,8 +53,8 @@ namespace game::component {
             current_state_->exit();
         }
 
+        spdlog::debug("玩家组件正在切换到状态: {}", typeid(*new_state).name());
         current_state_ = std::move(new_state);
-        spdlog::debug("玩家组件正在切换到状态: {}", typeid(*current_state_).name());
         current_state_->enter();
     }
 

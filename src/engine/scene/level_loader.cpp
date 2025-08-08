@@ -11,12 +11,10 @@
 #include "../object/game_object.h"
 #include "../render/animation.h"
 #include "../render/sprite.h"
-#include "../resource/resource_manager.h"
 #include "../scene/scene.h"
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <ranges> // 用于 std::views::transform
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
@@ -195,8 +193,9 @@ namespace engine::scene {
         tiles.reserve(total_tiles);
 
         // 批量处理瓦片数据
-        std::transform(data.begin(), data.end(), std::back_inserter(tiles),
-                       [this](const auto &gid) { return getTileInfoByGid(gid.get<int>()); });
+        std::transform(
+            data.begin(), data.end(), std::back_inserter(tiles),
+            [this](const auto &gid) { return getTileInfoByGid(gid.template get<int>()); });
 
         // 创建游戏对象
         auto game_object = std::make_unique<engine::object::GameObject>(layer_name);
@@ -449,7 +448,7 @@ namespace engine::scene {
             // 遍历数组并进行添加帧信息到animation对象
             std::for_each(frames_array.begin(), frames_array.end(),
                           [&animation, &sprite_size, row, duration](const auto &frame) {
-                              auto column = frame.get<int>();
+                              auto column = frame.template get<int>();
                               // 计算源矩形
                               SDL_FRect src_rect = {column * sprite_size.x, row * sprite_size.y,
                                                     sprite_size.x, sprite_size.y};

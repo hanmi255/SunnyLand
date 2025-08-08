@@ -6,7 +6,6 @@
 #include "../resource/resource_manager.h"
 #include "transform_component.h"
 #include <spdlog/spdlog.h>
-#include <stdexcept> // 用于 std::runtime_error
 
 namespace engine::component {
     SpriteComponent::SpriteComponent(const std::string &texture_id,

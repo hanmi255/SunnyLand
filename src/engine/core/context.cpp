@@ -14,8 +14,8 @@ namespace engine::core {
                      engine::resource::ResourceManager &resource_manager,
                      engine::physics::PhysicsEngine &physics_engine)
         : input_manager_(input_manager)
-        , renderer_(renderer)
         , camera_(camera)
+        , renderer_(renderer)
         , resource_manager_(resource_manager)
         , physics_engine_(physics_engine)
     {
