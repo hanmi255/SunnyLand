@@ -1,37 +1,51 @@
 # Tiled地图解析思路
-- 获取tilesets数组并载入图块集的数据
 
-- 获取layers数组并遍历对象
-  - 如果 type : imagelayer，载入单一图片
-    - 关注"parallax","repeat","offset"字段
-    - 创建包含 ParallaxComponent 的游戏对象
-    
-  - 如果 type : tilelayer，载入瓦片层
-    - 总共有“地图大小”个瓦片，放入容器vector中
-    - 每个瓦片包含数据：Sprite，Type(例如solid类型)
-    - 可能引用多个图块集，因此可先*载入并保存每个图块集的数据*（载入函数），其它瓦片层(以及对象层)也能继续引用
-    - 通过data数组中的gid查找所需信息（查找函数，能获取自定义属性），填充瓦片vector
-    - 创建包含 TileLayerComponent 的游戏对象(持有瓦片vector)
-    
-  - 如果 type : objectgroup 载入对象层
-    - 对象数据在"objects"字段中，每个对象都创建一个游戏对象
-    - 关注的要点：gid查找**源图片信息**，layer数据中确认目标位置（TransformComponent）信息
-      - 源图片信息：如果是"solid"类型，则 为静止障碍物，碰撞盒大小为整个图片大小
-      - 源图片信息：如果非"solid"类型，则 
-        - 碰撞盒大小、偏移: 获取 "objectgroup" --> 获取 "objects" --> "x","y","width","height"
-        - 获取其他指定自定义属性（模版函数），进行必要设置/组件添加。（例如tag、gravity）
-      - 源图片信息：如果有"animation"字段（自定义），则载入动画信息并创建动画组件
-        - 必要讯息（自定义）：动画名称、每一帧的源矩形、帧持续时间。
-    - 如果没有gid，则代表自己绘制的形状（可能是碰撞盒、触发器等，未来按需处理）
+## 整体流程
 
-- 自定义属性的获取方法：图块集中 获取 "tiles" --> 获取 "properties"
+- 清理之前状态并设置当前地图路径
+- 加载并解析JSON文件
+- 解析基本地图信息（尺寸、瓦片大小等）
+- 验证地图数据有效性
+- 加载所有tileset数据
+- 加载所有图层（imagelayer、tilelayer、objectgroup）
 
-- **对象层物体特别注意:** 信息分散在两个区块中：
-  - 地图tmj中：           绘制区域、名字 (及针对当前地图添加的自定义属性)
-  - gid对应的图块集tsj中:  源图片信息    (画在任何地图上都会有的属性)
+## 图块集加载
 
+- 从主地图文件中获取tilesets数组
+- 遍历每个tileset，通过source字段加载外部tileset文件
+- 保存firstgid和tileset数据的映射关系供后续gid查找使用
 
-# 地图自定义属性约定
+## 图层加载
+
+### 图像图层 (imagelayer)
+
+- 获取图像路径、偏移量、视差因子、重复属性等字段
+- 创建包含ParallaxComponent的游戏对象
+
+### 瓦片图层 (tilelayer)
+
+- 获取data数组中的gid数据
+- 为每个gid查找对应的TileInfo（包含Sprite和TileType）
+- 创建包含TileLayerComponent的游戏对象
+
+### 对象图层 (objectgroup)
+
+- 遍历objects数组中的每个对象
+- 对于有gid的对象，创建游戏对象并设置相应组件
+- 对于无gid的对象，当前版本仅记录日志（未来处理自定义形状）
+
+## 对象创建流程
+
+对于对象图层中的对象：
+
+- 通过gid获取TileInfo（包含sprite和tile type）
+- 解析对象变换信息（位置、缩放、旋转）
+- 创建游戏对象并添加TransformComponent和SpriteComponent
+- 设置碰撞组件（基于tile type或自定义碰撞体）
+- 应用对象属性（标签、重力、动画、生命值等）
+
+## 地图自定义属性约定
+
 - 限瓦片层
   - unisolid (bool) : 单向平台
   - ladder (bool) : 梯子
@@ -42,29 +56,53 @@
   - gravity (bool) : 是否使用重力（有此字段则默认添加 PhysicsComponent）
   - health (int) : 添加生命组件，生命值为 value
   - animation (json_string) : 添加动画组件，json格式为:
+
     ```json
     {
       "name1" : {"duration" : int, "row" : int, "frames": array(int)},
       "name2" : ...
     } 
     ```
-    含义为: 
+
+    含义为:
+
     ```json
     { "动画名" : {"帧持续时间" : ms, "行" : (从0开始数), "帧序列（列）": [0,1,2...]} }
     ```
+
     要求每个动画序列帧必须在同一行。
   - sound (json_string) : 添加音频组件，json格式为:
+
     ```json
     {
       "id1" : "file_path1",
       "id2" : ...
     } 
     ```
-  - 图块碰撞编辑器：识别为碰撞盒，限一个图形，只支持矩形和圆形
-  - 自定义形状：默认为触发器，两种主要功能
-    - 1. 进入下一关：tag : next_level，名称(Tiled自带字段)为下一关地图名字，例如 level2
-    - 2. 游戏胜利：tag: win
 
 - 两层皆可
   - solid (bool) : 静止不可进入的图块/物体
   - hazard (bool) : 对玩家造成伤害的瓦片
+
+## 自定义属性处理
+
+支持的自定义属性：
+
+- tag: 对象标签
+- gravity: 是否使用重力
+- health: 生命值
+- animation: 动画信息（JSON格式）
+- solid: 静止不可进入的图块/物体
+- hazard: 对玩家造成伤害的瓦片
+- unisolid: 单向平台
+- ladder: 梯子
+- slope: 斜坡图块
+
+## 瓦片类型识别
+
+- SOLID: 固体类型，不可穿越
+- HAZARD: 危险类型，会对玩家造成伤害
+- UNISOLID: 单向平台
+- LADDER: 梯子
+- SLOPE_X_Y: 各种斜坡类型
+- NORMAL: 普通类型
