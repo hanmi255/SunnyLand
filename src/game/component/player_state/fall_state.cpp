@@ -4,6 +4,7 @@
 #include "../../../engine/core/context.h"
 #include "../../../engine/input/input_manager.h"
 #include "../player_component.h"
+#include "climb_state.h"
 #include "idle_state.h"
 #include "walk_state.h"
 #include <glm/common.hpp>
@@ -22,6 +23,13 @@ namespace game::component::player_state {
         auto input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
+
+        // 接触梯子并且按移动键
+        if (physics_component->hasCollidedLadder() &&
+            (input_manager.isActionHeldDown("move_up") ||
+             input_manager.isActionHeldDown("move_down"))) {
+            return std::make_unique<ClimbState>(player_component_);
+        }
 
         // 下落状态下可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {

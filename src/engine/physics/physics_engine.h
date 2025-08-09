@@ -224,6 +224,11 @@ namespace engine::physics {
         bool isGroundTile(engine::component::TileType tile_type) const;
 
         /**
+         * @brief 检查瓦片类型是否为梯子瓦片
+         */
+        bool isLadderTile(engine::component::TileType tile_type) const;
+
+        /**
          * @brief 根据瓦片类型和指定宽度的 x 坐标，计算瓦片上对应的 y 坐标
          */
         float getTileHeightAtWidth(float width, engine::component::TileType tile_type,
@@ -249,6 +254,13 @@ namespace engine::physics {
          * @brief 处理Y轴地面碰撞
          */
         void handleGroundCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                    engine::component::PhysicsComponent* pc,
+                                    TileCollisionContext &context) const;
+
+        /**
+         * @brief 处理Y轴梯子碰撞
+         */
+        void handleLadderCollisionY(int tile_y, const glm::vec2 &tile_size,
                                     engine::component::PhysicsComponent* pc,
                                     TileCollisionContext &context) const;
 

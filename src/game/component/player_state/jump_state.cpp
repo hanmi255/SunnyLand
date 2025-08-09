@@ -4,6 +4,7 @@
 #include "../../../engine/core/context.h"
 #include "../../../engine/input/input_manager.h"
 #include "../player_component.h"
+#include "climb_state.h"
 #include "fall_state.h"
 #include <glm/common.hpp>
 #include <spdlog/spdlog.h>
@@ -27,6 +28,13 @@ namespace game::component::player_state {
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
 
+        // 接触梯子并且按移动键
+        if (physics_component->hasCollidedLadder() &&
+            (input_manager.isActionHeldDown("move_up") ||
+             input_manager.isActionHeldDown("move_down"))) {
+            return std::make_unique<ClimbState>(player_component_);
+        }
+
         // 跳跃状态下可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {
             if (physics_component->velocity_.x > 0.0f) physics_component->velocity_.x = 0.0f;
@@ -49,7 +57,7 @@ namespace game::component::player_state {
             glm::clamp(physics_component->velocity_.x, -max_speed, max_speed);
 
         // 如果速度为正，切换到 FallState
-        if (physics_component->velocity_.y > 0.0f) {
+        if (physics_component->velocity_.y >= 0.0f) {
             return std::make_unique<FallState>(player_component_);
         }
 

@@ -41,8 +41,9 @@ namespace game::component {
         // --- 移动相关参数 ---
         float move_force_ = 200.0f;     ///< @brief 水平移动力
         float max_speed_ = 120.0f;      ///< @brief 最大移动速度 (像素/秒)
+        float climb_speed_ = 120.0f;    ///< @brief 爬梯子速度 (像素/秒)
         float friction_factor_ = 0.85f; ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
-        float jump_velocity_ = 350.0f;     ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
+        float jump_velocity_ = 350.0f;  ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
 
         // --- 状态相关参数 ---
         float stunned_duration_ = 0.4f; ///< @brief 击退硬直效果持续时间
@@ -78,6 +79,7 @@ namespace game::component {
         bool isDead() const { return is_dead_; }
         float getMoveForce() const { return move_force_; }
         float getMaxSpeed() const { return max_speed_; }
+        float getClimbSpeed() const { return climb_speed_; }
         float getFrictionFactor() const { return friction_factor_; }
         float getJumpVelocity() const { return jump_velocity_; }
         float getStunnedDuration() const { return stunned_duration_; }
@@ -86,6 +88,7 @@ namespace game::component {
         void setIsDead(bool is_dead) { is_dead_ = is_dead; }
         void setMoveForce(float move_force) { move_force_ = move_force; }
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
+        void setClimbSpeed(float climb_speed) { climb_speed_ = climb_speed; }
         void setFrictionFactor(float friction_factor) { friction_factor_ = friction_factor; }
         void setJumpVelocity(float jump_force) { jump_velocity_ = jump_force; }
         void setStunnedDuration(float duration) { stunned_duration_ = duration; }

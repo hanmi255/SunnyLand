@@ -212,7 +212,14 @@ namespace engine::physics {
                 for (int x = start_x; x < end_x; ++x) {
                     for (int y = start_y; y < end_y; ++y) {
                         auto tile_type = layer->getTileTypeAt({x, y});
-                        // 未来可以添加更多触发器类型的瓦片，目前只有 HAZARD 类型
+
+                        // 梯子类型不加入事件，物理引擎自己处理
+                        if (tile_type == engine::component::TileType::LADDER) {
+                            pc->setCollidedLadder(true);
+                            continue;
+                        }
+
+                        // 未来可以添加更多触发器类型的瓦片，目前只对 HAZARD 触发事件
                         if (tile_type == engine::component::TileType::HAZARD) {
                             // 检查是否已经触发过该对象和瓦片类型的组合
                             auto trigger_pair = std::make_pair(obj, tile_type);
@@ -483,7 +490,7 @@ namespace engine::physics {
                                              engine::component::PhysicsComponent* pc,
                                              TileCollisionContext &context) const
     {
-        // 早期退出：如果没有Y方向位移，直接返回
+        // 早返回：无Y位移
         if (std::abs(context.displacement.y) < std::numeric_limits<float>::epsilon()) {
             return;
         }
@@ -492,9 +499,9 @@ namespace engine::physics {
         const auto tile_size = glm::vec2(layer->getTileSize());
         const auto inv_tile_size = 1.0f / tile_size; // 预计算倒数，避免重复除法
 
-        // 确定检测方向和相关参数
+        // 方向与测试位置
         const bool moving_down = context.displacement.y > 0.0f;
-        const float test_y = moving_down ? context.new_position.y + context.world_aabb_size.y
+        const float test_y = moving_down ? (context.new_position.y + context.world_aabb_size.y)
                                          : context.new_position.y;
 
         // 计算瓦片坐标
@@ -509,22 +516,34 @@ namespace engine::physics {
         const auto tile_type_left = layer->getTileTypeAt({tile_x_left, tile_y});
         const auto tile_type_right = layer->getTileTypeAt({tile_x_right, tile_y});
 
-        if (moving_down) {
-            // 向下移动：检查地面和单向平台碰撞
-            if (isGroundTile(tile_type_left) || isGroundTile(tile_type_right)) {
-                handleGroundCollisionY(tile_y, tile_size, pc, context);
-                return;
-            }
-
-            // 检查斜坡瓦片碰撞
-            handleSlopeCollisionY(tile_x_left, tile_x_right, tile_y, tile_type_left,
-                                  tile_type_right, tile_size, pc, context);
-        } else {
-            // 向上移动：只检查固体瓦片（天花板）碰撞
+        // 向上移动：仅检查天花板
+        if (!moving_down) {
             if (isSolidTile(tile_type_left) || isSolidTile(tile_type_right)) {
                 handleCeilingCollisionY(tile_y, tile_size, pc, context);
             }
+            return;
         }
+
+        // 向下移动：先检查地面
+        if (isGroundTile(tile_type_left) || isGroundTile(tile_type_right)) {
+            handleGroundCollisionY(tile_y, tile_size, pc, context);
+            return;
+        }
+
+        // 向下移动：再检查梯子
+        if (isLadderTile(tile_type_left) && isLadderTile(tile_type_right)) {
+            const auto tile_type_up_left = layer->getTileTypeAt({tile_x_left, tile_y - 1});
+            const auto tile_type_up_right = layer->getTileTypeAt({tile_x_right, tile_y - 1});
+            // 如果上方不是梯子，说明刚进入或即将离开梯子，需要处理一次
+            if (!isLadderTile(tile_type_up_left) && !isLadderTile(tile_type_up_right)) {
+                handleLadderCollisionY(tile_y, tile_size, pc, context);
+            }
+            return;
+        }
+
+        // 其它情况：检查斜坡
+        handleSlopeCollisionY(tile_x_left, tile_x_right, tile_y, tile_type_left, tile_type_right,
+                              tile_size, pc, context);
     }
 
     void PhysicsEngine::applyTileCollisionResults(engine::component::TransformComponent* tc,
@@ -560,6 +579,11 @@ namespace engine::physics {
     {
         return tile_type == engine::component::TileType::SOLID ||
                tile_type == engine::component::TileType::UNISOLID;
+    }
+
+    bool PhysicsEngine::isLadderTile(engine::component::TileType tile_type) const
+    {
+        return tile_type == engine::component::TileType::LADDER;
     }
 
     float PhysicsEngine::getTileHeightAtWidth(float width, engine::component::TileType tile_type,
@@ -639,6 +663,24 @@ namespace engine::physics {
         context.new_position.y = static_cast<float>(tile_y) * tile_size.y -
                                  context.world_aabb_size.y;
         pc->velocity_.y = 0.0f;
+        pc->setCollidedBelow(true);
+        context.has_y_collision = true;
+    }
+
+    void PhysicsEngine::handleLadderCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                               engine::component::PhysicsComponent* pc,
+                                               TileCollisionContext &context) const
+    {
+        // 没有重力，表明处于攀爬状态，不处理
+        if (!pc->isUseGravity()) {
+            return;
+        }
+
+        // 到达梯子顶部！速度归零，y方向移动到贴着梯子的位置
+        context.new_position.y = static_cast<float>(tile_y) * tile_size.y -
+                                 context.world_aabb_size.y;
+        pc->velocity_.y = 0.0f;
+        pc->setOnTopLadder(true);
         pc->setCollidedBelow(true);
         context.has_y_collision = true;
     }

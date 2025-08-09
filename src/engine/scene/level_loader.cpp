@@ -602,6 +602,10 @@ namespace engine::scene {
                         const auto is_hazard = getJsonValue(property, "value", false);
                         return is_hazard ? engine::component::TileType::HAZARD
                                          : engine::component::TileType::NORMAL;
+                    } else if (property_name == "ladder") {
+                        const auto is_ladder = getJsonValue(property, "value", false);
+                        return is_ladder ? engine::component::TileType::LADDER
+                                         : engine::component::TileType::NORMAL;
                     }
                     // TODO: 可以在这里添加更多的自定义属性处理逻辑
                 }

@@ -5,6 +5,7 @@
 #include "../../../engine/input/input_manager.h"
 #include "../../../engine/object/game_object.h"
 #include "../player_component.h"
+#include "climb_state.h"
 #include "fall_state.h"
 #include "idle_state.h"
 #include "jump_state.h"
@@ -24,6 +25,11 @@ namespace game::component::player_state {
         auto input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
+
+        // 接触梯子并且按移动键
+        if (physics_component->hasCollidedLadder() && input_manager.isActionHeldDown("move_up")) {
+            return std::make_unique<ClimbState>(player_component_);
+        }
 
         // 如果按下“jump”则切换到 JumpState
         if (input_manager.isActionJustPressed("jump")) {

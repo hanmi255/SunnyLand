@@ -29,6 +29,8 @@ namespace engine::component {
         bool collided_below_ = false;
         bool collided_left_ = false;
         bool collided_right_ = false;
+        bool collided_ladder_ = false;
+        bool is_on_top_ladder_ = false;
 
     public:
         /**
@@ -71,23 +73,29 @@ namespace engine::component {
         void setVelocity(const glm::vec2 &velocity) { velocity_ = velocity; }
 
         // 碰撞状态的访问和修改（供 PhysicsEngine 使用）
-        void resetCollisionFlags(){
+        void resetCollisionFlags()
+        {
             collided_above_ = false;
             collided_below_ = false;
             collided_left_ = false;
             collided_right_ = false;
+            collided_ladder_ = false;
+            is_on_top_ladder_ = false;
         }
 
         void setCollidedAbove(bool collided_above) { collided_above_ = collided_above; }
         void setCollidedBelow(bool collided_below) { collided_below_ = collided_below; }
         void setCollidedLeft(bool collided_left) { collided_left_ = collided_left; }
         void setCollidedRight(bool collided_right) { collided_right_ = collided_right; }
+        void setCollidedLadder(bool collided_ladder) { collided_ladder_ = collided_ladder; }
+        void setOnTopLadder(bool on_top) { is_on_top_ladder_ = on_top; }
 
         bool hasCollidedAbove() const { return collided_above_; }
         bool hasCollidedBelow() const { return collided_below_; }
         bool hasCollidedLeft() const { return collided_left_; }
         bool hasCollidedRight() const { return collided_right_; }
-
+        bool hasCollidedLadder() const { return collided_ladder_; }
+        bool isOnTopLadder() const { return is_on_top_ladder_; }
 
     private:
         // 核心逻辑
