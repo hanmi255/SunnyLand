@@ -85,7 +85,6 @@ BreakBeforeBinaryOperators: None
 # 针对不同类型的代码块使用不同的大括号策略
 # 函数定义使用新行大括号，其他控制结构保持大括号在同一行
 BreakBeforeBraces: Custom
-BreakBeforeBracePointerAlignment: None
 BraceWrapping:
   AfterCaseLabel: false
   AfterClass: false
@@ -169,9 +168,6 @@ ForEachMacros:
   - Q_FOREACH
   - BOOST_FOREACH
 
-# 保持包含块的格式
-IncludeBlock: Preserve
-
 # 包含文件分类
 IncludeCategories:
   - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
@@ -222,9 +218,6 @@ IndentWrappedFunctionNames: false
 
 # 不插入大括号
 InsertBraces: false
-
-# 不在文件末尾插入新行
-InsertNewLineAtEOF: false
 
 # 不插入尾随逗号
 InsertTrailingCommas: None
@@ -421,9 +414,6 @@ SpaceBeforeParens: ControlStatements
 # 括号前空格的详细选项
 SpaceBeforeParensOptions:
   AfterControlStatements: true
-  AfterCoroutines: true
-  AfterCxx11AttributeSpecifier: false
-  AfterFixedAddressOperator: false
   AfterForeachMacros: true
   AfterFunctionDeclarationName: false
   AfterFunctionDefinitionName: false
