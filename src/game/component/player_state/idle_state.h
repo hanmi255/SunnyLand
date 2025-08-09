@@ -9,6 +9,7 @@ namespace game::component::player_state {
     public:
         IdleState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~IdleState() override = default;
+        const char* getStateName() const override { return "IdleState"; }
 
     private:
         void enter() override;

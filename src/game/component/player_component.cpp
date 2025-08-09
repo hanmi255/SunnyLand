@@ -53,9 +53,14 @@ namespace game::component {
             current_state_->exit();
         }
 
-        spdlog::debug("玩家组件正在切换到状态: {}", typeid(*new_state).name());
+        spdlog::debug("玩家组件正在切换到状态: {}", new_state->getStateName());
         current_state_ = std::move(new_state);
         current_state_->enter();
+    }
+
+    bool PlayerComponent::isOnGround() const
+    {
+        return coyote_timer_ <= coyote_time_ || physics_component_->hasCollidedBelow();
     }
 
     void PlayerComponent::handleInput(engine::core::Context &context)
@@ -72,8 +77,32 @@ namespace game::component {
     {
         if (!current_state_) return;
 
-        auto next_state = current_state_->update(delta_time, context);
-        if (next_state) {
+        // 更新 Coyote Timer：着地时重置，离地时计时
+        if (physics_component_->hasCollidedBelow()) {
+            coyote_timer_ = 0.0f;
+        } else {
+            coyote_timer_ += delta_time;
+        }
+
+        // 处理无敌状态的闪烁效果
+        const bool is_invincible = health_component_->isInvincible();
+        if (is_invincible) {
+            flash_timer_ += delta_time;
+
+            // 使用 fmod 确保计时器在 [0, 2*flash_interval_) 范围内循环
+            const float flash_cycle = 2.0f * flash_interval_;
+            flash_timer_ = std::fmod(flash_timer_, flash_cycle);
+
+            // 前半周期可见，后半周期不可见
+            sprite_component_->setVisible(flash_timer_ < flash_interval_);
+        }
+        // 非无敌状态时确保精灵可见
+        else if (!sprite_component_->isVisible()) {
+            sprite_component_->setVisible(true);
+        }
+
+        // 更新状态机
+        if (auto next_state = current_state_->update(delta_time, context)) {
             setState(std::move(next_state));
         }
     }

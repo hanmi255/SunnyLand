@@ -8,6 +8,7 @@ namespace game::component::player_state {
     public:
         ClimbState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~ClimbState() override = default;
+        const char* getStateName() const override { return "ClimbState"; }
 
     private:
         void enter() override;

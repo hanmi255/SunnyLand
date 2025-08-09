@@ -9,6 +9,7 @@ namespace game::component::player_state {
     public:
         WalkState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~WalkState() override = default;
+        const char* getStateName() const override { return "WalkState"; }
 
     private:
         void enter() override;

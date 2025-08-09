@@ -56,7 +56,7 @@ namespace game::component::player_state {
         physics_component->velocity_.x *= friction_factor;
 
         // 如果下方没有碰撞，则切换到 FallState
-        if (!physics_component->hasCollidedBelow()) {
+        if (!player_component_->isOnGround()) {
             return std::make_unique<FallState>(player_component_);
         }
         return nullptr;

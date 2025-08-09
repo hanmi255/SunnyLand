@@ -9,6 +9,7 @@ namespace game::component::player_state {
     public:
         JumpState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~JumpState() override = default;
+        const char* getStateName() const override { return "JumpState"; }
 
     private:
         void enter() override;

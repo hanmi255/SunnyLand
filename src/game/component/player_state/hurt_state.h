@@ -12,6 +12,7 @@ namespace game::component::player_state {
     public:
         HurtState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~HurtState() override = default;
+        const char* getStateName() const override { return "HurtState"; }
 
     private:
         void enter() override;

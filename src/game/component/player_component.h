@@ -46,7 +46,13 @@ namespace game::component {
         float jump_velocity_ = 350.0f;  ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
 
         // --- 状态相关参数 ---
-        float stunned_duration_ = 0.4f; ///< @brief 击退硬直效果持续时间
+        float stunned_duration_ = 0.4f;                ///< @brief 击退硬直效果持续时间
+
+        static constexpr float coyote_time_ = 0.1f;    ///< @brief coyote time（单位：秒）
+        float coyote_timer_ = 0.0f;                    ///< @brief coyote timer 计时器
+
+        static constexpr float flash_interval_ = 0.1f; ///< @brief 闪烁间隔（单位：秒）
+        float flash_timer_ = 0.0f;                     ///< @brief 闪烁计时器
 
     public:
         PlayerComponent() = default;
@@ -94,6 +100,7 @@ namespace game::component {
         void setStunnedDuration(float duration) { stunned_duration_ = duration; }
 
         void setState(std::unique_ptr<player_state::PlayerState> new_state);
+        bool isOnGround() const;
 
     private:
         // 核心逻辑
