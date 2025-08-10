@@ -1,5 +1,6 @@
 #include "jump_behavior.h"
 #include "../../../engine/component/animation_component.h"
+#include "../../../engine/component/audio_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
 #include "../../../engine/component/transform_component.h"
@@ -38,7 +39,9 @@ namespace game::component::ai_behavior {
         auto* transform_component = ai_component.getTransformComponent();
         auto* sprite_component = ai_component.getSpriteComponent();
         auto* animation_component = ai_component.getAnimationComponent();
+        auto* audio_component = ai_component.getAudioComponent();
 
+        // 检查必要组件
         if (!physics_component || !transform_component || !sprite_component ||
             !animation_component) {
             spdlog::error("JumpBehavior：缺少必要的组件，无法执行跳跃行为。");
@@ -47,7 +50,7 @@ namespace game::component::ai_behavior {
 
         const auto is_on_ground = physics_component->hasCollidedBelow();
 
-        // 不在地面上，根据垂直速度判断是上升还是下落
+        // 不在地面上时的处理
         if (!is_on_ground) {
             if (physics_component->getVelocity().y < 0) {
                 animation_component->playAnimation("jump");
@@ -57,13 +60,17 @@ namespace game::component::ai_behavior {
             return;
         }
 
-        // 在地面上的处理逻辑
+        // 播放落地音效
+        if (audio_component && jump_timer_ < 0.001f) {
+            audio_component->playSound("cry", -1, true);
+        }
+
+        // 更新计时器和速度
         jump_timer_ += delta_time;
         physics_component->velocity_.x = 0.0f;
 
-        // 检查是否需要跳跃
+        // 还在地面等待时
         if (jump_timer_ < jump_interval_) {
-            // 还在地面等待
             animation_component->playAnimation("idle");
             return;
         }
@@ -71,20 +78,18 @@ namespace game::component::ai_behavior {
         // 准备跳跃
         jump_timer_ = 0.0f;
 
-        // 检查是否需要更新跳跃方向
+        // 更新跳跃方向
         const auto current_x = transform_component->getPosition().x;
 
-        // 如果右边超限或者撞墙，向左跳
         if (jumping_right_ &&
             (physics_component->hasCollidedRight() || current_x >= patrol_max_x_)) {
             jumping_right_ = false;
-        }
-        // 如果左边超限或者撞墙，向右跳
-        else if (!jumping_right_ &&
-                 (physics_component->hasCollidedLeft() || current_x <= patrol_min_x_)) {
+        } else if (!jumping_right_ &&
+                   (physics_component->hasCollidedLeft() || current_x <= patrol_min_x_)) {
             jumping_right_ = true;
         }
 
+        // 执行跳跃
         const auto jump_vel_x = jumping_right_ ? jump_vel_.x : -jump_vel_.x;
         physics_component->velocity_ = {jump_vel_x, jump_vel_.y};
         animation_component->playAnimation("jump");

@@ -1,4 +1,5 @@
 #include "context.h"
+#include "../audio/audio_player.h"
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
@@ -8,12 +9,13 @@
 
 namespace engine::core {
 
-    Context::Context(engine::input::InputManager &input_manager,
-                     engine::render::Camera &camera,
+    Context::Context(engine::input::InputManager &input_manager, engine::render::Camera &camera,
                      engine::render::Renderer &renderer,
                      engine::resource::ResourceManager &resource_manager,
-                     engine::physics::PhysicsEngine &physics_engine)
-        : input_manager_(input_manager)
+                     engine::physics::PhysicsEngine &physics_engine,
+                     engine::audio::AudioPlayer &audio_player)
+        : audio_player_(audio_player)
+        , input_manager_(input_manager)
         , camera_(camera)
         , renderer_(renderer)
         , resource_manager_(resource_manager)

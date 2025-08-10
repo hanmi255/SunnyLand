@@ -1,4 +1,5 @@
 #include "hurt_state.h"
+#include "../../../engine/component/audio_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
 #include "../../../engine/core/context.h"
@@ -14,7 +15,7 @@ namespace game::component::player_state {
     {
         playAnimation("hurt");
 
-        // --- 造成击退效果 ---
+        // 造成击退效果，并播放受伤音效
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
         auto knockback_velocity = glm::vec2(-100.0f, -150.0f); // 默认左上方击退效果
@@ -23,6 +24,9 @@ namespace game::component::player_state {
             knockback_velocity.x = -knockback_velocity.x;  // 变成向右
         }
         physics_component->velocity_ = knockback_velocity; // 设置击退速度
+        if (auto* audio_component = player_component_->getAudioComponent(); audio_component) {
+            audio_component->playSound("hurt");
+        }
     }
 
     void HurtState::exit() {}

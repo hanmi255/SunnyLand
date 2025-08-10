@@ -1,4 +1,5 @@
 #include "game_scene.h"
+#include "../../engine/audio/audio_player.h"
 #include "../../engine/component/animation_component.h"
 #include "../../engine/component/collider_component.h"
 #include "../../engine/component/health_component.h"
@@ -58,6 +59,8 @@ namespace game::scene {
             context_.getInputManager().setShouldQuit(true);
             return;
         }
+
+        initAudio();
 
         Scene::init();
         spdlog::trace("GameScene 初始化完成。");
@@ -202,6 +205,16 @@ namespace game::scene {
 
         return success;
     }
+
+    void GameScene::initAudio()
+    {
+        // 设置音量
+        context_.getAudioPlayer().setMusicVolume(0.2f); // 设置背景音乐音量为20%
+        context_.getAudioPlayer().setSoundVolume(0.5f); // 设置音效音量为50%
+        // 播放背景音乐 (循环，淡入1秒)
+        context_.getAudioPlayer().playMusic("assets/audio/hurry_up_and_run.ogg", true, 1000);
+    }
+
     void GameScene::handleObjectCollisions()
     {
         // 从物理引擎中获取碰撞对
@@ -309,6 +322,7 @@ namespace game::scene {
             auto* player_physics = player->getComponent<engine::component::PhysicsComponent>();
             if (player_physics) {
                 player_physics->velocity_.y = -300.0f; // 向上跳起
+                context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
             } else {
                 spdlog::warn("玩家 {} 没有 PhysicsComponent 组件，无法执行跳起效果",
                              player->getName());
@@ -339,6 +353,7 @@ namespace game::scene {
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag());
+        context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");
     }
 
     void GameScene::createEffect(const glm::vec2 &center_pos, const std::string_view &tag)

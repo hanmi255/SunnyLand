@@ -1,5 +1,6 @@
 #include "player_component.h"
 #include "../../engine/component/animation_component.h"
+#include "../../engine/component/audio_component.h"
 #include "../../engine/component/health_component.h"
 #include "../../engine/component/physics_component.h"
 #include "../../engine/component/sprite_component.h"
@@ -8,6 +9,7 @@
 #include "player_state/dead_state.h"
 #include "player_state/hurt_state.h"
 #include "player_state/idle_state.h"
+#include <glm/common.hpp>
 #include <spdlog/spdlog.h>
 #include <utility>
 
@@ -26,10 +28,11 @@ namespace game::component {
         sprite_component_ = owner_->getComponent<engine::component::SpriteComponent>();
         animation_component_ = owner_->getComponent<engine::component::AnimationComponent>();
         health_component_ = owner_->getComponent<engine::component::HealthComponent>();
+        audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查必要组件是否存在
         if (!transform_component_ || !physics_component_ || !sprite_component_ ||
-            !animation_component_ || !health_component_) {
+            !animation_component_ || !health_component_ || !audio_component_) {
             spdlog::error("Player 对象缺少必要组件！");
         }
 

@@ -9,6 +9,7 @@
 
 namespace engine::component {
     class AnimationComponent;
+    class AudioComponent;
     struct TileInfo;
     enum class TileType;
 } // namespace engine::component
@@ -112,6 +113,8 @@ namespace engine::scene {
 
         void addAnimation(const nlohmann::json &anim_json,
                           engine::component::AnimationComponent* ac, const glm::vec2 &sprite_size);
+
+        void addSound(const nlohmann::json &sound_json, engine::component::AudioComponent* ac);
 
         // ========== 瓦片数据处理函数 ==========
         [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;

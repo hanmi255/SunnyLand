@@ -4,6 +4,10 @@
 struct SDL_Window;
 struct SDL_Renderer;
 
+namespace engine::audio {
+    class AudioPlayer;
+} // namespace engine::audio
+
 namespace engine::input {
     class InputManager;
 } // namespace engine::input
@@ -44,6 +48,7 @@ namespace engine::core {
         std::unique_ptr<engine::core::Context> context_;
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::input::InputManager> input_manager_;
+        std::unique_ptr<engine::audio::AudioPlayer> audio_player_;
         std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
@@ -78,6 +83,7 @@ namespace engine::core {
         [[nodiscard]] bool initSDL();
         [[nodiscard]] bool initTime();
         [[nodiscard]] bool initResourceManager();
+        [[nodiscard]] bool initAudioPlayer();
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
         [[nodiscard]] bool initInputManager();

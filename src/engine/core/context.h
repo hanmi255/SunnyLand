@@ -1,5 +1,9 @@
 #pragma once
 
+namespace engine::audio {
+    class AudioPlayer;
+} // namespace engine::audio
+
 namespace engine::input {
     class InputManager;
 } // namespace engine::input
@@ -26,6 +30,7 @@ namespace engine::core {
      */
     class Context final {
     private:
+        engine::audio::AudioPlayer &audio_player_;
         engine::input::InputManager &input_manager_;
         engine::render::Camera &camera_;
         engine::render::Renderer &renderer_;
@@ -40,11 +45,14 @@ namespace engine::core {
          * @param renderer 对 Renderer 实例的引用。
          * @param resource_manager 对 ResourceManager 实例的引用。
          * @param physics_engine 对 PhysicsEngine 实例的引用。
+         * @param audio_player 对 AudioPlayer 实例的引用。
          */
-        Context(engine::input::InputManager &input_manager, engine::render::Camera &camera,
+        Context(engine::input::InputManager &input_manager,
+                engine::render::Camera &camera,
                 engine::render::Renderer &renderer,
                 engine::resource::ResourceManager &resource_manager,
-                engine::physics::PhysicsEngine &physics_engine);
+                engine::physics::PhysicsEngine &physics_engine,
+                engine::audio::AudioPlayer &audio_player);
 
         // 禁止拷贝和移动语义
         Context(const Context &) = delete;
@@ -58,5 +66,6 @@ namespace engine::core {
         engine::render::Renderer &getRenderer() const { return renderer_; }
         engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
         engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
+        engine::audio::AudioPlayer &getAudioPlayer() const { return audio_player_; }
     };
 } // namespace engine::core

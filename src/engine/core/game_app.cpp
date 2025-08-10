@@ -9,6 +9,7 @@
  */
 #include "game_app.h"
 #include "../../game/scene/game_scene.h"
+#include "../audio/audio_player.h"
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
@@ -66,11 +67,11 @@ namespace engine::core {
         if (!initSDL()) return false;
         if (!initTime()) return false;
         if (!initResourceManager()) return false;
+        if (!initAudioPlayer()) return false;
         if (!initRenderer()) return false;
         if (!initCamera()) return false;
         if (!initInputManager()) return false;
         if (!initPhysicsEngine()) return false;
-
         if (!initContext()) return false;
         if (!initSceneManager()) return false;
 
@@ -203,6 +204,18 @@ namespace engine::core {
         return true;
     }
 
+    bool GameApp::initAudioPlayer()
+    {
+        try {
+            audio_player_ = std::make_unique<engine::audio::AudioPlayer>(resource_manager_.get());
+        } catch (const std::exception &e) {
+            spdlog::error("初始化音频播放器失败: {}", e.what());
+            return false;
+        }
+        spdlog::trace("音频播放器初始化成功。");
+        return true;
+    }
+
     bool GameApp::initRenderer()
     {
         try {
@@ -258,8 +271,9 @@ namespace engine::core {
     bool GameApp::initContext()
     {
         try {
-            context_ = std::make_unique<engine::core::Context>(
-                *input_manager_, *camera_, *renderer_, *resource_manager_, *physics_engine_);
+            context_ = std::make_unique<engine::core::Context>(*input_manager_, *camera_,
+                                                               *renderer_, *resource_manager_,
+                                                               *physics_engine_, *audio_player_);
         } catch (const std::exception &e) {
             spdlog::error("Context 初始化失败: {}", e.what());
             return false;

@@ -1,4 +1,5 @@
 #include "dead_state.h"
+#include "../../../engine/component/audio_component.h"
 #include "../../../engine/component/collider_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/object/game_object.h"
@@ -15,11 +16,14 @@ namespace game::component::player_state {
         auto* physics_component = player_component_->getPhysicsComponent();
         physics_component->velocity_ = glm::vec2(0.0f, -200.0f); // 向上击退
 
-        // 禁用碰撞(自动掉出屏幕)
+        // 禁用碰撞(自动掉出屏幕)，播放死亡音效
         auto* collider_component =
             player_component_->getOwner()->getComponent<engine::component::ColliderComponent>();
         if (collider_component) {
             collider_component->setActive(false);
+        }
+        if (auto* audio_component = player_component_->getAudioComponent(); audio_component) {
+            audio_component->playSound("dead");
         }
     }
 

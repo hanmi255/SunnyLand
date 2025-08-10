@@ -1,4 +1,5 @@
 #include "jump_state.h"
+#include "../../../engine/component/audio_component.h"
 #include "../../../engine/component/physics_component.h"
 #include "../../../engine/component/sprite_component.h"
 #include "../../../engine/core/context.h"
@@ -13,9 +14,13 @@ namespace game::component::player_state {
 
     void JumpState::enter()
     {
+        // 向上跳跃，并播放跳跃音效
         playAnimation("jump");
         auto* physics_component = player_component_->getPhysicsComponent();
         physics_component->velocity_.y = -player_component_->getJumpVelocity(); // 向上跳跃
+        if (auto* audio_component = player_component_->getAudioComponent(); audio_component) {
+            audio_component->playSound("jump");
+        }
         spdlog::debug("PlayerComponent 进入 JumpState，设置初始垂直速度为: {}",
                       physics_component->velocity_.y);
     }

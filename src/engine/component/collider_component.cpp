@@ -21,7 +21,7 @@ namespace engine::component {
     void ColliderComponent::init()
     {
         if (!owner_) {
-            spdlog::error("ColliderComponent  在初始化前未设置 owner_。");
+            spdlog::error("ColliderComponent 在初始化前未设置 owner_。");
             return;
         }
         transform_component_ = owner_->getComponent<TransformComponent>();

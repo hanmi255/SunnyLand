@@ -5,6 +5,7 @@
 
 namespace engine::component {
     class AnimationComponent;
+    class AudioComponent;
     class HealthComponent;
     class PhysicsComponent;
     class SpriteComponent;
@@ -30,6 +31,7 @@ namespace game::component {
 
     private:
         engine::component::AnimationComponent* animation_component_ = nullptr; ///< @brief 动画组件
+        engine::component::AudioComponent* audio_component_ = nullptr;         ///< @brief 音频组件
         engine::component::HealthComponent* health_component_ = nullptr;       ///< @brief 生命组件
         engine::component::PhysicsComponent* physics_component_ = nullptr;     ///< @brief 物理组件
         engine::component::SpriteComponent* sprite_component_ = nullptr;       ///< @brief 精灵组件
@@ -71,6 +73,7 @@ namespace game::component {
         {
             return animation_component_;
         }
+        engine::component::AudioComponent* getAudioComponent() const { return audio_component_; }
         engine::component::HealthComponent* getHealthComponent() const { return health_component_; }
         engine::component::PhysicsComponent* getPhysicsComponent() const
         {

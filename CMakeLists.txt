@@ -35,7 +35,9 @@ add_subdirectory(third_party/spdlog)
 # 设置通用源文件
 set(SOURCES
     src/main.cpp
+    src/engine/audio/audio_player.cpp
     src/engine/component/animation_component.cpp
+    src/engine/component/audio_component.cpp
     src/engine/component/collider_component.cpp
     src/engine/component/health_component.cpp
     src/engine/component/parallax_component.cpp
