@@ -99,6 +99,10 @@ namespace game::scene {
         void addScoreWithUI(int score);
         void healWithUI(int amount);
         void updateHealthWithUI();
+
+        // --- 测试函数 ---
+        void createTestButton();  ///< @brief 创建测试按钮
+        void testButtonClicked(); ///< @brief 测试按钮点击事件
     };
 
 } // namespace game::scene
