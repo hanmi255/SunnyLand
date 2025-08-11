@@ -15,6 +15,7 @@ namespace engine::physics {
 namespace engine::render {
     class Camera;
     class Renderer;
+    class TextRenderer;
 } // namespace engine::render
 
 namespace engine::resource {
@@ -34,6 +35,7 @@ namespace engine::core {
         engine::input::InputManager &input_manager_;
         engine::render::Camera &camera_;
         engine::render::Renderer &renderer_;
+        engine::render::TextRenderer &text_renderer_;
         engine::resource::ResourceManager &resource_manager_;
         engine::physics::PhysicsEngine &physics_engine_;
 
@@ -47,9 +49,8 @@ namespace engine::core {
          * @param physics_engine 对 PhysicsEngine 实例的引用。
          * @param audio_player 对 AudioPlayer 实例的引用。
          */
-        Context(engine::input::InputManager &input_manager,
-                engine::render::Camera &camera,
-                engine::render::Renderer &renderer,
+        Context(engine::input::InputManager &input_manager, engine::render::Camera &camera,
+                engine::render::Renderer &renderer, engine::render::TextRenderer &text_renderer,
                 engine::resource::ResourceManager &resource_manager,
                 engine::physics::PhysicsEngine &physics_engine,
                 engine::audio::AudioPlayer &audio_player);
@@ -64,6 +65,7 @@ namespace engine::core {
         engine::input::InputManager &getInputManager() const { return input_manager_; }
         engine::render::Camera &getCamera() const { return camera_; }
         engine::render::Renderer &getRenderer() const { return renderer_; }
+        engine::render::TextRenderer &getTextRenderer() const { return text_renderer_; }
         engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
         engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
         engine::audio::AudioPlayer &getAudioPlayer() const { return audio_player_; }

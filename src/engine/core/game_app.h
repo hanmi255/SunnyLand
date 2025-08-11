@@ -19,6 +19,7 @@ namespace engine::physics {
 namespace engine::render {
     class Camera;
     class Renderer;
+    class TextRenderer;
 } // namespace engine::render
 
 namespace engine::resource {
@@ -52,6 +53,7 @@ namespace engine::core {
         std::unique_ptr<engine::physics::PhysicsEngine> physics_engine_;
         std::unique_ptr<engine::render::Camera> camera_;
         std::unique_ptr<engine::render::Renderer> renderer_;
+        std::unique_ptr<engine::render::TextRenderer> text_renderer_;
         std::unique_ptr<engine::resource::ResourceManager> resource_manager_;
         std::unique_ptr<engine::scene::SceneManager> scene_manager_;
 
@@ -86,6 +88,7 @@ namespace engine::core {
         [[nodiscard]] bool initAudioPlayer();
         [[nodiscard]] bool initRenderer();
         [[nodiscard]] bool initCamera();
+        [[nodiscard]] bool initTextRenderer();
         [[nodiscard]] bool initInputManager();
         [[nodiscard]] bool initPhysicsEngine();
         [[nodiscard]] bool initContext();
