@@ -14,6 +14,7 @@
 #include "../../engine/render/animation.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/scene/level_loader.h"
+#include "../../engine/scene/scene_manager.h"
 #include "../component/ai_behavior/jump_behavior.h"
 #include "../component/ai_behavior/patrol_behavior.h"
 #include "../component/ai_behavior/updown_behavior.h"
@@ -92,7 +93,8 @@ namespace game::scene {
     {
         // 加载关卡（level_loader通常加载完成后即可销毁，因此不存为成员变量）
         engine::scene::LevelLoader level_loader;
-        if (!level_loader.loadLevel("assets/maps/level1.tmj", *this)) {
+        auto level_path = levelNameToPath(name_);
+        if (!level_loader.loadLevel(level_path, *this)) {
             spdlog::error("关卡加载失败");
             return false;
         }
@@ -244,6 +246,10 @@ namespace game::scene {
                         spdlog::debug("玩家 {} 受到了 HAZARD 对象伤害", player->getName());
                     }
                 }
+                // 处理玩家与关底触发器碰撞
+                else if (other_tag == "next_level") {
+                    toNextLevel(other);
+                }
             }();
         }
     }
@@ -354,6 +360,13 @@ namespace game::scene {
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
         createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag());
         context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");
+    }
+
+    void GameScene::toNextLevel(engine::object::GameObject* trigger)
+    {
+        auto scene_name = trigger->getName();
+        auto next_scene = std::make_unique<GameScene>(scene_name, context_, scene_manager_);
+        scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
     void GameScene::createEffect(const glm::vec2 &center_pos, const std::string_view &tag)

@@ -220,10 +220,13 @@ namespace engine::scene {
 
         // 遍历对象数据
         for (const auto &object : objects) {
-            auto gid = object.value("gid", 0);
+            auto gid = getJsonValue(object, "gid", 0);
             if (gid == 0) {
-                // TODO: 处理自定义形状（碰撞盒、触发器等）
-                spdlog::debug("跳过无 gid 的对象（可能是自定义形状）");
+                // 处理自定义形状对象（矩形、点、椭圆、多边形等）
+                if (!processCustomShapeObject(object, scene)) {
+                    continue; // 跳过不支持的对象类型
+                }
+                ++loaded_objects;
                 continue;
             }
 
@@ -241,6 +244,58 @@ namespace engine::scene {
 
         spdlog::debug("加载对象图层: '{}' 完成 ({} 对象)", layer_json.value("name", "Unnamed"),
                       loaded_objects);
+    }
+
+    bool LevelLoader::processCustomShapeObject(const nlohmann::json &object_json, Scene &scene)
+    {
+        // 检查是否为不支持的几何对象类型
+        if (getJsonValue(object_json, "point", false)) {   // 如果是点对象
+            return false;                                  // TODO: 点对象的处理方式
+        }
+        if (getJsonValue(object_json, "ellipse", false)) { // 如果是椭圆对象
+            return false;                                  // TODO: 椭圆对象的处理方式
+        }
+        if (getJsonValue(object_json, "polygon", false)) { // 如果是多边形对象
+            return false;                                  // TODO: 多边形对象的处理方式
+        }
+
+        // 创建自定义形状的矩形对象
+        const std::string object_name = object_json.value("name", "Unnamed");
+        auto game_object = std::make_unique<engine::object::GameObject>(object_name);
+
+        // 获取Transform相关信息（自定义形状的坐标针对左上角）
+        const auto position =
+            glm::vec2(getJsonValue(object_json, "x", 0.0f), getJsonValue(object_json, "y", 0.0f));
+        const auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0f),
+                                        getJsonValue(object_json, "height", 0.0f));
+        const auto rotation = getJsonValue(object_json, "rotation", 0.0f);
+
+        // 添加TransformComponent，缩放设定为1.0f
+        game_object->addComponent<engine::component::TransformComponent>(position, glm::vec2(1.0f),
+                                                                         rotation);
+
+        // 添加碰撞组件和物理组件
+        auto collider = std::make_unique<engine::physics::AABBCollider>(dst_size);
+        auto* cc =
+            game_object->addComponent<engine::component::ColliderComponent>(std::move(collider));
+
+        // 自定义形状通常是trigger类型，除非显式指定（因此默认为true）
+        cc->setTrigger(getJsonValue(object_json, "trigger", true));
+
+        // 添加物理组件，不受重力影响
+        game_object->addComponent<engine::component::PhysicsComponent>(
+            &scene.getContext().getPhysicsEngine(), false);
+
+        // 获取标签信息并设置
+        if (auto tag = getTileProperty<std::string>(object_json, "tag"); tag) {
+            game_object->setTag(tag.value());
+        }
+
+        // 添加到场景
+        scene.addGameObject(std::move(game_object));
+        spdlog::info("加载对象: '{}' 完成 (类型: 自定义形状)", object_name);
+
+        return true;
     }
 
     std::unique_ptr<engine::object::GameObject>
@@ -296,10 +351,11 @@ namespace engine::scene {
     LevelLoader::parseObjectTransform(const nlohmann::json &object_json, const glm::vec2 &src_size)
     {
         // 获取基础变换信息
-        auto position = glm::vec2(object_json.value("x", 0.0f), object_json.value("y", 0.0f));
-        auto dst_size =
-            glm::vec2(object_json.value("width", 0.0f), object_json.value("height", 0.0f));
-        auto rotation = object_json.value("rotation", 0.0f);
+        auto position =
+            glm::vec2(getJsonValue(object_json, "x", 0.0f), getJsonValue(object_json, "y", 0.0f));
+        auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0f),
+                                  getJsonValue(object_json, "height", 0.0f));
+        auto rotation = getJsonValue(object_json, "rotation", 0.0f);
 
         // 调整位置（从左下角到左上角）
         position.y -= dst_size.y;
@@ -443,7 +499,7 @@ namespace engine::scene {
             // 获取可能存在的动画帧信息
             auto duration_ms = getJsonValue(anim_info, "duration", 100); // 默认持续时间为100毫秒
             auto duration = static_cast<float>(duration_ms) / 1000.0f;   // 转换为秒
-            auto row = anim_info.value("row", 0);                        // 默认行数为0
+            auto row = getJsonValue(anim_info, "row", 0);                // 默认行数为0
 
             // 帧信息（数组）是必须存在的
             if (!anim_info.contains(JsonKeys::FRAMES) || !anim_info[JsonKeys::FRAMES].is_array()) {

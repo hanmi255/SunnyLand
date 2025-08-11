@@ -76,8 +76,7 @@ namespace engine::core {
         if (!initSceneManager()) return false;
 
         // 创建第一个场景并压入栈
-        auto scene =
-            std::make_unique<game::scene::GameScene>("GameScene", *context_, *scene_manager_);
+        auto scene = std::make_unique<game::scene::GameScene>("level1", *context_, *scene_manager_);
         scene_manager_->requestPushScene(std::move(scene));
 
         is_running_ = true;

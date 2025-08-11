@@ -45,12 +45,12 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"fly\": {\"frames\": [0,1,2,3]}\n}"
-                },
+                }, 
                 {
                  "name":"health",
                  "type":"int",
                  "value":1
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",
@@ -59,7 +59,7 @@
          "width":40,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "height":32,
          "id":1,
@@ -93,22 +93,22 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"idle\": {\"duration\": 200, \"row\":0, \"frames\":[0,1,2,3,2,1]},\n  \"walk\": {\"row\":1, \"frames\":[0,1,2,3,4,5]},\n  \"climb\":{\"row\":2, \"frames\":[0,1,2,3]},\n  \"hurt\": {\"row\":4, \"frames\":[0,1]},\n  \"jump\": {\"row\":5, \"frames\":[0]},\n  \"fall\": {\"row\":5, \"frames\":[1]}\n}"
-                },
+                }, 
                 {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
-                },
+                }, 
                 {
                  "name":"health",
                  "type":"int",
                  "value":3
-                },
+                }, 
                 {
                  "name":"sound",
                  "type":"string",
                  "value":"{\n  \"jump\":\"assets\/audio\/cartoon-jump-6462.mp3\",\n  \"hurt\":\"assets\/audio\/monster.mp3\",\n  \"dead\":\"assets\/audio\/dead-8bit-41400.mp3\"\n}"
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",
@@ -117,7 +117,7 @@
          "width":32,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "height":32,
          "id":2,
@@ -151,22 +151,22 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"idle\": {\"duration\": 300, \"frames\":[0,1,2,3]},\n  \"jump\": {\"row\": 1, \"frames\":[1]},\n  \"fall\": {\"row\": 1, \"frames\":[2]}\n}"
-                },
+                }, 
                 {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
-                },
+                }, 
                 {
                  "name":"health",
                  "type":"int",
                  "value":1
-                },
+                }, 
                 {
                  "name":"sound",
                  "type":"string",
                  "value":"{\n  \"cry\":\"assets\/audio\/frog_quak-81741.mp3\"\n}"
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",
@@ -175,7 +175,7 @@
          "width":35,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "height":28,
          "id":3,
@@ -209,17 +209,17 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"walk\": {\"frames\":[0,1,2,3,4,5]}\n}"
-                },
+                }, 
                 {
                  "name":"gravity",
                  "type":"bool",
                  "value":true
-                },
+                }, 
                 {
                  "name":"health",
                  "type":"int",
                  "value":1
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",
@@ -228,7 +228,7 @@
          "width":36,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "height":21,
          "id":4,
@@ -262,7 +262,7 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"idle\": {\"duration\": 200, \"frames\":[0,1,2,3,4,3,2,1]}\n}"
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",
@@ -271,7 +271,7 @@
          "width":21,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "height":13,
          "id":5,
@@ -305,7 +305,7 @@
                  "name":"animation",
                  "type":"string",
                  "value":"{\n  \"idle\": {\"duration\": 200, \"frames\":[0,1,2,3,4]}\n}"
-                },
+                }, 
                 {
                  "name":"tag",
                  "type":"string",

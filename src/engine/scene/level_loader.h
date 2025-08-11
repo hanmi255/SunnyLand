@@ -90,6 +90,9 @@ namespace engine::scene {
         void loadObjectLayer(const nlohmann::json &layer_json, Scene &scene);
 
         // =========== 游戏对象创建函数 ==========
+        [[nodiscard]] bool processCustomShapeObject(const nlohmann::json &object_json,
+                                                    Scene &scene);
+
         [[nodiscard]] std::unique_ptr<engine::object::GameObject>
         createGameObjectFromObject(const nlohmann::json &object_json, int gid, Scene &scene);
 

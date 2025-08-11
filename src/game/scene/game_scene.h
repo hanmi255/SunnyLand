@@ -68,6 +68,13 @@ namespace game::scene {
         void PlayerVSItemCollision(engine::object::GameObject* player,
                                    engine::object::GameObject* item);
 
+        void toNextLevel(engine::object::GameObject* trigger);
+
+        std::string levelNameToPath(const std::string_view &level_name) const
+        {
+            return "assets/maps/" + std::string(level_name) + ".tmj";
+        }
+
         void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
     };
 
