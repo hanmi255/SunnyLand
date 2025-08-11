@@ -64,6 +64,9 @@ set(SOURCES
     src/engine/scene/level_loader.cpp
     src/engine/scene/scene.cpp
     src/engine/scene/scene_manager.cpp
+    src/engine/ui/ui_element.cpp
+    src/engine/ui/ui_manager.cpp
+    src/engine/ui/ui_panel.cpp
     src/game/data/session_data.cpp
     src/game/component/ai_component.cpp
     src/game/component/ai_behavior/jump_behavior.cpp

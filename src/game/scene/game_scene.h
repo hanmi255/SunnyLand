@@ -67,6 +67,7 @@ namespace game::scene {
         [[nodiscard]] bool initLevel();
         [[nodiscard]] bool initPlayer();
         [[nodiscard]] bool initEnemyAndItem();
+        [[nodiscard]] bool initUI();
         void initAudio();
 
         void handleObjectCollisions();
@@ -85,9 +86,6 @@ namespace game::scene {
         }
 
         void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
-
-        // 测试函数
-        void testTextRenderer();
     };
 
 } // namespace game::scene

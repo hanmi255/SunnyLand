@@ -3,14 +3,20 @@
 #include "../object/game_object.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
+#include "../ui/ui_manager.h"
 #include "scene_manager.h"
 #include <algorithm> // 用于 std::remove_if
+#include <memory>
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
     Scene::Scene(const std::string_view &name, engine::core::Context &context,
                  engine::scene::SceneManager &scene_manager)
-        : name_(name), context_(context), scene_manager_(scene_manager), is_initialized_(false)
+        : name_(name)
+        , context_(context)
+        , scene_manager_(scene_manager)
+        , ui_manager_(std::make_unique<engine::ui::UIManager>())
+        , is_initialized_(false)
     {
         spdlog::trace("场景 '{}' 构建成功", name_);
     }
@@ -50,6 +56,8 @@ namespace engine::scene {
             std::remove_if(game_objects_.begin(), game_objects_.end(), remove_predicate),
             game_objects_.end());
 
+        // 更新 UI
+        ui_manager_->update(delta_time, context_);
         processPendingActions();
     }
 
@@ -59,11 +67,17 @@ namespace engine::scene {
         for (auto const &object : game_objects_) {
             if (object) object->render(context_);
         }
+
+        // 渲染 UI
+        ui_manager_->render(context_);
     }
 
     void Scene::handleInput()
     {
         if (!is_initialized_) return;
+
+        // 如果被 UI 元素处理，则不处理游戏对象
+        if (ui_manager_->handleInput(context_)) return;
 
         auto handle_input_predicate = [this](auto &object) -> bool {
             if (!object) return true;

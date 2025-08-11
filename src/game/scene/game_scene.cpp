@@ -16,6 +16,9 @@
 #include "../../engine/render/text_renderer.h"
 #include "../../engine/scene/level_loader.h"
 #include "../../engine/scene/scene_manager.h"
+#include "../../engine/ui/ui_manager.h"
+#include "../../engine/ui/ui_panel.h"
+#include "../../engine/utils/math.h"
 #include "../component/ai_behavior/jump_behavior.h"
 #include "../component/ai_behavior/patrol_behavior.h"
 #include "../component/ai_behavior/updown_behavior.h"
@@ -65,6 +68,11 @@ namespace game::scene {
             context_.getInputManager().setShouldQuit(true);
             return;
         }
+        if (!initUI()) {
+            spdlog::error("UI初始化失败，无法继续。");
+            context_.getInputManager().setShouldQuit(true);
+            return;
+        }
 
         initAudio();
 
@@ -82,7 +90,6 @@ namespace game::scene {
     void GameScene::render()
     {
         Scene::render();
-        testTextRenderer();
     }
 
     void GameScene::handleInput()
@@ -212,6 +219,17 @@ namespace game::scene {
         }
 
         return success;
+    }
+
+    bool GameScene::initUI()
+    {
+        if (!ui_manager_->init(glm::vec2(640.0f, 360.0f))) return false;
+
+        // 创建一个透明的方形UIPanel
+        ui_manager_->addElement(std::make_unique<engine::ui::UIPanel>(
+            glm::vec2(100.0f, 100.0f), glm::vec2(200.0f, 200.0f),
+            engine::utils::FColor{0.5f, 0.0f, 0.0f, 0.3f}));
+        return true;
     }
 
     void GameScene::initAudio()
@@ -423,17 +441,6 @@ namespace game::scene {
         animation_component->playAnimation("effect");
         safelyAddGameObject(std::move(effect_obj));
         spdlog::debug("创建特效: {}", tag);
-    }
-
-    void GameScene::testTextRenderer()
-    {
-        auto &text_renderer = context_.getTextRenderer();
-        const auto &camera = context_.getCamera();
-        // UI和地图各渲染一次，测试是否正常
-        text_renderer.drawUIText("UI Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32,
-                                 glm::vec2(100.0f), {0, 1.0f, 0, 1.0f});
-        text_renderer.drawText(camera, "Map Text", "assets/fonts/VonwaonBitmap-16px.ttf", 32,
-                               glm::vec2(200.0f));
     }
 
 } // namespace game::scene
