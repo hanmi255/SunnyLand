@@ -8,6 +8,11 @@ namespace engine::object {
     class GameObject;
 } // namespace engine::object
 
+namespace engine::ui {
+    class UILabel;
+    class UIPanel;
+} // namespace engine::ui
+
 namespace game::data {
     class SessionData;
 } // namespace game::data
@@ -19,8 +24,10 @@ namespace game::scene {
      */
     class GameScene final : public engine::scene::Scene {
         std::shared_ptr<game::data::SessionData>
-            game_session_data_; ///< @brief 场景间共享数据，因此用shared_ptr
-        engine::object::GameObject* player_ = nullptr;
+            game_session_data_;                        ///< @brief 场景间共享数据，因此用shared_ptr
+        engine::object::GameObject* player_ = nullptr; ///< @brief 玩家
+        engine::ui::UILabel* score_label_ = nullptr;   ///< @brief 得分标签
+        engine::ui::UIPanel* health_panel_ = nullptr;  ///< @brief 生命值图标面板
 
     private:
         struct EnemyConfig {
@@ -53,8 +60,7 @@ namespace game::scene {
         };
 
     public:
-        GameScene(engine::core::Context &context,
-                  engine::scene::SceneManager &scene_manager,
+        GameScene(engine::core::Context &context, engine::scene::SceneManager &scene_manager,
                   std::shared_ptr<game::data::SessionData> data = nullptr);
 
         void init() override;
@@ -86,6 +92,13 @@ namespace game::scene {
         }
 
         void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
+
+        // --- UI 相关函数 ---
+        void createScoreUI();
+        void createHealthUI();
+        void addScoreWithUI(int score);
+        void healWithUI(int amount);
+        void updateHealthWithUI();
     };
 
 } // namespace game::scene

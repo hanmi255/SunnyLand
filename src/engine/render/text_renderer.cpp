@@ -47,7 +47,8 @@ namespace engine::render {
     }
 
     void TextRenderer::drawUIText(const std::string_view &text, const std::string_view &font_id,
-                                  int font_size, const glm::vec2 &position, const SDL_FColor &color)
+                                  int font_size, const glm::vec2 &position,
+                                  const engine::utils::FColor &color)
     {
         TTF_Font* font = resource_manager_->getFont(font_id, font_size);
         if (!font) {
@@ -80,7 +81,7 @@ namespace engine::render {
 
     void TextRenderer::drawText(const Camera &camera, const std::string_view &text,
                                 const std::string_view &font_id, int font_size,
-                                const glm::vec2 &position, const SDL_FColor &color)
+                                const glm::vec2 &position, const engine::utils::FColor &color)
     {
         // 应用相机变换
         glm::vec2 position_screen = camera.worldToScreen(position);

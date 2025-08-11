@@ -11,6 +11,7 @@
 #include <SDL3/SDL_rect.h> // 用于 SDL_FRect
 #include <optional>        // 用于 std::optional
 #include <string>          // 用于 std::string
+#include <string_view>
 
 namespace engine::render {
     /**
@@ -40,14 +41,14 @@ namespace engine::render {
          * std::nullopt，则使用整个纹理。
          * @param is_flipped 是否水平翻转
          */
-        Sprite(const std::string &texture_id,
+        Sprite(const std::string_view &texture_id,
                const std::optional<SDL_FRect> &src_rect = std::nullopt, bool is_flipped = false)
             : texture_id_(texture_id), src_rect_(src_rect), is_flipped_(is_flipped)
         {
         }
 
         // --- getters ---
-        std::string_view getTextureId() const { return texture_id_; }
+        const std::string_view getTextureId() const { return texture_id_; }
         const std::optional<SDL_FRect> &getSrcRect() const { return src_rect_; }
         bool isFlipped() const { return is_flipped_; }
 

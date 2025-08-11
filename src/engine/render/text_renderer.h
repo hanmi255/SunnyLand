@@ -1,4 +1,5 @@
 #pragma once
+#include "../utils/math.h"
 #include <SDL3/SDL_render.h>
 #include <glm/vec2.hpp>
 #include <string_view>
@@ -51,7 +52,7 @@ namespace engine::render {
          */
         void drawUIText(const std::string_view &text, const std::string_view &font_id,
                         int font_size, const glm::vec2 &position,
-                        const SDL_FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
+                        const engine::utils::FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
 
         /**
          * @brief 绘制地图上的字符串。
@@ -65,7 +66,7 @@ namespace engine::render {
          */
         void drawText(const Camera &camera, const std::string_view &text,
                       const std::string_view &font_id, int font_size, const glm::vec2 &position,
-                      const SDL_FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
+                      const engine::utils::FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
 
         /**
          * @brief 获取文本的尺寸。

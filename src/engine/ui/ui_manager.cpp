@@ -3,7 +3,6 @@
 #include "ui_panel.h"
 #include <spdlog/spdlog.h>
 
-
 namespace engine::ui {
 
     UIManager::~UIManager() = default;

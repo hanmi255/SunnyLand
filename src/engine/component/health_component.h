@@ -31,7 +31,7 @@ namespace engine::component {
         HealthComponent &operator=(HealthComponent &&) = delete;
 
         bool takeDamage(int damage_amount);
-        void heal(int heal_amount);
+        int heal(int heal_amount);
 
         // --- getters ---
         int getMaxHealth() const { return max_health_; }
