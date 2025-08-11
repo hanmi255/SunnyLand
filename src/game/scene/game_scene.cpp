@@ -20,6 +20,7 @@
 #include "../component/ai_behavior/updown_behavior.h"
 #include "../component/ai_component.h"
 #include "../component/player_component.h"
+#include "../data/session_data.h"
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
 
@@ -30,13 +31,16 @@ namespace game::scene {
     const GameScene::EffectConfig GameScene::EffectConfig::ITEM{
         "assets/textures/FX/item-feedback.png", 4, 32.0f, 32.0f, 0.1f};
 
-    GameScene::GameScene(const std::string_view &name, engine::core::Context &context,
-                         engine::scene::SceneManager &scene_manager)
-        : Scene(name, context, scene_manager)
+    GameScene::GameScene(engine::core::Context &context, engine::scene::SceneManager &scene_manager,
+                         std::shared_ptr<game::data::SessionData> data)
+        : Scene("GameScene", context, scene_manager), game_session_data_(std::move(data))
     {
-        spdlog::trace("GameScene 构造完成");
+        if (!game_session_data_) { // 如果没有传入SessionData，则创建一个默认的
+            game_session_data_ = std::make_shared<game::data::SessionData>();
+            spdlog::info("未提供 SessionData，使用默认值。");
+        }
+        spdlog::trace("GameScene 构造完成。");
     }
-
     void GameScene::init()
     {
         if (is_initialized_) {
@@ -82,6 +86,7 @@ namespace game::scene {
     void GameScene::handleInput()
     {
         Scene::handleInput();
+        testSaveAndLoad();
     }
 
     void GameScene::clean()
@@ -93,7 +98,7 @@ namespace game::scene {
     {
         // 加载关卡（level_loader通常加载完成后即可销毁，因此不存为成员变量）
         engine::scene::LevelLoader level_loader;
-        auto level_path = levelNameToPath(name_);
+        auto level_path = game_session_data_->getMapPath();
         if (!level_loader.loadLevel(level_path, *this)) {
             spdlog::error("关卡加载失败");
             return false;
@@ -261,15 +266,27 @@ namespace game::scene {
             if (tile_type == engine::component::TileType::HAZARD) {
                 // 玩家碰到到危险瓦片，受伤
                 if (obj->getName() == "player") {
-                    if (auto* player_component =
-                            obj->getComponent<game::component::PlayerComponent>()) {
-                        player_component->takeDamage(1);
-                        spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->getName());
-                    }
+                    handlePlayerDamage(1);
+                    spdlog::debug("玩家 {} 受到了 HAZARD 瓦片伤害", obj->getName());
                 }
-                // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
             }
+            // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
         }
+    }
+
+    void GameScene::handlePlayerDamage(int damage_amount)
+    {
+        auto* player_component = player_->getComponent<game::component::PlayerComponent>();
+        if (!player_component->takeDamage(damage_amount)) { // 没有受伤，直接返回
+            return;
+        }
+        if (player_component->isDead()) {
+            spdlog::info("玩家 {} 死亡", player_->getName());
+            // TODO: 可能的死亡逻辑处理
+        }
+        // 更新游戏数据(生命值)
+        game_session_data_->setCurrentHealth(
+            player_component->getHealthComponent()->getCurrentHealth());
     }
 
     void GameScene::PlayerVSEnemyCollision(engine::object::GameObject* player,
@@ -329,6 +346,8 @@ namespace game::scene {
             if (player_physics) {
                 player_physics->velocity_.y = -300.0f; // 向上跳起
                 context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
+                // 加分
+                game_session_data_->addScore(10);
             } else {
                 spdlog::warn("玩家 {} 没有 PhysicsComponent 组件，无法执行跳起效果",
                              player->getName());
@@ -337,14 +356,7 @@ namespace game::scene {
         // 踩踏判断失败，玩家受伤
         else {
             spdlog::info("敌人 {} 对玩家 {} 造成伤害", enemy->getName(), player->getName());
-
-            auto* player_component = player->getComponent<game::component::PlayerComponent>();
-            if (player_component) {
-                player_component->takeDamage(1);
-            } else {
-                spdlog::error("玩家 {} 没有 PlayerComponent 组件，无法处理受伤", player->getName());
-            }
-            // TODO: 其他受伤逻辑
+            handlePlayerDamage(1);
         }
     }
 
@@ -354,7 +366,7 @@ namespace game::scene {
         if (item->getName() == "fruit") {
             player->getComponent<engine::component::HealthComponent>()->heal(1); // 加血
         } else if (item->getName() == "gem") {
-            // TODO: 加分
+            game_session_data_->addScore(5);
         }
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
@@ -365,7 +377,9 @@ namespace game::scene {
     void GameScene::toNextLevel(engine::object::GameObject* trigger)
     {
         auto scene_name = trigger->getName();
-        auto next_scene = std::make_unique<GameScene>(scene_name, context_, scene_manager_);
+        auto map_path = levelNameToPath(scene_name);
+        game_session_data_->setNextLevel(map_path);
+        auto next_scene = std::make_unique<GameScene>(context_, scene_manager_, game_session_data_);
         scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
@@ -408,5 +422,19 @@ namespace game::scene {
         animation_component->playAnimation("effect");
         safelyAddGameObject(std::move(effect_obj));
         spdlog::debug("创建特效: {}", tag);
-    };
+    }
+
+    void GameScene::testSaveAndLoad()
+    {
+        auto input_manager = context_.getInputManager();
+        if (input_manager.isActionJustPressed("attack")) {
+            game_session_data_->saveToFile("assets/data/save.json");
+        }
+        if (input_manager.isActionJustPressed("pause")) {
+            game_session_data_->loadFromFile("assets/data/save.json");
+            spdlog::info("当前生命值: {}", game_session_data_->getCurrentHealth());
+            spdlog::info("当前得分: {}", game_session_data_->getCurrentScore());
+        }
+    }
+
 } // namespace game::scene

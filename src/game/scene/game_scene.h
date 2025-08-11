@@ -1,11 +1,16 @@
 #pragma once
 #include "../../engine/scene/scene.h"
 #include <glm/vec2.hpp>
+#include <memory>
 #include <string_view>
 
 namespace engine::object {
     class GameObject;
 } // namespace engine::object
+
+namespace game::data {
+    class SessionData;
+} // namespace game::data
 
 namespace game::scene {
 
@@ -13,6 +18,8 @@ namespace game::scene {
      * @brief 主要的游戏场景，包含玩家、敌人、关卡元素等。
      */
     class GameScene final : public engine::scene::Scene {
+        std::shared_ptr<game::data::SessionData>
+            game_session_data_; ///< @brief 场景间共享数据，因此用shared_ptr
         engine::object::GameObject* player_ = nullptr;
 
     private:
@@ -46,8 +53,9 @@ namespace game::scene {
         };
 
     public:
-        GameScene(const std::string_view &name, engine::core::Context &context,
-                  engine::scene::SceneManager &scene_manager);
+        GameScene(engine::core::Context &context,
+                  engine::scene::SceneManager &scene_manager,
+                  std::shared_ptr<game::data::SessionData> data = nullptr);
 
         void init() override;
         void update(float delta_time) override;
@@ -63,6 +71,7 @@ namespace game::scene {
 
         void handleObjectCollisions();
         void handleTileTriggers();
+        void handlePlayerDamage(int damage_amount);
         void PlayerVSEnemyCollision(engine::object::GameObject* player,
                                     engine::object::GameObject* enemy);
         void PlayerVSItemCollision(engine::object::GameObject* player,
@@ -76,6 +85,9 @@ namespace game::scene {
         }
 
         void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
+
+        // 测试函数
+        void testSaveAndLoad();
     };
 
 } // namespace game::scene
