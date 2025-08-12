@@ -33,8 +33,8 @@ namespace engine::component {
          *                      (0.5, 0.5) 表示以相机一半的速度移动。
          * @param repeat_xy 是否沿着X Y轴重复
          */
-        ParallaxComponent(const std::string &texture_id, const glm::vec2 &scroll_factor,
-                          const glm::bvec2 &repeat_xy);
+        ParallaxComponent(const std::string &texture_id, glm::vec2 scroll_factor,
+                          glm::bvec2 repeat_xy);
 
         // --- getters ---
         const engine::render::Sprite &getSprite() const { return sprite_; }
@@ -44,8 +44,8 @@ namespace engine::component {
 
         // --- setters ---
         void setSprite(const engine::render::Sprite &sprite) { sprite_ = sprite; }
-        void setScrollFactor(const glm::vec2 &factor) { scroll_factor_ = factor; }
-        void setRepeatXY(const glm::bvec2 &repeat_xy) { repeat_xy_ = repeat_xy; }
+        void setScrollFactor(glm::vec2 factor) { scroll_factor_ = std::move(factor); }
+        void setRepeatXY(glm::bvec2 repeat_xy) { repeat_xy_ = std::move(repeat_xy); }
         void setVisible(bool visible) { is_visible_ = visible; }
 
     private:

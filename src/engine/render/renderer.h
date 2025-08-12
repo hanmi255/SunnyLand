@@ -72,7 +72,7 @@ namespace engine::render {
          * @param scale 缩放因子。
          */
         void drawParallax(const Camera &camera, const Sprite &sprite, const glm::vec2 &position,
-                          const glm::vec2 &scroll_factor, const glm::bvec2 &repeat = {true, true},
+                          const glm::vec2 &scroll_factor, glm::bvec2 repeat = {true, true},
                           const glm::vec2 &scale = {1.0f, 1.0f});
 
         /**

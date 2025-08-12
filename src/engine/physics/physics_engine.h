@@ -127,9 +127,9 @@ namespace engine::physics {
         }
 
         // --- setters ---
-        void setGravity(const glm::vec2 &gravity) { gravity_ = gravity; }
+        void setGravity(glm::vec2 gravity) { gravity_ = std::move(gravity); }
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
-        void setWorldBounds(const engine::utils::Rect &bounds) { world_bounds_ = bounds; }
+        void setWorldBounds(engine::utils::Rect bounds) { world_bounds_ = std::move(bounds); }
 
     private:
         /**

@@ -6,6 +6,7 @@
 #include "../resource/resource_manager.h"
 #include "transform_component.h"
 #include <spdlog/spdlog.h>
+#include <utility>
 
 namespace engine::component {
     SpriteComponent::SpriteComponent(const std::string &texture_id,
@@ -14,13 +15,13 @@ namespace engine::component {
                                      const std::optional<SDL_FRect> source_rect_opt,
                                      bool is_flipped)
         : resource_manager_(&resource_manager)
-        , sprite_(texture_id, source_rect_opt, is_flipped)
+        , sprite_(texture_id, std::move(source_rect_opt), is_flipped)
         , alignment_(alignment)
     {
         if (!resource_manager_) {
             spdlog::critical("创建 SpriteComponent 时 ResourceManager 为空！，此组件将无效。");
         }
-        spdlog::trace("SpriteComponent 构造完成，纹理ID: {}", texture_id);
+        spdlog::trace("创建 SpriteComponent，纹理ID: {}", sprite_.getTextureId());
     }
 
     SpriteComponent::SpriteComponent(engine::render::Sprite &&sprite,
@@ -128,18 +129,18 @@ namespace engine::component {
     }
 
     void SpriteComponent::setSpriteById(const std::string &texture_id,
-                                        const std::optional<SDL_FRect> &src_rect_opt)
+                                        std::optional<SDL_FRect> src_rect_opt)
     {
         sprite_.setTextureId(texture_id);
-        sprite_.setSrcRect(src_rect_opt);
+        sprite_.setSrcRect(std::move(src_rect_opt));
 
         updateSpriteSize();
         updateOffset();
     }
 
-    void SpriteComponent::setSrcRect(const std::optional<SDL_FRect> &src_rect_opt)
+    void SpriteComponent::setSrcRect(std::optional<SDL_FRect> src_rect_opt)
     {
-        sprite_.setSrcRect(src_rect_opt);
+        sprite_.setSrcRect(std::move(src_rect_opt));
         updateSpriteSize();
         updateOffset();
     }

@@ -4,13 +4,14 @@
 #include "../render/sprite.h"
 #include <spdlog/spdlog.h>
 #include <string_view>
+#include <utility>
 
 namespace engine::ui {
 
-    UIImage::UIImage(const std::string_view &texture_id, const glm::vec2 &position,
-                     const glm::vec2 &size, const std::optional<SDL_FRect> &source_rect,
-                     bool is_flipped)
-        : UIElement(position, size), sprite_(texture_id, source_rect, is_flipped)
+    UIImage::UIImage(const std::string_view &texture_id, glm::vec2 position, glm::vec2 size,
+                     std::optional<SDL_FRect> src_rect, bool is_flipped)
+        : UIElement(std::move(position), std::move(size))
+        , sprite_(texture_id, std::move(src_rect), is_flipped)
     {
         if (texture_id.empty()) {
             spdlog::warn("创建了一个空纹理ID的 UIImage。");

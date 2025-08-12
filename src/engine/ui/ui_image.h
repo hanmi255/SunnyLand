@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace engine::ui {
 
@@ -24,17 +25,17 @@ namespace engine::ui {
         * @param texture_id 要显示的纹理ID。
         * @param position 图像的局部位置。
         * @param size 图像元素的大小。（如果为{0,0}，则使用纹理的原始尺寸）
-        * @param source_rect
+        * @param src_rect
         * 可选：要绘制的纹理部分。（如果为空，则使用纹理的整个区域）
         * @param is_flipped 可选：精灵是否应该水平翻转。
         */
         UIImage(const std::string_view &texture_id,
-                const glm::vec2 &position = {0.0f, 0.0f},
-                const glm::vec2 &size = {0.0f, 0.0f},
-                const std::optional<SDL_FRect> &source_rect = std::nullopt,
+                glm::vec2 position = {0.0f, 0.0f},
+                glm::vec2 size = {0.0f, 0.0f},
+                std::optional<SDL_FRect> src_rect = std::nullopt,
                 bool is_flipped = false);
 
-        // --- 核心方法 ---
+        // 核心逻辑
         void render(engine::core::Context &context) override;
 
         // --- getters ---
@@ -45,12 +46,12 @@ namespace engine::ui {
         }
 
         // --- setters ---
-        void setSprite(const engine::render::Sprite &sprite) { sprite_ = sprite; }
+        void setSprite(engine::render::Sprite sprite) { sprite_ = std::move(sprite); }
         void setTextureId(const std::string &texture_id) {
             sprite_.setTextureId(texture_id);
         }
-        void setSrcRect(const std::optional<SDL_FRect> &source_rect) {
-            sprite_.setSrcRect(source_rect);
+        void setSrcRect(std::optional<SDL_FRect> src_rect) {
+            sprite_.setSrcRect(std::move(src_rect));
         }
 
         bool isFlipped() const { return sprite_.isFlipped(); }

@@ -38,8 +38,8 @@ namespace engine::ui {
          */
         UILabel(engine::render::TextRenderer &text_renderer, const std::string_view &text,
                 const std::string_view &font_id, int font_size = 16,
-                const engine::utils::FColor &text_color = {1.0f, 1.0f, 1.0f, 1.0f},
-                const glm::vec2 &position = {0.0f, 0.0f});
+                engine::utils::FColor text_color = {1.0f, 1.0f, 1.0f, 1.0f},
+                glm::vec2 position = {0.0f, 0.0f});
 
         // --- 核心逻辑 ---
         void render(engine::core::Context &context) override;
@@ -54,7 +54,7 @@ namespace engine::ui {
         void setText(const std::string_view &text);
         void setFontId(const std::string_view &font_id);
         void setFontSize(int font_size);
-        void setTextFColor(const engine::utils::FColor &text_fcolor);
+        void setTextFColor(engine::utils::FColor text_fcolor);
     };
 
 } // namespace engine::ui

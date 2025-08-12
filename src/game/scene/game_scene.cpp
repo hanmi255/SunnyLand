@@ -448,7 +448,7 @@ namespace game::scene {
         scene_manager_.requestPushScene(std::move(end_scene));
     }
 
-    void GameScene::createEffect(const glm::vec2 &center_pos, const std::string_view &tag)
+    void GameScene::createEffect(glm::vec2 center_pos, std::string_view tag)
     {
         // 根据标签获取配置
         const EffectConfig* config = nullptr;
@@ -464,7 +464,7 @@ namespace game::scene {
         // 创建游戏对象
         auto effect_obj =
             std::make_unique<engine::object::GameObject>("effect_" + std::string(tag));
-        effect_obj->addComponent<engine::component::TransformComponent>(center_pos);
+        effect_obj->addComponent<engine::component::TransformComponent>(std::move(center_pos));
 
         // 添加精灵组件
         effect_obj->addComponent<engine::component::SpriteComponent>(

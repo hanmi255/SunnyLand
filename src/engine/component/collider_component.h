@@ -57,7 +57,7 @@ namespace engine::component {
 
         // --- setters ---
         void setAlignment(engine::utils::Alignment anchor);
-        void setOffset(const glm::vec2 &offset) { offset_ = offset; }
+        void setOffset(glm::vec2 offset) { offset_ = std::move(offset); }
         void setTrigger(bool is_trigger) { is_trigger_ = is_trigger; }
         void setActive(bool is_active) { is_active_ = is_active; }
 

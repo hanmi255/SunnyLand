@@ -8,12 +8,11 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::component {
-    ParallaxComponent::ParallaxComponent(const std::string &texture_id,
-                                         const glm::vec2 &scroll_factor,
-                                         const glm::bvec2 &repeat_xy)
-        : sprite_(engine::render::Sprite(texture_id))
-        , scroll_factor_(scroll_factor)
-        , repeat_xy_(repeat_xy)
+    ParallaxComponent::ParallaxComponent(const std::string &texture_id, glm::vec2 scroll_factor,
+                                         glm::bvec2 repeat_xy)
+        : sprite_(texture_id)
+        , scroll_factor_(std::move(scroll_factor))
+        , repeat_xy_(std::move(repeat_xy))
     {
         spdlog::trace("ParallaxComponent 构造完成，纹理 ID: {}", texture_id);
     }

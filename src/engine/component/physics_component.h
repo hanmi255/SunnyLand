@@ -1,6 +1,7 @@
 #pragma once
 #include "component.h"
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace engine::physics {
     class PhysicsEngine;
@@ -70,7 +71,7 @@ namespace engine::component {
         void setEnabled(bool enabled) { enabled_ = enabled; }
         void setMass(float mass) { mass_ = (mass >= 0.0f) ? mass : 1.0f; }
         void setUseGravity(bool use_gravity) { use_gravity_ = use_gravity; }
-        void setVelocity(const glm::vec2 &velocity) { velocity_ = velocity; }
+        void setVelocity(glm::vec2 velocity) { velocity_ = std::move(velocity); }
 
         // 碰撞状态的访问和修改（供 PhysicsEngine 使用）
         void resetCollisionFlags()

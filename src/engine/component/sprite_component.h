@@ -81,10 +81,10 @@ namespace engine::component {
 
         // --- setters ---
         void setSpriteById(const std::string &texture_id,
-                           const std::optional<SDL_FRect> &src_rect_opt = std::nullopt);
+                           std::optional<SDL_FRect> source_rect_opt = std::nullopt);
         void setFlipped(bool flipped) { sprite_.setFlipped(flipped); }
         void setVisible(bool visible) { is_visible_ = visible; }
-        void setSrcRect(const std::optional<SDL_FRect> &src_rect_pot);
+        void setSrcRect(std::optional<SDL_FRect> src_rect_pot);
         void setAlignment(engine::utils::Alignment anchor);
 
     private:

@@ -63,8 +63,8 @@ namespace engine::render {
         engine::component::TransformComponent* getTarget() const;
 
         // --- setters ---
-        void setPosition(const glm::vec2 &position);
-        void setLimitBounds(const std::optional<engine::utils::Rect> bounds);
+        void setPosition(glm::vec2 position);
+        void setLimitBounds(std::optional<engine::utils::Rect> limit_bounds);
         void setTarget(engine::component::TransformComponent* target);
 
     private:

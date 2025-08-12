@@ -51,8 +51,8 @@ namespace engine::core {
 
         // --- setters ---
         void setState(State new_state);
-        void setWindowSize(glm::vec2 new_size);
-        void setLogicalSize(glm::vec2 new_size);
+        void setWindowSize(const glm::vec2 &window_size);
+        void setLogicalSize(const glm::vec2 &logical_size);
     };
 
 } // namespace engine::core

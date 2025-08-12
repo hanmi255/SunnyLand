@@ -93,7 +93,7 @@ namespace game::scene {
             return "assets/maps/" + std::string(level_name) + ".tmj";
         }
 
-        void createEffect(const glm::vec2 &center_pos, const std::string_view &tag);
+        void createEffect(glm::vec2 center_pos, std::string_view tag);
 
         // --- UI 相关函数 ---
         void createScoreUI();

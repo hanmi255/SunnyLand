@@ -6,7 +6,7 @@
 
 namespace engine::core {
     class Context;
-}
+} // namespace engine::core
 
 namespace engine::ui {
 
@@ -33,8 +33,7 @@ namespace engine::ui {
          * @param position 初始局部位置
          * @param size 初始大小
          */
-        explicit UIElement(const glm::vec2 &position = {0.0f, 0.0f},
-                           const glm::vec2 &size = {0.0f, 0.0f});
+        explicit UIElement(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 size = {0.0f, 0.0f});
         virtual ~UIElement() = default;
 
         // --- 核心逻辑 ---
@@ -56,10 +55,10 @@ namespace engine::ui {
         const std::vector<std::unique_ptr<UIElement>> &getChildren() const { return children_; }
 
         // --- setters ---
-        void setSize(const glm::vec2 &size) { size_ = size; }
+        void setSize(glm::vec2 size) { size_ = std::move(size); }
         void setVisible(bool visible) { visible_ = visible; }
         void setParent(UIElement* parent) { parent_ = parent; }
-        void setPosition(const glm::vec2 &position) { position_ = position; } // 相对于父节点
+        void setPosition(glm::vec2 position) { position_ = std::move(position); } // 相对于父节点
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }
 
         // --- 辅助方法 ---

@@ -112,7 +112,7 @@ namespace engine::component {
         bool isVisible() const { return is_visible_; }
 
         // --- setters ---
-        void setOffset(const glm::vec2 &offset) { offset_ = offset; }
+        void setOffset(glm::vec2 offset) { offset_ = std::move(offset); }
         void setVisible(bool visible) { is_visible_ = visible; }
         void setPhysicsEngine(engine::physics::PhysicsEngine* physics_engine)
         {

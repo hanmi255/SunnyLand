@@ -68,7 +68,7 @@ namespace engine::render {
 
     void Renderer::drawParallax(const Camera &camera, const Sprite &sprite,
                                 const glm::vec2 &position, const glm::vec2 &scroll_factor,
-                                const glm::bvec2 &repeat, const glm::vec2 &scale)
+                                glm::bvec2 repeat, const glm::vec2 &scale)
     {
         // 早期验证 - 避免无效的缩放
         if (scale.x <= 0.0f || scale.y <= 0.0f) {

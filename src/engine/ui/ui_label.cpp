@@ -8,13 +8,13 @@ namespace engine::ui {
 
     UILabel::UILabel(engine::render::TextRenderer &text_renderer, const std::string_view &text,
                      const std::string_view &font_id, int font_size,
-                     const engine::utils::FColor &text_color, const glm::vec2 &position)
-        : UIElement(position)
+                     engine::utils::FColor text_color, glm::vec2 position)
+        : UIElement(std::move(position))
         , text_renderer_(text_renderer)
         , text_(text)
         , font_id_(font_id)
         , font_size_(font_size)
-        , text_fcolor_(text_color)
+        , text_fcolor_(std::move(text_color))
     {
         // 获取文本渲染尺寸
         size_ = text_renderer_.getTextSize(text_, font_id_, font_size_);
@@ -48,9 +48,9 @@ namespace engine::ui {
         size_ = text_renderer_.getTextSize(text_, font_id_, font_size_);
     }
 
-    void UILabel::setTextFColor(const engine::utils::FColor &text_fcolor)
+    void UILabel::setTextFColor(engine::utils::FColor text_fcolor)
     {
-        text_fcolor_ = text_fcolor;
+        text_fcolor_ = std::move(text_fcolor);
     }
 
 } // namespace engine::ui

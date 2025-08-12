@@ -6,13 +6,13 @@
 namespace engine::render {
     Animation::Animation(const std::string_view &name, bool loop) : name_(name), loop_(loop) {}
 
-    void Animation::addFrame(const SDL_FRect &source_rect, float duration)
+    void Animation::addFrame(SDL_FRect src_rect, float duration)
     {
         if (duration <= 0.0f) {
             spdlog::warn("尝试向动画 '{}' 添加无效持续时间的帧", name_);
             return;
         }
-        frames_.push_back({source_rect, duration});
+        frames_.push_back({src_rect, duration});
         total_duration_ += duration;
     }
 

@@ -53,9 +53,9 @@ namespace engine::render {
         bool isFlipped() const { return is_flipped_; }
 
         // --- setters ---
-        void setTextureId(const std::string &texture_id) { this->texture_id_ = texture_id; }
-        void setSrcRect(const std::optional<SDL_FRect> &src_rect) { this->src_rect_ = src_rect; }
-        void setFlipped(bool flipped) { this->is_flipped_ = flipped; }
+        void setTextureId(const std::string &texture_id) { texture_id_ = texture_id; }
+        void setSrcRect(std::optional<SDL_FRect> src_rect) { src_rect_ = std::move(src_rect); }
+        void setFlipped(bool flipped) { is_flipped_ = flipped; }
     };
 
 } // namespace engine::render

@@ -1,6 +1,7 @@
 #pragma once
 #include "component.h"
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace engine::component {
     /**
@@ -24,7 +25,7 @@ namespace engine::component {
          */
         TransformComponent(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 scale = {1.0f, 1.0f},
                            float rotation = 0.0f)
-            : position_(position), scale_(scale), rotation_(rotation)
+            : position_(std::move(position)), scale_(std::move(scale)), rotation_(rotation)
         {
         }
 
@@ -40,8 +41,8 @@ namespace engine::component {
         float getRotation() const { return rotation_; }
 
         // --- setters ---
-        void setPosition(const glm::vec2 &position) { position_ = position; }
-        void setScale(const glm::vec2 &scale);
+        void setPosition(glm::vec2 position) { position_ = std::move(position); }
+        void setScale(glm::vec2 scale);
         void setRotation(float rotation) { rotation_ = rotation; }
 
         void translate(const glm::vec2 &offset) { position_ += offset; }

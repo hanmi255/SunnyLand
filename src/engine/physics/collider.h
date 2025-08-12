@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/vec2.hpp>
+#include <utility>
 
 namespace engine::physics {
 
@@ -23,10 +24,13 @@ namespace engine::physics {
 
     public:
         virtual ~Collider() = default;
-        // --- getters & setters ---
+
+        // --- getters ---
         virtual ColliderType getType() const = 0;
         const glm::vec2 &getAABBSize() const { return aabb_size_; }
-        void setAABBSize(const glm::vec2 &size) { aabb_size_ = size; }
+
+        // --- setters ---
+        void setAABBSize(glm::vec2 size) { aabb_size_ = std::move(size); }
     };
 
     /**
@@ -41,13 +45,15 @@ namespace engine::physics {
          * @brief 构造函数。
          * @param size 包围盒的宽度和高度。
          */
-        explicit AABBCollider(const glm::vec2 &size) : size_(size) { setAABBSize(size); }
+        explicit AABBCollider(glm::vec2 size) : size_(std::move(size)) { setAABBSize(size_); }
         ~AABBCollider() override = default;
 
-        // --- getters & setters ---
+        // --- getters ---
         ColliderType getType() const override { return ColliderType::AABB; }
         const glm::vec2 &getSize() const { return size_; }
-        void setSize(const glm::vec2 &size) { size_ = size; }
+
+        // --- setters ---
+        void setSize(glm::vec2 size) { size_ = std::move(size); }
     };
 
     /**
