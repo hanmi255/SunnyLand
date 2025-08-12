@@ -78,6 +78,7 @@ namespace game::scene {
 
         void handleObjectCollisions();
         void handleTileTriggers();
+        void checkPlayerFallOutOfWorld();
         void handlePlayerDamage(int damage_amount);
         void PlayerVSEnemyCollision(engine::object::GameObject* player,
                                     engine::object::GameObject* enemy);
@@ -85,6 +86,7 @@ namespace game::scene {
                                    engine::object::GameObject* item);
 
         void toNextLevel(engine::object::GameObject* trigger);
+        void showEndScene(bool is_win);
 
         std::string levelNameToPath(const std::string_view &level_name) const
         {

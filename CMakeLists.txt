@@ -89,6 +89,7 @@ set(SOURCES
     src/game/component/player_state/idle_state.cpp
     src/game/component/player_state/jump_state.cpp
     src/game/component/player_state/walk_state.cpp
+    src/game/scene/end_scene.cpp
     src/game/scene/game_scene.cpp
     src/game/scene/helps_scene.cpp
     src/game/scene/menu_scene.cpp

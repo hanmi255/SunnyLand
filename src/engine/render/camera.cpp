@@ -82,13 +82,13 @@ namespace engine::render {
         return target_;
     }
 
-    void Camera::setPostion(const glm::vec2 &position)
+    void Camera::setPosition(const glm::vec2 &position)
     {
         position_ = position;
         clampPosition();
     }
 
-    void Camera::setLimitBounds(const engine::utils::Rect &bounds)
+    void Camera::setLimitBounds(const std::optional<engine::utils::Rect> bounds)
     {
         limit_bounds_ = bounds;
         clampPosition();

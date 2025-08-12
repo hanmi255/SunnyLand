@@ -16,6 +16,7 @@ namespace game::data {
         int max_health_ = 3;
         int current_score_ = 0;
         int high_score_ = 0;
+        bool is_win_ = false;
 
         int level_health_ = 3; ///< @brief 进入关卡时的生命值（读/存档用）
         int level_score_ = 0;  ///< @brief 进入关卡时的得分（读/存档用）
@@ -39,6 +40,7 @@ namespace game::data {
         int getLevelHealth() const { return level_health_; }
         int getLevelScore() const { return level_score_; }
         const std::string &getMapPath() const { return map_path_; }
+        bool getIsWin() const { return is_win_; }
 
         // --- setters ---
         void setCurrentHealth(int health);
@@ -48,12 +50,14 @@ namespace game::data {
         void setLevelHealth(int level_health) { level_health_ = level_health; }
         void setLevelScore(int level_score) { level_score_ = level_score; }
         void setMapPath(const std::string &map_path) { map_path_ = map_path; }
+        void setIsWin(bool is_win) { is_win_ = is_win; }
 
         // 核心逻辑
         void reset();
         void setNextLevel(const std::string &map_path);
         bool saveToFile(const std::string &filename) const;
         bool loadFromFile(const std::string &filename);
+        bool syncHighScore(const std::string& filename);
     };
 
 } // namespace game::data

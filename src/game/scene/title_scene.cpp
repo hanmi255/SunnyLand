@@ -47,6 +47,13 @@ namespace game::scene {
             return;
         }
 
+        session_data_->syncHighScore("assets/data/save.json"); // 更新最高分
+
+        // 重置相机坐标，不限制边界
+        context_.getCamera().setPosition(glm::vec2(0.0f, 0.0f));
+        context_.getCamera().setLimitBounds(
+            std::nullopt); // 若无这一行，从GameScene返回到标题场景时，相机会限制在地图边界内
+
         // 创建 UI 元素
         createUI();
 
@@ -198,6 +205,7 @@ namespace game::scene {
     void TitleScene::onQuitClick()
     {
         spdlog::debug("退出按钮被点击。");
+        session_data_->syncHighScore("assets/data/save.json");
         context_.getInputManager().setShouldQuit(true);
     }
 

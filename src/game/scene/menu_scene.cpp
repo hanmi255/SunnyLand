@@ -136,6 +136,7 @@ namespace game::scene {
     void MenuScene::onQuitClicked()
     {
         spdlog::debug("退出按钮被点击。请求应用程序退出。");
+        session_data_->syncHighScore("assets/data/save.json");
         context_.getInputManager().setShouldQuit(true); // 输入管理器设置退出标志
     }
 

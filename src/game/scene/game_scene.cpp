@@ -28,6 +28,7 @@
 #include "../component/ai_component.h"
 #include "../component/player_component.h"
 #include "../data/session_data.h"
+#include "end_scene.h"
 #include "menu_scene.h"
 #include <SDL3/SDL_rect.h>
 #include <spdlog/spdlog.h>
@@ -58,6 +59,7 @@ namespace game::scene {
 
         spdlog::trace("GameScene 初始化开始...");
         context_.getGameState().setState(engine::core::State::Playing);
+        game_session_data_->syncHighScore("assets/data/save.json");
 
         if (!initLevel()) {
             spdlog::error("关卡初始化失败，无法继续。");
@@ -91,6 +93,7 @@ namespace game::scene {
         Scene::update(delta_time);
         handleObjectCollisions();
         handleTileTriggers();
+        checkPlayerFallOutOfWorld();
     }
 
     void GameScene::render()
@@ -142,7 +145,7 @@ namespace game::scene {
         auto world_size =
             main_layer->getComponent<engine::component::TileLayerComponent>()->getWorldSize();
         context_.getCamera().setLimitBounds(engine::utils::Rect(glm::vec2(0.0f), world_size));
-        context_.getCamera().setPostion(glm::vec2(0.0f)); // 开始时重置相机位置，以免切换场景时晃动
+        context_.getCamera().setPosition(glm::vec2(0.0f)); // 开始时重置相机位置，以免切换场景时晃动
 
         // 设置世界边界
         context_.getPhysicsEngine().setWorldBounds(
@@ -168,6 +171,15 @@ namespace game::scene {
             return false;
         }
 
+        // 从SessionData中更新玩家生命值
+        auto* health_component = player_->getComponent<engine::component::HealthComponent>();
+        if (!health_component) {
+            spdlog::error("玩家对象缺少 HealthComponent 组件，无法设置生命值");
+            return false;
+        }
+        health_component->setMaxHealth(game_session_data_->getMaxHealth());
+        health_component->setCurrentHealth(game_session_data_->getCurrentHealth());
+
         // 相机跟随玩家
         auto* player_transform = player_->getComponent<engine::component::TransformComponent>();
         if (!player_transform) {
@@ -175,6 +187,7 @@ namespace game::scene {
             return false;
         }
         context_.getCamera().setTarget(player_transform);
+
         spdlog::trace("Player初始化完成。");
         return true;
     }
@@ -279,6 +292,10 @@ namespace game::scene {
                 else if (other_tag == "next_level") {
                     toNextLevel(other);
                 }
+                // 处理玩家与胜利触发器碰撞
+                else if (other_tag == "win") {
+                    showEndScene(true);
+                }
             }();
         }
     }
@@ -295,6 +312,22 @@ namespace game::scene {
                 }
             }
             // TODO: 其他对象类型的处理，目前让敌人无视瓦片伤害
+        }
+    }
+
+    void GameScene::checkPlayerFallOutOfWorld()
+    {
+        // 玩家掉出地图下方则判断为失败
+        if (!player_) {
+            return;
+        }
+
+        auto pos = player_->getComponent<engine::component::TransformComponent>()->getPosition();
+        auto world_rect = context_.getPhysicsEngine().getWorldBounds();
+        // 多100像素冗余量
+        if (world_rect && pos.y > world_rect->position.y + world_rect->size.y + 100.0f) {
+            spdlog::debug("玩家掉出地图下方，游戏失败");
+            showEndScene(false);
         }
     }
 
@@ -406,6 +439,15 @@ namespace game::scene {
         scene_manager_.requestReplaceScene(std::move(next_scene));
     }
 
+    void GameScene::showEndScene(bool is_win)
+    {
+        spdlog::debug("显示结束场景，游戏 {}", is_win ? "胜利" : "失败");
+        game_session_data_->setIsWin(is_win);
+        auto end_scene =
+            std::make_unique<game::scene::EndScene>(context_, scene_manager_, game_session_data_);
+        scene_manager_.requestPushScene(std::move(end_scene));
+    }
+
     void GameScene::createEffect(const glm::vec2 &center_pos, const std::string_view &tag)
     {
         // 根据标签获取配置
@@ -503,23 +545,19 @@ namespace game::scene {
 
             auto bg_icon =
                 std::make_unique<engine::ui::UIImage>(empty_heart_tex, icon_pos, icon_size);
-            if (!bg_icon) {
-                spdlog::warn("无法创建背景心形图标 {}", i);
-                continue;
-            }
+
             health_panel_->addChild(std::move(bg_icon));
         }
 
-        for (int i = 0; i < current_health; ++i) { // 创建前景图标
+        for (int i = 0; i < max_health; ++i) { // 创建前景图标
             const glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
             const glm::vec2 icon_size = {icon_width, icon_height};
 
             auto fg_icon =
                 std::make_unique<engine::ui::UIImage>(full_heart_tex, icon_pos, icon_size);
-            if (!fg_icon) {
-                spdlog::warn("无法创建前景心形图标 {}", i);
-                continue;
-            }
+            bool is_visible = (i < current_health); // 前景图标的可见性取决于当前生命值
+            fg_icon->setVisible(is_visible);
+
             health_panel_->addChild(std::move(fg_icon));
         }
 
