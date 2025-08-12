@@ -2,7 +2,7 @@
 #include "../render/sprite.h"
 #include "component.h"
 #include <glm/vec2.hpp>
-#include <string>
+#include <string_view>
 
 namespace engine::component {
     class TransformComponent;
@@ -33,7 +33,7 @@ namespace engine::component {
          *                      (0.5, 0.5) 表示以相机一半的速度移动。
          * @param repeat_xy 是否沿着X Y轴重复
          */
-        ParallaxComponent(const std::string &texture_id, glm::vec2 scroll_factor,
+        ParallaxComponent(std::string_view texture_id, glm::vec2 scroll_factor,
                           glm::bvec2 repeat_xy);
 
         // --- getters ---

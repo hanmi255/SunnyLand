@@ -10,6 +10,7 @@
 #pragma once
 #include <nlohmann/json_fwd.hpp> // nlohmann_json 提供的前向声明
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -23,7 +24,7 @@ namespace engine::core {
      */
     class Config final {
     public:
-        explicit Config(const std::string &file_path);
+        explicit Config(std::string_view file_path);
 
         // 禁用拷贝和移动语义
         Config(const Config &) = delete;
@@ -31,8 +32,8 @@ namespace engine::core {
         Config(Config &&) = delete;
         Config &operator=(Config &&) = delete;
 
-        bool loadFromFile(const std::string &file_path);
-        [[nodiscard]] bool saveToFile(const std::string &file_path) const;
+        bool loadFromFile(std::string_view file_path);
+        [[nodiscard]] bool saveToFile(std::string_view file_path) const;
 
         // --- getters ---
         const std::string &getWindowTitle() const;

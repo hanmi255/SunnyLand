@@ -2,6 +2,7 @@
 #include "./component.h"
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace engine::render {
@@ -45,12 +46,12 @@ namespace engine::component {
         AnimationComponent &operator=(AnimationComponent &&) = delete;
 
         void addAnimation(std::unique_ptr<engine::render::Animation> animation);
-        void playAnimation(const std::string &name);
+        void playAnimation(std::string_view name);
         void stopAnimation() { is_playing_ = false; }
         void resumeAnimation() { is_playing_ = true; }
 
         // --- getters ---
-        std::string getCurrentAnimationName() const;
+        std::string_view getCurrentAnimationName() const;
         bool isPlaying() const { return is_playing_; }
         bool isAnimationFinished() const;
         bool isOneShotRemoval() const { return is_one_shot_removal_; }

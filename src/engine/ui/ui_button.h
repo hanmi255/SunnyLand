@@ -26,8 +26,8 @@ namespace engine::ui {
          * @param size 大小
          * @param callback 回调函数
          */
-        UIButton(engine::core::Context &context, const std::string &normal_sprite_id,
-                 const std::string &hover_sprite_id, const std::string &pressed_sprite_id,
+        UIButton(engine::core::Context &context, std::string_view normal_sprite_id,
+                 std::string_view hover_sprite_id, std::string_view pressed_sprite_id,
                  glm::vec2 position = {0.0f, 0.0f}, glm::vec2 size = {0.0f, 0.0f},
                  std::function<void()> callback = nullptr);
         ~UIButton() override = default;

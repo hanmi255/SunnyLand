@@ -74,12 +74,11 @@ namespace engine::scene {
          * @param scene 要加载数据的目标 Scene 对象。
          * @return bool 是否加载成功。
          */
-        bool loadLevel(const std::string &level_path, Scene &scene);
+        bool loadLevel(std::string_view level_path, Scene &scene);
 
     private:
         // ========== 核心加载流程函数 ==========
-        [[nodiscard]] std::optional<nlohmann::json>
-        loadJsonFile(const std::string &file_path) const;
+        [[nodiscard]] std::optional<nlohmann::json> loadJsonFile(std::string_view file_path) const;
         [[nodiscard]] bool parseMapBasicInfo(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllTilesets(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllLayers(const nlohmann::json &json_data, Scene &scene);
@@ -126,7 +125,7 @@ namespace engine::scene {
         getTileType(const nlohmann::json &tile_json) const;
         [[nodiscard]] engine::component::TileType
         getTileTypeById(const nlohmann::json &tileset_json, int local_id) const;
-        void loadTileset(const std::string &tileset_path, int first_gid);
+        void loadTileset(std::string_view tileset_path, int first_gid);
 
         // ========== 瓦片属性解析函数 ==========
         template <typename T>
@@ -140,8 +139,8 @@ namespace engine::scene {
                                              std::string_view expected_key) const;
 
         // ========== 通用工具函数 ==========
-        [[nodiscard]] std::string resolvePath(const std::string &relative_path,
-                                              const std::string &file_path) const;
+        [[nodiscard]] std::string resolvePath(std::string relative_path,
+                                              std::string file_path) const;
         template <typename T>
         [[nodiscard]] T getJsonValue(const nlohmann::json &json, std::string_view key,
                                      T default_value) const;

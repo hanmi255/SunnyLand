@@ -1,6 +1,7 @@
 #pragma once
 #include <nlohmann/json.hpp>
 #include <string>
+#include <string_view>
 
 namespace game::data {
 
@@ -39,7 +40,7 @@ namespace game::data {
         int getHighScore() const { return high_score_; }
         int getLevelHealth() const { return level_health_; }
         int getLevelScore() const { return level_score_; }
-        const std::string &getMapPath() const { return map_path_; }
+        std::string_view getMapPath() const { return map_path_; }
         bool getIsWin() const { return is_win_; }
 
         // --- setters ---
@@ -49,15 +50,15 @@ namespace game::data {
         void setHighScore(int high_score) { high_score_ = high_score; }
         void setLevelHealth(int level_health) { level_health_ = level_health; }
         void setLevelScore(int level_score) { level_score_ = level_score; }
-        void setMapPath(const std::string &map_path) { map_path_ = map_path; }
+        void setMapPath(std::string_view map_path) { map_path_ = map_path; }
         void setIsWin(bool is_win) { is_win_ = is_win; }
 
         // 核心逻辑
         void reset();
-        void setNextLevel(const std::string &map_path);
-        bool saveToFile(const std::string &filename) const;
-        bool loadFromFile(const std::string &filename);
-        bool syncHighScore(const std::string& filename);
+        void setNextLevel(std::string_view map_path);
+        bool saveToFile(std::string_view filename) const;
+        bool loadFromFile(std::string_view filename);
+        bool syncHighScore(std::string_view filename);
     };
 
 } // namespace game::data

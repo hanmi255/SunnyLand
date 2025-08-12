@@ -4,6 +4,7 @@
 #include "ui_element.h"
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace engine::core {
@@ -31,16 +32,16 @@ namespace engine::ui {
         bool interactive_ = true;                          ///< @brief 是否可交互
 
     public:
-        UIInteractive(engine::core::Context &context, const glm::vec2 &position = {0.0f, 0.0f},
-                      const glm::vec2 &size = {0.0f, 0.0f});
+        UIInteractive(engine::core::Context &context, glm::vec2 position = {0.0f, 0.0f},
+                      glm::vec2 size = {0.0f, 0.0f});
         ~UIInteractive() override;
 
         virtual void clicked() {} ///< @brief 如果有点击事件，则重写该方法
 
-        void addSprite(const std::string &name, std::unique_ptr<engine::render::Sprite> sprite);
-        void setSprite(const std::string &name);
-        void addSound(const std::string &name, const std::string &path);
-        void playSound(const std::string &name);
+        void addSprite(std::string_view name, std::unique_ptr<engine::render::Sprite> sprite);
+        void setSprite(std::string_view name);
+        void addSound(std::string_view name, std::string_view path);
+        void playSound(std::string_view name);
 
         // --- getters ---
         engine::ui::state::UIState* getState() const { return state_.get(); }

@@ -72,21 +72,21 @@ namespace engine::input {
          * @param action_name 动作名称
          * @return true 如果动作在当前帧刚被按下
          */
-        bool isActionJustPressed(const std::string &action_name) const;
+        bool isActionJustPressed(std::string_view action_name) const;
 
         /**
          * @brief 检查动作是否被持续按下
          * @param action_name 动作名称
          * @return true 如果动作当前被按下（包括刚按下和持续按下）
          */
-        bool isActionHeldDown(const std::string &action_name) const;
+        bool isActionHeldDown(std::string_view action_name) const;
 
         /**
          * @brief 检查动作是否刚刚被释放
          * @param action_name 动作名称
          * @return true 如果动作在当前帧刚被释放
          */
-        bool isActionJustReleased(const std::string &action_name) const;
+        bool isActionJustReleased(std::string_view action_name) const;
 
         // --- 应用程序状态 ---
 
@@ -186,7 +186,7 @@ namespace engine::input {
          * @param action_name 动作名称
          * @param key_name 按键名称
          */
-        void addInputMapping(const std::string &action_name, const std::string &key_name);
+        void addInputMapping(std::string_view action_name, std::string_view key_name);
 
         // --- 工具函数 ---
 
@@ -196,7 +196,7 @@ namespace engine::input {
          * @param is_input_active 输入是否激活
          * @param is_repeat_event 是否为重复事件
          */
-        void updateActionState(const std::string &action_name, bool is_input_active,
+        void updateActionState(std::string_view action_name, bool is_input_active,
                                bool is_repeat_event);
 
         /**
@@ -204,7 +204,7 @@ namespace engine::input {
          * @param key_name 按键名称
          * @return 对应的SDL扫描码，如果无效则返回SDL_SCANCODE_UNKNOWN
          */
-        static SDL_Scancode scancodeFromString(const std::string &key_name) noexcept;
+        static SDL_Scancode scancodeFromString(std::string_view key_name) noexcept;
 
         /**
          * @brief 从字符串获取鼠标按钮ID

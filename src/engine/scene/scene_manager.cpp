@@ -171,7 +171,7 @@ namespace engine::scene {
             return;
         }
 
-        const std::string scene_name = scenes_stack_.back()->getName();
+        const auto scene_name = scenes_stack_.back()->getName();
         spdlog::debug("将场景 '{}' 弹出场景栈", scene_name);
 
         // 清理并弹出场景
@@ -190,9 +190,9 @@ namespace engine::scene {
             return;
         }
 
-        const std::string new_scene_name = scene->getName();
-        const std::string old_scene_name = scenes_stack_.empty() ? "无场景"
-                                                                 : scenes_stack_.back()->getName();
+        const auto new_scene_name = scene->getName();
+        const auto old_scene_name = scenes_stack_.empty() ? "无场景"
+                                                          : scenes_stack_.back()->getName();
 
         spdlog::debug("将当前场景 '{}' 替换为场景 '{}'", old_scene_name, new_scene_name);
 

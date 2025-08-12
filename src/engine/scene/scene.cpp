@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::scene {
-    Scene::Scene(const std::string_view &name, engine::core::Context &context,
+    Scene::Scene(std::string_view name, engine::core::Context &context,
                  engine::scene::SceneManager &scene_manager)
         : name_(name)
         , context_(context)
@@ -166,7 +166,7 @@ namespace engine::scene {
         object_ptr->setNeedRemove(true);
     }
 
-    engine::object::GameObject* Scene::findGameObjectByName(const std::string &name) const
+    engine::object::GameObject* Scene::findGameObjectByName(std::string_view name) const
     {
         for (const auto &object : game_objects_) {
             if (object && object->getName() == name) {

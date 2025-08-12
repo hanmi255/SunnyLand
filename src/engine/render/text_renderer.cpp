@@ -46,9 +46,8 @@ namespace engine::render {
         TTF_Quit(); // 一定要确保在ResourceManager销毁之后调用
     }
 
-    void TextRenderer::drawUIText(const std::string_view &text, const std::string_view &font_id,
-                                  int font_size, const glm::vec2 &position,
-                                  const engine::utils::FColor &color)
+    void TextRenderer::drawUIText(std::string_view text, std::string_view font_id, int font_size,
+                                  const glm::vec2 &position, const engine::utils::FColor &color)
     {
         TTF_Font* font = resource_manager_->getFont(font_id, font_size);
         if (!font) {
@@ -79,9 +78,9 @@ namespace engine::render {
         TTF_DestroyText(temp_text_object);
     }
 
-    void TextRenderer::drawText(const Camera &camera, const std::string_view &text,
-                                const std::string_view &font_id, int font_size,
-                                const glm::vec2 &position, const engine::utils::FColor &color)
+    void TextRenderer::drawText(const Camera &camera, std::string_view text,
+                                std::string_view font_id, int font_size, const glm::vec2 &position,
+                                const engine::utils::FColor &color)
     {
         // 应用相机变换
         glm::vec2 position_screen = camera.worldToScreen(position);
@@ -90,8 +89,8 @@ namespace engine::render {
         drawUIText(text, font_id, font_size, position_screen, color);
     }
 
-    glm::vec2 TextRenderer::getTextSize(const std::string_view &text,
-                                        const std::string_view &font_id, int font_size)
+    glm::vec2 TextRenderer::getTextSize(std::string_view text, std::string_view font_id,
+                                        int font_size)
     {
         TTF_Font* font = resource_manager_->getFont(font_id, font_size);
         if (!font) {

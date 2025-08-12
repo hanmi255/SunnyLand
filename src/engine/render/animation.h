@@ -28,7 +28,7 @@ namespace engine::render {
         bool loop_ = true;                   ///< @brief 是否循环播放（默认循环）
 
     public:
-        Animation(const std::string_view &name = "default", bool loop = true);
+        Animation(std::string_view name = "default", bool loop = true);
         ~Animation() = default;
 
         // 禁止拷贝和移动语义
@@ -53,7 +53,7 @@ namespace engine::render {
         const AnimationFrame &getFrame(float time) const;
 
         // --- getters ---
-        const std::string &getName() const { return name_; }
+        std::string_view getName() const { return name_; }
         const std::vector<AnimationFrame> &getFrames() const { return frames_; }
         size_t getFrameCount() const { return frames_.size(); }
         float getTotalDuration() const { return total_duration_; }
@@ -61,7 +61,7 @@ namespace engine::render {
         bool isEmpty() const { return frames_.empty(); }
 
         // --- setters ---
-        void setName(const std::string_view &name) { name_ = name; }
+        void setName(std::string_view name) { name_ = name; }
         void setLooping(bool loop) { loop_ = loop; }
     };
 } // namespace engine::render

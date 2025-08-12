@@ -40,14 +40,14 @@ namespace game::data {
         spdlog::info("SessionData reset.");
     }
 
-    void SessionData::setNextLevel(const std::string &map_path)
+    void SessionData::setNextLevel(std::string_view map_path)
     {
         map_path_ = map_path;
         level_health_ = current_health_;
         level_score_ = current_score_;
     }
 
-    bool SessionData::saveToFile(const std::string &filename) const
+    bool SessionData::saveToFile(std::string_view filename) const
     {
         try {
             // 将成员变量序列化到 JSON 对象中
@@ -60,7 +60,9 @@ namespace game::data {
 
             // 写入文件
             {
-                std::ofstream ofs(filename);
+                auto path = std::filesystem::path(filename);
+                std::ofstream ofs(path);
+
                 if (!ofs.is_open()) {
                     spdlog::error("无法打开存档文件进行写入: {}", filename);
                     return false;
@@ -76,13 +78,15 @@ namespace game::data {
         }
     }
 
-    bool SessionData::loadFromFile(const std::string &filename)
+    bool SessionData::loadFromFile(std::string_view filename)
     {
         try {
             // 从文件解析 JSON 数据
             nlohmann::json j;
             {
-                std::ifstream ifs(filename);
+                auto path = std::filesystem::path(filename);
+                std::ifstream ifs(path);
+
                 if (!ifs.is_open()) {
                     spdlog::warn("读档时找不到文件: {}", filename);
                     // 如果存档文件不存在，这不一定是错误
@@ -106,13 +110,15 @@ namespace game::data {
         }
     }
 
-    bool SessionData::syncHighScore(const std::string &filename)
+    bool SessionData::syncHighScore(std::string_view filename)
     {
         try {
             // 读取JSON文件
             nlohmann::json j;
             {
-                std::ifstream ifs(filename);
+                auto path = std::filesystem::path(filename);
+                std::ifstream ifs(path);
+
                 if (!ifs.is_open()) {
                     spdlog::warn("找不到文件: {}, 无法进行同步", filename);
                     return false;
@@ -127,7 +133,9 @@ namespace game::data {
                 // 文件中的最高分低于当前最高分，更新文件
                 j["high_score"] = high_score_;
                 {
-                    std::ofstream ofs(filename, std::ios::trunc); // 使用trunc确保完全重写
+                    auto path = std::filesystem::path(filename);
+                    std::ofstream ofs(path, std::ios::trunc); // 使用trunc确保完全重写
+
                     if (!ofs.is_open()) {
                         spdlog::error("无法打开文件进行写入: {}", filename);
                         return false;

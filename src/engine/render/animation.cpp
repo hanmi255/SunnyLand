@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::render {
-    Animation::Animation(const std::string_view &name, bool loop) : name_(name), loop_(loop) {}
+    Animation::Animation(std::string_view name, bool loop) : name_(name), loop_(loop) {}
 
     void Animation::addFrame(SDL_FRect src_rect, float duration)
     {

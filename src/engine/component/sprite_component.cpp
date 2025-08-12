@@ -9,7 +9,7 @@
 #include <utility>
 
 namespace engine::component {
-    SpriteComponent::SpriteComponent(const std::string &texture_id,
+    SpriteComponent::SpriteComponent(std::string_view texture_id,
                                      engine::resource::ResourceManager &resource_manager,
                                      engine::utils::Alignment alignment,
                                      const std::optional<SDL_FRect> source_rect_opt,
@@ -128,10 +128,10 @@ namespace engine::component {
                                          rotation_degrees);
     }
 
-    void SpriteComponent::setSpriteById(const std::string &texture_id,
+    void SpriteComponent::setSpriteById(std::string_view texture_id,
                                         std::optional<SDL_FRect> src_rect_opt)
     {
-        sprite_.setTextureId(texture_id);
+        sprite_.setTextureId(std::string(texture_id));
         sprite_.setSrcRect(std::move(src_rect_opt));
 
         updateSpriteSize();

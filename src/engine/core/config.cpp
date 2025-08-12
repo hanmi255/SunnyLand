@@ -1,17 +1,19 @@
 #include "config.h"
+#include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
 namespace engine::core {
-    Config::Config(const std::string &file_path)
+    Config::Config(std::string_view file_path)
     {
         loadFromFile(file_path);
     }
 
-    bool Config::loadFromFile(const std::string &file_path)
+    bool Config::loadFromFile(std::string_view file_path)
     {
-        std::ifstream file(file_path);
+        auto path = std::filesystem::path(file_path);
+        std::ifstream file(path); // ifstream 不支持std::string_view 构造
 
         if (!file.is_open()) {
             spdlog::warn("配置文件 '{}' 未找到，使用默认设置并创建配置文件", file_path);
@@ -39,9 +41,11 @@ namespace engine::core {
         }
     }
 
-    bool Config::saveToFile(const std::string &file_path) const
+    bool Config::saveToFile(std::string_view file_path) const
     {
-        std::ofstream file(file_path);
+        auto path = std::filesystem::path(file_path);
+        std::ofstream file(path);
+
         if (!file.is_open()) {
             spdlog::error("无法打开文件 '{}'，进行写入", file_path);
             return false;
@@ -149,23 +153,24 @@ namespace engine::core {
 
     nlohmann::ordered_json Config::toJson() const
     {
-        return nlohmann::ordered_json{
-            {"window", {
-                {"title", window_title_},
-                {"width", window_width_},
-                {"height", window_height_},
-                {"resizable", window_resizable_}
-            }},
-            {"graphics", {
-                {"vsync", vsync_enabled_},
-            }},
-            {"performance", {
-                {"target_fps", target_fps_},
-            }},
-            {"audio", {
-                {"music_volume", music_volume_},
-                {"sound_volume", sound_volume_},
-            }},
-            {"input_mappings", input_mappings_}};
+        return nlohmann::ordered_json{{"window",
+                                       {{"title", window_title_},
+                                        {"width", window_width_},
+                                        {"height", window_height_},
+                                        {"resizable", window_resizable_}}},
+                                      {"graphics",
+                                       {
+                                           {"vsync", vsync_enabled_},
+                                       }},
+                                      {"performance",
+                                       {
+                                           {"target_fps", target_fps_},
+                                       }},
+                                      {"audio",
+                                       {
+                                           {"music_volume", music_volume_},
+                                           {"sound_volume", sound_volume_},
+                                       }},
+                                      {"input_mappings", input_mappings_}};
     }
 } // namespace engine::core

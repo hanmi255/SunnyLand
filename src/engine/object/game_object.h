@@ -22,7 +22,7 @@ namespace engine::object {
         bool need_remove_ = false; ///< @breif 将来由场景类负责删除
 
     public:
-        GameObject(const std::string_view &name = "", const std::string_view &tag = "");
+        GameObject(std::string_view name = "", std::string_view tag = "");
 
         // 禁止拷贝和移动语义
         GameObject(const GameObject &) = delete;
@@ -36,8 +36,8 @@ namespace engine::object {
         bool isNeedRemove() const { return need_remove_; }
 
         // --- setters ---
-        void setName(const std::string_view &name) { name_ = name; }
-        void setTag(const std::string_view &tag) { tag_ = tag; }
+        void setName(std::string_view name) { name_ = name; }
+        void setTag(std::string_view tag) { tag_ = tag; }
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }
 
         // 关键循环函数

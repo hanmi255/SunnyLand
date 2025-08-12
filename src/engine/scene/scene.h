@@ -45,7 +45,7 @@ namespace engine::scene {
          * @param context 场景上下文。
          * @param scene_manager 场景管理器。
          */
-        Scene(const std::string_view &name, engine::core::Context &context,
+        Scene(std::string_view name, engine::core::Context &context,
               engine::scene::SceneManager &scene_manager);
         virtual ~Scene();
 
@@ -67,10 +67,10 @@ namespace engine::scene {
         virtual void removeGameObject(engine::object::GameObject* object_ptr);
         virtual void safelyRemoveGameObject(engine::object::GameObject* object_ptr);
 
-        engine::object::GameObject* findGameObjectByName(const std::string &name) const;
+        engine::object::GameObject* findGameObjectByName(std::string_view name) const;
 
         // --- getters ---
-        const std::string &getName() const { return name_; }
+        std::string_view getName() const { return name_; }
         engine::core::Context &getContext() const { return context_; }
         engine::scene::SceneManager &getSceneManager() const { return scene_manager_; }
         bool isInitialized() const { return is_initialized_; }
@@ -80,7 +80,7 @@ namespace engine::scene {
         }
 
         // --- setters ---
-        void setName(const std::string_view &name) { name_ = name; }
+        void setName(std::string_view name) { name_ = name; }
         void setInitialized(bool initialized) { is_initialized_ = initialized; }
 
     protected:

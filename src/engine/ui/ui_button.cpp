@@ -3,8 +3,8 @@
 #include <spdlog/spdlog.h>
 
 namespace engine::ui {
-    UIButton::UIButton(engine::core::Context &context, const std::string &normal_sprite_id,
-                       const std::string &hover_sprite_id, const std::string &pressed_sprite_id,
+    UIButton::UIButton(engine::core::Context &context, std::string_view normal_sprite_id,
+                       std::string_view hover_sprite_id, std::string_view pressed_sprite_id,
                        glm::vec2 position, glm::vec2 size, std::function<void()> callback)
         : UIInteractive(context, std::move(position), std::move(size))
         , callback_(std::move(callback))

@@ -88,7 +88,7 @@ namespace game::scene {
         void toNextLevel(engine::object::GameObject* trigger);
         void showEndScene(bool is_win);
 
-        std::string levelNameToPath(const std::string_view &level_name) const
+        std::string levelNameToPath(std::string_view level_name) const
         {
             return "assets/maps/" + std::string(level_name) + ".tmj";
         }

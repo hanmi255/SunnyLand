@@ -5,7 +5,6 @@
 #include <SDL3/SDL_rect.h>
 #include <glm/vec2.hpp>
 #include <optional>
-#include <string>
 #include <string_view>
 
 namespace engine::core {
@@ -44,7 +43,7 @@ namespace engine::component {
          * @param source_rect_opt 可选的源矩形。
          * @param is_flipped 初始翻转状态。
          */
-        SpriteComponent(const std::string &texture_id,
+        SpriteComponent(std::string_view texture_id,
                         engine::resource::ResourceManager &resource_manager,
                         engine::utils::Alignment alignment = engine::utils::Alignment::NONE,
                         const std::optional<SDL_FRect> source_rect_opt = std::nullopt,
@@ -80,7 +79,7 @@ namespace engine::component {
         engine::utils::Alignment getAlignment() const { return alignment_; }
 
         // --- setters ---
-        void setSpriteById(const std::string &texture_id,
+        void setSpriteById(std::string_view texture_id,
                            std::optional<SDL_FRect> source_rect_opt = std::nullopt);
         void setFlipped(bool flipped) { sprite_.setFlipped(flipped); }
         void setVisible(bool visible) { is_visible_ = visible; }

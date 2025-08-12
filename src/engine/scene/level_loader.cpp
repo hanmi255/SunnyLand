@@ -20,7 +20,7 @@
 
 namespace engine::scene {
 
-    [[nodiscard]] bool LevelLoader::loadLevel(const std::string &level_path, Scene &scene)
+    [[nodiscard]] bool LevelLoader::loadLevel(std::string_view level_path, Scene &scene)
     {
         // 清理之前的状态
         tileset_data_.clear();
@@ -58,9 +58,11 @@ namespace engine::scene {
         return true;
     }
 
-    std::optional<nlohmann::json> LevelLoader::loadJsonFile(const std::string &file_path) const
+    std::optional<nlohmann::json> LevelLoader::loadJsonFile(std::string_view file_path) const
     {
-        std::ifstream file(file_path);
+        auto path = std::filesystem::path(file_path);
+        std::ifstream file(path);
+
         if (!file.is_open()) {
             spdlog::error("无法打开文件: {}", file_path);
             return std::nullopt;
@@ -725,7 +727,7 @@ namespace engine::scene {
         return engine::component::TileType::NORMAL;
     }
 
-    void LevelLoader::loadTileset(const std::string &tileset_path, int first_gid)
+    void LevelLoader::loadTileset(std::string_view tileset_path, int first_gid)
     {
         auto tileset_json_opt = loadJsonFile(tileset_path);
         if (!tileset_json_opt) {
@@ -797,8 +799,7 @@ namespace engine::scene {
         return true;
     }
 
-    std::string LevelLoader::resolvePath(const std::string &relative_path,
-                                         const std::string &file_path) const
+    std::string LevelLoader::resolvePath(std::string relative_path, std::string file_path) const
     {
         try {
             const auto map_dir = std::filesystem::path(file_path).parent_path();

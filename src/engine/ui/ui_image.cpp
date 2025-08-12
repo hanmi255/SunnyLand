@@ -3,12 +3,11 @@
 #include "../render/renderer.h"
 #include "../render/sprite.h"
 #include <spdlog/spdlog.h>
-#include <string_view>
 #include <utility>
 
 namespace engine::ui {
 
-    UIImage::UIImage(const std::string_view &texture_id, glm::vec2 position, glm::vec2 size,
+    UIImage::UIImage(std::string_view texture_id, glm::vec2 position, glm::vec2 size,
                      std::optional<SDL_FRect> src_rect, bool is_flipped)
         : UIElement(std::move(position), std::move(size))
         , sprite_(texture_id, std::move(src_rect), is_flipped)

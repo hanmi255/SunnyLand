@@ -36,8 +36,8 @@ namespace engine::ui {
          * @param font_size 字体大小
          * @param text_color 文本颜色
          */
-        UILabel(engine::render::TextRenderer &text_renderer, const std::string_view &text,
-                const std::string_view &font_id, int font_size = 16,
+        UILabel(engine::render::TextRenderer &text_renderer, std::string_view text,
+                std::string_view font_id, int font_size = 16,
                 engine::utils::FColor text_color = {1.0f, 1.0f, 1.0f, 1.0f},
                 glm::vec2 position = {0.0f, 0.0f});
 
@@ -45,14 +45,14 @@ namespace engine::ui {
         void render(engine::core::Context &context) override;
 
         // --- getters ---
-        const std::string_view getText() const { return text_; }
-        const std::string_view getFontId() const { return font_id_; }
+        std::string_view getText() const { return text_; }
+        std::string_view getFontId() const { return font_id_; }
         int getFontSize() const { return font_size_; }
         const engine::utils::FColor &getTextFColor() const { return text_fcolor_; }
 
         // --- setters ---
-        void setText(const std::string_view &text);
-        void setFontId(const std::string_view &font_id);
+        void setText(std::string_view text);
+        void setFontId(std::string_view font_id);
         void setFontSize(int font_size);
         void setTextFColor(engine::utils::FColor text_fcolor);
     };

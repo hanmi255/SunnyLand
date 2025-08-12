@@ -15,7 +15,7 @@ namespace engine::audio {
         }
     }
 
-    int AudioPlayer::playSound(const std::string_view &sound_path, int channel)
+    int AudioPlayer::playSound(std::string_view sound_path, int channel)
     {
         Mix_Chunk* chunk = resource_manager_->getSound(sound_path);
         if (!chunk) {
@@ -32,7 +32,7 @@ namespace engine::audio {
         return played_channel;
     }
 
-    bool AudioPlayer::playMusic(const std::string_view &music_path, int loops, int fade_in_ms)
+    bool AudioPlayer::playMusic(std::string_view music_path, int loops, int fade_in_ms)
     {
         if (music_path == current_music_path_) return true; // 如果当前音乐已经在播放，则不重复播放
 

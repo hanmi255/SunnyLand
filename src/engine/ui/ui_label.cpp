@@ -2,13 +2,12 @@
 #include "../core/context.h"
 #include "../render/text_renderer.h"
 #include <spdlog/spdlog.h>
-#include <string_view>
 
 namespace engine::ui {
 
-    UILabel::UILabel(engine::render::TextRenderer &text_renderer, const std::string_view &text,
-                     const std::string_view &font_id, int font_size,
-                     engine::utils::FColor text_color, glm::vec2 position)
+    UILabel::UILabel(engine::render::TextRenderer &text_renderer, std::string_view text,
+                     std::string_view font_id, int font_size, engine::utils::FColor text_color,
+                     glm::vec2 position)
         : UIElement(std::move(position))
         , text_renderer_(text_renderer)
         , text_(text)
@@ -30,13 +29,13 @@ namespace engine::ui {
         UIElement::render(context);
     }
 
-    void UILabel::setText(const std::string_view &text)
+    void UILabel::setText(std::string_view text)
     {
         text_ = text;
         size_ = text_renderer_.getTextSize(text_, font_id_, font_size_);
     }
 
-    void UILabel::setFontId(const std::string_view &font_id)
+    void UILabel::setFontId(std::string_view font_id)
     {
         font_id_ = font_id;
         size_ = text_renderer_.getTextSize(text_, font_id_, font_size_);
