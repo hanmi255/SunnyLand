@@ -23,6 +23,7 @@ namespace engine::resource {
 } // namespace engine::resource
 
 namespace engine::core {
+    class GameState;
 
     /**
      * @brief 持有对核心引擎模块引用的上下文对象。
@@ -32,6 +33,7 @@ namespace engine::core {
     class Context final {
     private:
         engine::audio::AudioPlayer &audio_player_;
+        engine::core::GameState &game_state_;
         engine::input::InputManager &input_manager_;
         engine::render::Camera &camera_;
         engine::render::Renderer &renderer_;
@@ -53,7 +55,8 @@ namespace engine::core {
                 engine::render::Renderer &renderer, engine::render::TextRenderer &text_renderer,
                 engine::resource::ResourceManager &resource_manager,
                 engine::physics::PhysicsEngine &physics_engine,
-                engine::audio::AudioPlayer &audio_player);
+                engine::audio::AudioPlayer &audio_player,
+                engine::core::GameState &game_state);
 
         // 禁止拷贝和移动语义
         Context(const Context &) = delete;
@@ -69,5 +72,6 @@ namespace engine::core {
         engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
         engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
         engine::audio::AudioPlayer &getAudioPlayer() const { return audio_player_; }
+        engine::core::GameState &getGameState() const { return game_state_; }
     };
 } // namespace engine::core

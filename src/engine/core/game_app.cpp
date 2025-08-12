@@ -19,6 +19,7 @@
 #include "../scene/scene_manager.h"
 #include "config.h"
 #include "context.h"
+#include "game_state.h"
 #include "time.h"
 #include <SDL3/SDL.h>
 #include <filesystem> // 用于 std::filesystem
@@ -74,6 +75,7 @@ namespace engine::core {
         if (!initTextRenderer()) return false;
         if (!initInputManager()) return false;
         if (!initPhysicsEngine()) return false;
+        if (!initGameState()) return false;
         if (!initContext()) return false;
         if (!initSceneManager()) return false;
 
@@ -285,12 +287,23 @@ namespace engine::core {
         return true;
     }
 
+    bool GameApp::initGameState()
+    {
+        try {
+            game_state_ = std::make_unique<engine::core::GameState>(window_, sdl_renderer_);
+        } catch (const std::exception &e) {
+            spdlog::error("GameState 初始化失败: {}", e.what());
+            return false;
+        }
+        return true;
+    }
+
     bool GameApp::initContext()
     {
         try {
             context_ = std::make_unique<engine::core::Context>(
                 *input_manager_, *camera_, *renderer_, *text_renderer_, *resource_manager_,
-                *physics_engine_, *audio_player_);
+                *physics_engine_, *audio_player_, *game_state_);
         } catch (const std::exception &e) {
             spdlog::error("Context 初始化失败: {}", e.what());
             return false;

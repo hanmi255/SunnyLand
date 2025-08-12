@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "../core/context.h"
+#include "../core/game_state.h"
 #include "../object/game_object.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
@@ -33,9 +34,10 @@ namespace engine::scene {
     {
         if (!is_initialized_) return;
 
-        // 先更新物理引擎
+        // 只有游戏进行中，才需要更新物理引擎和相机
+        if (!context_.getGameState().isPlaying()) return;
+
         context_.getPhysicsEngine().update(delta_time);
-        // 再更新相机
         context_.getCamera().update(delta_time);
 
         // 遍历所有游戏对象并更新

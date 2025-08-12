@@ -1,5 +1,6 @@
 #include "context.h"
 #include "../audio/audio_player.h"
+#include "../core/game_state.h"
 #include "../input/input_manager.h"
 #include "../physics/physics_engine.h"
 #include "../render/camera.h"
@@ -15,8 +16,9 @@ namespace engine::core {
                      engine::render::TextRenderer &text_renderer,
                      engine::resource::ResourceManager &resource_manager,
                      engine::physics::PhysicsEngine &physics_engine,
-                     engine::audio::AudioPlayer &audio_player)
+                     engine::audio::AudioPlayer &audio_player, engine::core::GameState &game_state)
         : audio_player_(audio_player)
+        , game_state_(game_state)
         , input_manager_(input_manager)
         , camera_(camera)
         , renderer_(renderer)
@@ -24,7 +26,7 @@ namespace engine::core {
         , resource_manager_(resource_manager)
         , physics_engine_(physics_engine)
     {
-        spdlog::trace("上下文已创建并初始化，包含输入管理器、渲染器、相机和资源管理器。");
+        spdlog::trace("上下文已创建并初始化。");
     }
 
 } // namespace engine::core

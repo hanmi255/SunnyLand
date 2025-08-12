@@ -1,6 +1,7 @@
 #include "title_scene.h"
 #include "../../engine/audio/audio_player.h"
 #include "../../engine/core/context.h"
+#include "../../engine/core/game_state.h"
 #include "../../engine/input/input_manager.h"
 #include "../../engine/render/camera.h"
 #include "../../engine/resource/resource_manager.h"
@@ -66,7 +67,8 @@ namespace game::scene {
     void TitleScene::createUI()
     {
         spdlog::trace("创建 TitleScene UI...");
-        auto window_size = glm::vec2(640.0f, 360.0f);
+        context_.getGameState().setState(engine::core::State::Title);
+        auto window_size = context_.getGameState().getLogicalSize();
 
         if (!ui_manager_->init(window_size)) {
             spdlog::error("初始化 UIManager 失败!");
@@ -178,7 +180,7 @@ namespace game::scene {
             return;
         }
 
-        if (session_data_->loadFromFile("assets/save.json")) {
+        if (session_data_->loadFromFile("assets/data/save.json")) {
             spdlog::debug("保存文件加载成功。开始游戏...");
             scene_manager_.requestReplaceScene(
                 std::make_unique<GameScene>(context_, scene_manager_, session_data_));

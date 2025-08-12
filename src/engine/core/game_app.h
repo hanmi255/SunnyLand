@@ -33,6 +33,7 @@ namespace engine::scene {
 namespace engine::core {
     class Config;
     class Context;
+    class GameState;
     class Time;
 
     /**
@@ -47,6 +48,7 @@ namespace engine::core {
         // 引擎组件
         std::unique_ptr<engine::core::Config> config_;
         std::unique_ptr<engine::core::Context> context_;
+        std::unique_ptr<engine::core::GameState> game_state_;
         std::unique_ptr<engine::core::Time> time_;
         std::unique_ptr<engine::input::InputManager> input_manager_;
         std::unique_ptr<engine::audio::AudioPlayer> audio_player_;
@@ -91,6 +93,7 @@ namespace engine::core {
         [[nodiscard]] bool initTextRenderer();
         [[nodiscard]] bool initInputManager();
         [[nodiscard]] bool initPhysicsEngine();
+        [[nodiscard]] bool initGameState();
         [[nodiscard]] bool initContext();
         [[nodiscard]] bool initSceneManager();
 
