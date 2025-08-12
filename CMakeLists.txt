@@ -89,6 +89,8 @@ set(SOURCES
     src/game/component/player_state/jump_state.cpp
     src/game/component/player_state/walk_state.cpp
     src/game/scene/game_scene.cpp
+    src/game/scene/helps_scene.cpp
+    src/game/scene/title_scene.cpp
 )
 
 # 根据平台向"通用源文件"追加平台专属的文件
