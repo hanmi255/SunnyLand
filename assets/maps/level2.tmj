@@ -91,6 +91,12 @@
                  "height":73,
                  "id":2,
                  "name":"win",
+                 "properties":[
+                        {
+                         "name":"tag",
+                         "type":"string",
+                         "value":"win"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
