@@ -40,6 +40,12 @@ namespace game::scene {
         void init() override;
         void handleInput() override;
 
+        // 禁止拷贝和移动语义
+        MenuScene(const MenuScene &) = delete;
+        MenuScene &operator=(const MenuScene &) = delete;
+        MenuScene(MenuScene &&) = delete;
+        MenuScene &operator=(MenuScene &&) = delete;
+
     private:
         void createUI();
 
