@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <memory> // 用于 std::unique_ptr
 
 struct SDL_Window;
@@ -45,6 +46,8 @@ namespace engine::core {
         SDL_Renderer* sdl_renderer_ = nullptr;
         bool is_running_ = false;
 
+        std::function<void(engine::scene::SceneManager &)> scene_setup_func_;
+
         // 引擎组件
         std::unique_ptr<engine::core::Config> config_;
         std::unique_ptr<engine::core::Context> context_;
@@ -68,6 +71,13 @@ namespace engine::core {
          * 运行游戏应用程序，其中会调用init()，然后进入主循环，离开循环后自动调用close()。
          */
         void run();
+
+        /**
+         * @brief 注册用于设置初始游戏场景的函数。
+         *        这个函数将在 SceneManager 初始化后被调用。
+         * @param func 一个接收 SceneManager 引用的函数对象。
+         */
+        void registerSceneSetup(std::function<void(engine::scene::SceneManager &)> func);
 
         // 禁止拷贝和移动
         GameApp(const GameApp &) = delete;

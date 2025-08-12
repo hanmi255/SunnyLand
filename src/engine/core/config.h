@@ -63,7 +63,7 @@ namespace engine::core {
         int target_fps_ = 144;
 
         // 音频设置
-        float music_volume_ = 0.5f;
+        float music_volume_ = 0.2f;
         float sound_volume_ = 0.5f;
 
         // 存储动作名称到 SDL Scancode 名称列表的映射
