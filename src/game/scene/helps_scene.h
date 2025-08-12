@@ -5,11 +5,6 @@ namespace engine::core {
     class Context;
 } // namespace engine::core
 
-namespace engine::render {
-    class Renderer;
-    class Camera;
-} // namespace engine::render
-
 namespace engine::input {
     class InputManager;
 } // namespace engine::input
@@ -17,6 +12,11 @@ namespace engine::input {
 namespace engine::scene {
     class SceneManager;
 } // namespace engine::scene
+
+namespace engine::render {
+    class Renderer;
+    class Camera;
+} // namespace engine::render
 
 namespace game::scene {
 
