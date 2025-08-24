@@ -3,14 +3,12 @@
 #include "../render/renderer.h"
 #include "../render/sprite.h"
 #include <spdlog/spdlog.h>
-#include <utility>
 
 namespace engine::ui {
 
     UIImage::UIImage(std::string_view texture_id, glm::vec2 position, glm::vec2 size,
                      std::optional<SDL_FRect> src_rect, bool is_flipped)
-        : UIElement(std::move(position), std::move(size))
-        , sprite_(texture_id, std::move(src_rect), is_flipped)
+        : UIElement(position, size), sprite_(texture_id, src_rect, is_flipped)
     {
         if (texture_id.empty()) {
             spdlog::warn("创建了一个空纹理ID的 UIImage。");
@@ -26,7 +24,7 @@ namespace engine::ui {
 
         // 渲染自身
         auto position = getScreenPosition();
-        if (size_.x == 0.0f && size_.y == 0.0f) { // 如果尺寸为0，则使用纹理的原始尺寸
+        if (size_.x == 0.0F && size_.y == 0.0F) { // 如果尺寸为0，则使用纹理的原始尺寸
             context.getRenderer().drawUISprite(sprite_, position);
         } else {
             context.getRenderer().drawUISprite(sprite_, position, size_);

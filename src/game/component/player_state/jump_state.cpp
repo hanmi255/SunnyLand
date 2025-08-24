@@ -7,6 +7,7 @@
 #include "../player_component.h"
 #include "climb_state.h"
 #include "fall_state.h"
+#include <algorithm>
 #include <glm/common.hpp>
 #include <spdlog/spdlog.h>
 
@@ -29,7 +30,7 @@ namespace game::component::player_state {
 
     std::unique_ptr<PlayerState> JumpState::handleInput(engine::core::Context &context)
     {
-        auto input_manager = context.getInputManager();
+        const auto& input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
 
@@ -42,18 +43,18 @@ namespace game::component::player_state {
 
         // 跳跃状态下可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {
-            if (physics_component->velocity_.x > 0.0f) physics_component->velocity_.x = 0.0f;
-            physics_component->addForce({-player_component_->getMoveForce(), 0.0f});
+            physics_component->velocity_.x = std::min(physics_component->velocity_.x, 0.0F);
+            physics_component->addForce({-player_component_->getMoveForce(), 0.0F});
             sprite_component->setFlipped(true);
         } else if (input_manager.isActionHeldDown("move_right")) {
-            if (physics_component->velocity_.x < 0.0f) physics_component->velocity_.x = 0.0f;
-            physics_component->addForce({player_component_->getMoveForce(), 0.0f});
+            physics_component->velocity_.x = std::max(physics_component->velocity_.x, 0.0F);
+            physics_component->addForce({player_component_->getMoveForce(), 0.0F});
             sprite_component->setFlipped(false);
         }
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> JumpState::update(float, engine::core::Context &)
+    std::unique_ptr<PlayerState> JumpState::update(float /*unused*/, engine::core::Context & /*unused*/)
     {
         // 限制最大速度(水平方向)
         auto* physics_component = player_component_->getPhysicsComponent();
@@ -62,7 +63,7 @@ namespace game::component::player_state {
             glm::clamp(physics_component->velocity_.x, -max_speed, max_speed);
 
         // 如果速度为正，切换到 FallState
-        if (physics_component->velocity_.y >= 0.0f) {
+        if (physics_component->velocity_.y >= 0.0F) {
             return std::make_unique<FallState>(player_component_);
         }
 

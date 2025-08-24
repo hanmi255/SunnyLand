@@ -48,20 +48,20 @@ namespace game::component {
 
         void setBehavior(std::unique_ptr<ai_behavior::AIBehavior> behavior);
         bool takeDamage(int damage_amount);
-        bool isAlive() const;
+        [[nodiscard]] bool isAlive() const;
 
         // --- getters ---
-        engine::component::AnimationComponent* getAnimationComponent() const
+        [[nodiscard]] engine::component::AnimationComponent* getAnimationComponent() const
         {
             return animation_component_;
         }
-        engine::component::AudioComponent* getAudioComponent() const { return audio_component_; }
-        engine::component::PhysicsComponent* getPhysicsComponent() const
+        [[nodiscard]] engine::component::AudioComponent* getAudioComponent() const { return audio_component_; }
+        [[nodiscard]] engine::component::PhysicsComponent* getPhysicsComponent() const
         {
             return physics_component_;
         }
-        engine::component::SpriteComponent* getSpriteComponent() const { return sprite_component_; }
-        engine::component::TransformComponent* getTransformComponent() const
+        [[nodiscard]] engine::component::SpriteComponent* getSpriteComponent() const { return sprite_component_; }
+        [[nodiscard]] engine::component::TransformComponent* getTransformComponent() const
         {
             return transform_component_;
         }
@@ -69,6 +69,6 @@ namespace game::component {
     private:
         // 核心逻辑
         void init() override;
-        void update(float delta_time, engine::core::Context &) override;
+        void update(float delta_time, engine::core::Context & /*unused*/) override;
     };
 } // namespace game::component

@@ -20,7 +20,7 @@
 
 namespace engine::scene {
 
-    [[nodiscard]] bool LevelLoader::loadLevel(std::string_view level_path, Scene &scene)
+    bool LevelLoader::loadLevel(std::string_view level_path, Scene &scene)
     {
         // 清理之前的状态
         tileset_data_.clear();
@@ -58,7 +58,7 @@ namespace engine::scene {
         return true;
     }
 
-    std::optional<nlohmann::json> LevelLoader::loadJsonFile(std::string_view file_path) const
+    std::optional<nlohmann::json> LevelLoader::loadJsonFile(std::string_view file_path)
     {
         auto path = std::filesystem::path(file_path);
         std::ifstream file(path);
@@ -162,11 +162,11 @@ namespace engine::scene {
         const auto layer_name = getLayerName(layer_json);
 
         // 获取图层属性
-        const glm::vec2 offset(getJsonValue(layer_json, "offsetx", 0.0f),
-                               getJsonValue(layer_json, "offsety", 0.0f));
+        const glm::vec2 offset(getJsonValue(layer_json, "offsetx", 0.0F),
+                               getJsonValue(layer_json, "offsety", 0.0F));
 
-        const glm::vec2 scroll_factor(getJsonValue(layer_json, "parallaxx", 1.0f),
-                                      getJsonValue(layer_json, "parallaxy", 1.0f));
+        const glm::vec2 scroll_factor(getJsonValue(layer_json, "parallaxx", 1.0F),
+                                      getJsonValue(layer_json, "parallaxy", 1.0F));
 
         const glm::bvec2 repeat(getJsonValue(layer_json, "repeatx", false),
                                 getJsonValue(layer_json, "repeaty", false));
@@ -267,13 +267,13 @@ namespace engine::scene {
 
         // 获取Transform相关信息（自定义形状的坐标针对左上角）
         const auto position =
-            glm::vec2(getJsonValue(object_json, "x", 0.0f), getJsonValue(object_json, "y", 0.0f));
-        const auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0f),
-                                        getJsonValue(object_json, "height", 0.0f));
-        const auto rotation = getJsonValue(object_json, "rotation", 0.0f);
+            glm::vec2(getJsonValue(object_json, "x", 0.0F), getJsonValue(object_json, "y", 0.0F));
+        const auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0F),
+                                        getJsonValue(object_json, "height", 0.0F));
+        const auto rotation = getJsonValue(object_json, "rotation", 0.0F);
 
         // 添加TransformComponent，缩放设定为1.0f
-        game_object->addComponent<engine::component::TransformComponent>(position, glm::vec2(1.0f),
+        game_object->addComponent<engine::component::TransformComponent>(position, glm::vec2(1.0F),
                                                                          rotation);
 
         // 添加碰撞组件和物理组件
@@ -354,10 +354,10 @@ namespace engine::scene {
     {
         // 获取基础变换信息
         auto position =
-            glm::vec2(getJsonValue(object_json, "x", 0.0f), getJsonValue(object_json, "y", 0.0f));
-        auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0f),
-                                  getJsonValue(object_json, "height", 0.0f));
-        auto rotation = getJsonValue(object_json, "rotation", 0.0f);
+            glm::vec2(getJsonValue(object_json, "x", 0.0F), getJsonValue(object_json, "y", 0.0F));
+        auto dst_size = glm::vec2(getJsonValue(object_json, "width", 0.0F),
+                                  getJsonValue(object_json, "height", 0.0F));
+        auto rotation = getJsonValue(object_json, "rotation", 0.0F);
 
         // 调整位置（从左下角到左上角）
         position.y -= dst_size.y;
@@ -430,7 +430,7 @@ namespace engine::scene {
         auto gravity = getTileProperty<bool>(tile_json.value(), "gravity");
         if (gravity) {
             auto* pc = game_object.getComponent<engine::component::PhysicsComponent>();
-            if (pc) {
+            if (pc != nullptr) {
                 pc->setUseGravity(gravity.value());
             } else {
                 spdlog::warn("对象 '{}' 在设置重力信息时没有物理组件，请检查地图设置。",
@@ -483,7 +483,7 @@ namespace engine::scene {
                                    const glm::vec2 &sprite_size)
     {
         // 检查 anim_json 必须是一个对象，并且 ac 不能为 nullptr
-        if (!anim_json.is_object() || !ac) {
+        if (!anim_json.is_object() || (ac == nullptr)) {
             spdlog::error("无效的动画 JSON 或 AnimationComponent 指针。");
             return;
         }
@@ -500,7 +500,7 @@ namespace engine::scene {
 
             // 获取可能存在的动画帧信息
             auto duration_ms = getJsonValue(anim_info, "duration", 100); // 默认持续时间为100毫秒
-            auto duration = static_cast<float>(duration_ms) / 1000.0f;   // 转换为秒
+            auto duration = static_cast<float>(duration_ms) / 1000.0F;   // 转换为秒
             auto row = getJsonValue(anim_info, "row", 0);                // 默认行数为0
 
             // 帧信息（数组）是必须存在的
@@ -539,7 +539,7 @@ namespace engine::scene {
     void LevelLoader::addSound(const nlohmann::json &sound_json,
                                engine::component::AudioComponent* ac)
     {
-        if (!sound_json.is_object() || !ac) {
+        if (!sound_json.is_object() || (ac == nullptr)) {
             spdlog::error("无效的音效 JSON 或 AudioComponent 指针");
             return;
         }
@@ -597,7 +597,8 @@ namespace engine::scene {
                 engine::render::Sprite sprite{texture_id, texture_rect};
                 auto tile_type = getTileTypeById(tileset, local_id);
                 return engine::component::TileInfo(std::move(sprite), tile_type);
-            } else if (tileset.contains(JsonKeys::TILES)) {
+            }
+            if (tileset.contains(JsonKeys::TILES)) {
                 // 多图片模式
                 const auto &tiles_json = tileset[JsonKeys::TILES];
                 for (const auto &tile_json : tiles_json) {
@@ -672,33 +673,41 @@ namespace engine::scene {
                         const auto is_solid = getJsonValue(property, "value", false);
                         return is_solid ? engine::component::TileType::SOLID
                                         : engine::component::TileType::NORMAL;
-                    } else if (property_name == "slope") {
+                    }
+                    if (property_name == "slope") {
                         const auto slope_type = getJsonValue<std::string>(property, "value", "");
                         if (slope_type == "0_1") {
                             return engine::component::TileType::SLOPE_0_1;
-                        } else if (slope_type == "1_0") {
-                            return engine::component::TileType::SLOPE_1_0;
-                        } else if (slope_type == "0_2") {
-                            return engine::component::TileType::SLOPE_0_2;
-                        } else if (slope_type == "2_0") {
-                            return engine::component::TileType::SLOPE_2_0;
-                        } else if (slope_type == "2_1") {
-                            return engine::component::TileType::SLOPE_2_1;
-                        } else if (slope_type == "1_2") {
-                            return engine::component::TileType::SLOPE_1_2;
-                        } else {
-                            spdlog::error("未知的斜坡类型: {}", slope_type);
-                            return engine::component::TileType::NORMAL;
                         }
-                    } else if (property_name == "unisolid") {
+                        if (slope_type == "1_0") {
+                            return engine::component::TileType::SLOPE_1_0;
+                        }
+                        if (slope_type == "0_2") {
+                            return engine::component::TileType::SLOPE_0_2;
+                        }
+                        if (slope_type == "2_0") {
+                            return engine::component::TileType::SLOPE_2_0;
+                        }
+                        if (slope_type == "2_1") {
+                            return engine::component::TileType::SLOPE_2_1;
+                        }
+                        if (slope_type == "1_2") {
+                            return engine::component::TileType::SLOPE_1_2;
+                        }
+                        spdlog::error("未知的斜坡类型: {}", slope_type);
+                        return engine::component::TileType::NORMAL;
+                    }
+                    if (property_name == "unisolid") {
                         const auto is_unisolid = getJsonValue(property, "value", false);
                         return is_unisolid ? engine::component::TileType::UNISOLID
                                            : engine::component::TileType::NORMAL;
-                    } else if (property_name == "hazard") {
+                    }
+                    if (property_name == "hazard") {
                         const auto is_hazard = getJsonValue(property, "value", false);
                         return is_hazard ? engine::component::TileType::HAZARD
                                          : engine::component::TileType::NORMAL;
-                    } else if (property_name == "ladder") {
+                    }
+                    if (property_name == "ladder") {
                         const auto is_ladder = getJsonValue(property, "value", false);
                         return is_ladder ? engine::component::TileType::LADDER
                                          : engine::component::TileType::NORMAL;
@@ -765,9 +774,9 @@ namespace engine::scene {
         const auto &objects = object_group[JsonKeys::OBJECTS];
         for (const auto &object : objects) {
             auto rect = engine::utils::Rect{
-                glm::vec2(getJsonValue(object, "x", 0.0f), getJsonValue(object, "y", 0.0f)),
-                glm::vec2(getJsonValue(object, "width", 0.0f),
-                          getJsonValue(object, "height", 0.0f))};
+                .position=glm::vec2(getJsonValue(object, "x", 0.0F), getJsonValue(object, "y", 0.0F)),
+                .size=glm::vec2(getJsonValue(object, "width", 0.0F),
+                          getJsonValue(object, "height", 0.0F))};
             if (rect.size.x > 0 && rect.size.y > 0) return rect;
         }
         return std::nullopt;

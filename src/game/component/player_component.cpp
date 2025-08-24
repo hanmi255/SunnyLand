@@ -17,7 +17,7 @@ namespace game::component {
 
     void PlayerComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("PlayerComponent 在初始化前未设置 owner_。");
             return;
         }
@@ -31,8 +31,8 @@ namespace game::component {
         audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查必要组件是否存在
-        if (!transform_component_ || !physics_component_ || !sprite_component_ ||
-            !animation_component_ || !health_component_ || !audio_component_) {
+        if ((transform_component_ == nullptr) || (physics_component_ == nullptr) || (sprite_component_ == nullptr) ||
+            (animation_component_ == nullptr) || (health_component_ == nullptr) || (audio_component_ == nullptr)) {
             spdlog::error("Player 对象缺少必要组件！");
         }
 
@@ -82,7 +82,7 @@ namespace game::component {
 
         // 更新 Coyote Timer：着地时重置，离地时计时
         if (physics_component_->hasCollidedBelow()) {
-            coyote_timer_ = 0.0f;
+            coyote_timer_ = 0.0F;
         } else {
             coyote_timer_ += delta_time;
         }
@@ -93,7 +93,7 @@ namespace game::component {
             flash_timer_ += delta_time;
 
             // 使用 fmod 确保计时器在 [0, 2*flash_interval_) 范围内循环
-            const float flash_cycle = 2.0f * flash_interval_;
+            const float flash_cycle = 2.0F * flash_interval_;
             flash_timer_ = std::fmod(flash_timer_, flash_cycle);
 
             // 前半周期可见，后半周期不可见
@@ -112,7 +112,7 @@ namespace game::component {
 
     bool PlayerComponent::takeDamage(int damage_amount)
     {
-        if (is_dead_ || !health_component_ || damage_amount <= 0) {
+        if (is_dead_ || (health_component_ == nullptr) || damage_amount <= 0) {
             spdlog::warn("玩家已死亡或缺少必要组件，并未造成伤害。");
             return false;
         }

@@ -34,14 +34,14 @@ namespace game::data {
         SessionData &operator=(SessionData &&) = delete;
 
         // --- getters ---
-        int getCurrentHealth() const { return current_health_; }
-        int getMaxHealth() const { return max_health_; }
-        int getCurrentScore() const { return current_score_; }
-        int getHighScore() const { return high_score_; }
-        int getLevelHealth() const { return level_health_; }
-        int getLevelScore() const { return level_score_; }
-        std::string_view getMapPath() const { return map_path_; }
-        bool getIsWin() const { return is_win_; }
+        [[nodiscard]] int getCurrentHealth() const { return current_health_; }
+        [[nodiscard]] int getMaxHealth() const { return max_health_; }
+        [[nodiscard]] int getCurrentScore() const { return current_score_; }
+        [[nodiscard]] int getHighScore() const { return high_score_; }
+        [[nodiscard]] int getLevelHealth() const { return level_health_; }
+        [[nodiscard]] int getLevelScore() const { return level_score_; }
+        [[nodiscard]] std::string_view getMapPath() const { return map_path_; }
+        [[nodiscard]] bool getIsWin() const { return is_win_; }
 
         // --- setters ---
         void setCurrentHealth(int health);
@@ -56,7 +56,7 @@ namespace game::data {
         // 核心逻辑
         void reset();
         void setNextLevel(std::string_view map_path);
-        bool saveToFile(std::string_view filename) const;
+        [[nodiscard]] bool saveToFile(std::string_view filename) const;
         bool loadFromFile(std::string_view filename);
         bool syncHighScore(std::string_view filename);
     };

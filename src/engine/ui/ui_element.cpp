@@ -6,9 +6,7 @@
 
 namespace engine::ui {
 
-    UIElement::UIElement(glm::vec2 position, glm::vec2 size)
-        : position_(std::move(position)), size_(std::move(size))
-    {}
+    UIElement::UIElement(glm::vec2 position, glm::vec2 size) : position_(position), size_(size) {}
 
     bool UIElement::handleInput(engine::core::Context &context)
     {
@@ -58,7 +56,7 @@ namespace engine::ui {
 
     std::unique_ptr<UIElement> UIElement::removeChild(UIElement* child_ptr)
     {
-        if (!child_ptr) return nullptr;
+        if (child_ptr == nullptr) return nullptr;
 
         // 使用 std::find_if 和 lambda 表达式查找要移除的子元素
         auto it = std::find_if(
@@ -84,7 +82,7 @@ namespace engine::ui {
 
     glm::vec2 UIElement::getScreenPosition() const
     {
-        if (parent_) {
+        if (parent_ != nullptr) {
             return parent_->getScreenPosition() + position_;
         }
         return position_; // 根元素的位置已经是相对屏幕的绝对位置

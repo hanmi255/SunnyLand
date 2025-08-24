@@ -28,9 +28,9 @@ namespace engine::ui {
         * 可选：要绘制的纹理部分。（如果为空，则使用纹理的整个区域）
         * @param is_flipped 可选：精灵是否应该水平翻转。
         */
-        UIImage(std::string_view texture_id,
-                glm::vec2 position = {0.0f, 0.0f},
-                glm::vec2 size = {0.0f, 0.0f},
+        explicit UIImage(std::string_view texture_id,
+                glm::vec2 position = {0.0F, 0.0F},
+                glm::vec2 size = {0.0F, 0.0F},
                 std::optional<SDL_FRect> src_rect = std::nullopt,
                 bool is_flipped = false);
 
@@ -38,9 +38,9 @@ namespace engine::ui {
         void render(engine::core::Context &context) override;
 
         // --- getters ---
-        const engine::render::Sprite &getSprite() const { return sprite_; }
-        std::string_view getTextureId() const { return sprite_.getTextureId(); }
-        const std::optional<SDL_FRect> &getSrcRect() const {
+        [[nodiscard]] const engine::render::Sprite &getSprite() const { return sprite_; }
+        [[nodiscard]] std::string_view getTextureId() const { return sprite_.getTextureId(); }
+        [[nodiscard]] const std::optional<SDL_FRect> &getSrcRect() const {
             return sprite_.getSrcRect();
         }
 
@@ -50,7 +50,7 @@ namespace engine::ui {
             sprite_.setTextureId(texture_id);
         }
         void setSrcRect(std::optional<SDL_FRect> src_rect) {
-            sprite_.setSrcRect(std::move(src_rect));
+            sprite_.setSrcRect(src_rect);
         }
 
         bool isFlipped() const { return sprite_.isFlipped(); }

@@ -1,6 +1,8 @@
 #include "input_manager.h"
 #include "../core/config.h"
 #include <SDL3/SDL.h>
+#include <math.h>
+#include <math.h>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
 
@@ -23,7 +25,7 @@ namespace engine::input {
     InputManager::InputManager(SDL_Renderer* sdl_renderer, const engine::core::Config* config)
         : sdl_renderer_(sdl_renderer), should_quit_(false)
     {
-        if (!sdl_renderer_) {
+        if (sdl_renderer_ == nullptr) {
             spdlog::error("输入管理器: SDL_Renderer 为空指针");
             throw std::runtime_error("输入管理器: SDL_Renderer 为空指针");
         }
@@ -185,7 +187,7 @@ namespace engine::input {
     {
         spdlog::trace("初始化输入映射...");
 
-        if (!config) {
+        if (config == nullptr) {
             spdlog::error("输入管理器: Config 为空指针");
             throw std::runtime_error("输入管理器: Config 为空指针");
         }

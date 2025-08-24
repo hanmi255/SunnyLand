@@ -11,13 +11,13 @@ namespace engine::physics::collision {
 
     CollisionData::CollisionData(const engine::component::ColliderComponent &component)
     {
-        auto* collider = component.getCollider();
+        const auto* collider = component.getCollider();
         auto* transform = component.getTransform();
 
         size = collider->getAABBSize() * transform->getScale();
         position = transform->getPosition() + component.getOffset();
-        center = position + 0.5f * size;
-        radius = 0.5f * size.x; // 假设圆形半径为宽度的一半
+        center = position + 0.5F * size;
+        radius = 0.5F * size.x; // 假设圆形半径为宽度的一半
         type = collider->getType();
     }
 
@@ -42,19 +42,20 @@ namespace engine::physics::collision {
         if (a.type == engine::physics::ColliderType::AABB &&
             b.type == engine::physics::ColliderType::AABB) {
             return true; // AABB已经检测过了
-        } else if (a.type == engine::physics::ColliderType::CIRCLE &&
-                   b.type == engine::physics::ColliderType::CIRCLE) {
-            return checkCircleOverlap(a.center, a.radius, b.center, b.radius);
-        } else {
-            // AABB vs Circle 或 Circle vs AABB
-            const CollisionData* aabb_data = (a.type == engine::physics::ColliderType::AABB) ? &a
-                                                                                             : &b;
-            const CollisionData* circle_data =
-                (a.type == engine::physics::ColliderType::CIRCLE) ? &a : &b;
-
-            return checkAABBCircleOverlap(aabb_data->position, aabb_data->size, circle_data->center,
-                                          circle_data->radius);
         }
+
+        if (a.type == engine::physics::ColliderType::CIRCLE &&
+            b.type == engine::physics::ColliderType::CIRCLE) {
+            return checkCircleOverlap(a.center, a.radius, b.center, b.radius);
+        }
+
+        // AABB vs Circle 或 Circle vs AABB
+        const CollisionData* aabb_data = (a.type == engine::physics::ColliderType::AABB) ? &a : &b;
+        const CollisionData* circle_data = (a.type == engine::physics::ColliderType::CIRCLE) ? &a
+                                                                                             : &b;
+
+        return checkAABBCircleOverlap(aabb_data->position, aabb_data->size, circle_data->center,
+                                      circle_data->radius);
     }
 
     bool checkCircleOverlap(const glm::vec2 &a_center, float a_radius, const glm::vec2 &b_center,
@@ -80,8 +81,8 @@ namespace engine::physics::collision {
     bool checkAABBOverlap(const glm::vec2 &a_pos, const glm::vec2 &a_size, const glm::vec2 &b_pos,
                           const glm::vec2 &b_size)
     {
-        return !(a_pos.x >= b_pos.x + b_size.x || a_pos.x + a_size.x <= b_pos.x ||
-                 a_pos.y >= b_pos.y + b_size.y || a_pos.y + a_size.y <= b_pos.y);
+        return a_pos.x < b_pos.x + b_size.x && a_pos.x + a_size.x > b_pos.x &&
+                 a_pos.y < b_pos.y + b_size.y && a_pos.y + a_size.y > b_pos.y;
     }
 
     bool checkRectOverlap(const engine::utils::Rect &a, const engine::utils::Rect &b)

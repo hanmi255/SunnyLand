@@ -51,23 +51,23 @@ namespace game::scene {
         // --- 主文字标签 ---
         std::string main_message = is_win ? "YOU WIN! CONGRATS!" : "YOU DIED! TRY AGAIN!";
         // 赢了是绿色，输了是红色
-        engine::utils::FColor message_color = is_win
-                                                  ? engine::utils::FColor{0.0f, 1.0f, 0.0f, 1.0f}
-                                                  : engine::utils::FColor{1.0f, 0.0f, 0.0f, 1.0f};
+        engine::utils::FColor message_color =
+            is_win ? engine::utils::FColor{.r = 0.0F, .g = 1.0F, .b = 0.0F, .a = 1.0F}
+                   : engine::utils::FColor{.r = 1.0F, .g = 0.0F, .b = 0.0F, .a = 1.0F};
 
         auto main_label = std::make_unique<engine::ui::UILabel>(
             context_.getTextRenderer(), main_message, "assets/fonts/VonwaonBitmap-16px.ttf", 48,
             message_color);
         // 标签居中
         glm::vec2 label_size = main_label->getSize();
-        glm::vec2 main_label_pos = {(window_size.x - label_size.x) / 2.0f, window_size.y * 0.3f};
+        glm::vec2 main_label_pos = {(window_size.x - label_size.x) / 2.0F, window_size.y * 0.3F};
         main_label->setPosition(main_label_pos);
         ui_manager_->addElement(std::move(main_label));
 
         // --- 得分标签 ---
         int current_score = session_data_->getCurrentScore();
         int high_score = session_data_->getHighScore();
-        engine::utils::FColor score_color = {1.0f, 1.0f, 1.0f, 1.0f};
+        engine::utils::FColor score_color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F};
         int score_font_size = 24;
 
         // 当前得分
@@ -77,8 +77,8 @@ namespace game::scene {
             score_font_size, score_color);
         glm::vec2 score_label_size = score_label->getSize();
         // x方向居中，y方向在主标签下方20像素
-        glm::vec2 score_label_pos = {(window_size.x - score_label_size.x) / 2.0f,
-                                     main_label_pos.y + label_size.y + 20.0f};
+        glm::vec2 score_label_pos = {(window_size.x - score_label_size.x) / 2.0F,
+                                     main_label_pos.y + label_size.y + 20.0F};
         score_label->setPosition(score_label_pos);
         ui_manager_->addElement(std::move(score_label));
 
@@ -89,19 +89,19 @@ namespace game::scene {
             score_font_size, score_color);
         glm::vec2 high_score_label_size = high_score_label->getSize();
         // x方向居中，y方向在当前得分下方10像素
-        glm::vec2 high_score_label_pos = {(window_size.x - high_score_label_size.x) / 2.0f,
-                                          score_label_pos.y + score_label_size.y + 10.0f};
+        glm::vec2 high_score_label_pos = {(window_size.x - high_score_label_size.x) / 2.0F,
+                                          score_label_pos.y + score_label_size.y + 10.0F};
         high_score_label->setPosition(high_score_label_pos);
         ui_manager_->addElement(std::move(high_score_label));
 
         // --- UI按钮 ---
-        glm::vec2 button_size = {120.0f, 40.0f}; // 让按钮更大一点
-        float button_spacing = 20.0f;
-        float total_button_width = button_size.x * 2 + button_spacing;
+        glm::vec2 button_size = {120.0F, 40.0F}; // 让按钮更大一点
+        float button_spacing = 20.0F;
+        float total_button_width = (button_size.x * 2) + button_spacing;
 
         // 按钮放在右下角，与边缘间隔30像素
-        float buttons_x = window_size.x - total_button_width - 30.0f;
-        float buttons_y = window_size.y - button_size.y - 30.0f;
+        float buttons_x = window_size.x - total_button_width - 30.0F;
+        float buttons_y = window_size.y - button_size.y - 30.0F;
 
         // Back Button
         auto back_button = std::make_unique<engine::ui::UIButton>(

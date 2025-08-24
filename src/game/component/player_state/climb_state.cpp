@@ -33,7 +33,7 @@ namespace game::component::player_state {
 
     std::unique_ptr<PlayerState> ClimbState::handleInput(engine::core::Context &context)
     {
-        auto input_manager = context.getInputManager();
+        const auto& input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* animation_component = player_component_->getAnimationComponent();
 
@@ -44,8 +44,8 @@ namespace game::component::player_state {
         auto is_right = input_manager.isActionHeldDown("move_right");
         auto speed = player_component_->getClimbSpeed();
 
-        physics_component->velocity_.x = is_left ? -speed : is_right ? speed : 0.0f;
-        physics_component->velocity_.y = is_up ? -speed : is_down ? speed : 0.0f;
+        physics_component->velocity_.x = is_left ? -speed : is_right ? speed : 0.0F;
+        physics_component->velocity_.y = is_up ? -speed : is_down ? speed : 0.0F;
 
         (is_up || is_down || is_left || is_right) ? animation_component->resumeAnimation()
                                                   : animation_component->stopAnimation();
@@ -57,7 +57,7 @@ namespace game::component::player_state {
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> ClimbState::update(float , engine::core::Context &)
+    std::unique_ptr<PlayerState> ClimbState::update(float  /*unused*/, engine::core::Context & /*unused*/)
     {
         auto* physics_component = player_component_->getPhysicsComponent();
         // 如果着地，则切换到 IdleState

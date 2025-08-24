@@ -7,15 +7,15 @@ namespace game::component::player_state {
         friend class game::component::PlayerComponent;
 
     public:
-        DeadState(PlayerComponent* player_component) : PlayerState(player_component) {}
+        explicit DeadState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~DeadState() override = default;
-        const char* getStateName() const override { return "DeadState"; }
+        [[nodiscard]] const char* getStateName() const override { return "DeadState"; }
 
     private:
         void enter() override;
         void exit() override;
-        std::unique_ptr<PlayerState> handleInput(engine::core::Context &) override;
-        std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context &) override;
+        std::unique_ptr<PlayerState> handleInput(engine::core::Context & /*unused*/) override;
+        std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context & /*unused*/) override;
     };
 
 } // namespace game::component::player_state

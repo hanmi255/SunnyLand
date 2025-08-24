@@ -39,7 +39,7 @@ namespace engine::resource {
         struct SDLFontDeleter {
             void operator()(TTF_Font* font) const
             {
-                if (font) {
+                if (font != nullptr) {
                     TTF_CloseFont(font);
                 }
             }

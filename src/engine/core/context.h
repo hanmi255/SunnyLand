@@ -65,13 +65,13 @@ namespace engine::core {
         Context &operator=(const Context &&) = delete;
 
         // -- getters ---
-        engine::input::InputManager &getInputManager() const { return input_manager_; }
-        engine::render::Camera &getCamera() const { return camera_; }
-        engine::render::Renderer &getRenderer() const { return renderer_; }
-        engine::render::TextRenderer &getTextRenderer() const { return text_renderer_; }
-        engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
-        engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
-        engine::audio::AudioPlayer &getAudioPlayer() const { return audio_player_; }
-        engine::core::GameState &getGameState() const { return game_state_; }
+        [[nodiscard]] engine::input::InputManager &getInputManager() const { return input_manager_; }
+        [[nodiscard]] engine::render::Camera &getCamera() const { return camera_; }
+        [[nodiscard]] engine::render::Renderer &getRenderer() const { return renderer_; }
+        [[nodiscard]] engine::render::TextRenderer &getTextRenderer() const { return text_renderer_; }
+        [[nodiscard]] engine::resource::ResourceManager &getResourceManager() const { return resource_manager_; }
+        [[nodiscard]] engine::physics::PhysicsEngine &getPhysicsEngine() const { return physics_engine_; }
+        [[nodiscard]] engine::audio::AudioPlayer &getAudioPlayer() const { return audio_player_; }
+        [[nodiscard]] engine::core::GameState &getGameState() const { return game_state_; }
     };
 } // namespace engine::core

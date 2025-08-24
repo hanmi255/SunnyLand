@@ -21,7 +21,7 @@ namespace game::component::player_state {
 
     std::unique_ptr<PlayerState> IdleState::handleInput(engine::core::Context &context)
     {
-        auto input_manager = context.getInputManager();
+        const auto& input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
 
         // 如果接触梯子并且按向上移动键
@@ -31,7 +31,7 @@ namespace game::component::player_state {
 
         // 如果位于梯子顶部并且按向下移动键
         if (physics_component->isOnTopLadder() && input_manager.isActionHeldDown("move_down")) {
-            player_component_->getTransformComponent()->translate(glm::vec2(0, 2.0f));
+            player_component_->getTransformComponent()->translate(glm::vec2(0, 2.0F));
             return std::make_unique<ClimbState>(player_component_);
         }
 
@@ -48,7 +48,7 @@ namespace game::component::player_state {
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> IdleState::update(float, engine::core::Context &)
+    std::unique_ptr<PlayerState> IdleState::update(float /*unused*/, engine::core::Context & /*unused*/)
     {
         // 应用摩擦力(水平方向)
         auto* physics_component = player_component_->getPhysicsComponent();

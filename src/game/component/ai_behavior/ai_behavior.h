@@ -23,7 +23,7 @@ namespace game::component::ai_behavior {
         AIBehavior &operator=(AIBehavior &&) = delete;
 
     protected:
-        virtual void enter(AIComponent &) {}
+        virtual void enter(AIComponent & /*unused*/) {}
         virtual void update(float, AIComponent &) = 0;
     };
 } // namespace game::component::ai_behavior

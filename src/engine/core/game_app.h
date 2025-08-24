@@ -29,7 +29,7 @@ namespace engine::resource {
 
 namespace engine::scene {
     class SceneManager;
-}
+} // namespace engine::scene
 
 namespace engine::core {
     class Config;
@@ -108,6 +108,6 @@ namespace engine::core {
         [[nodiscard]] bool initSceneManager();
 
         // 设置资源路径
-        bool setupAssetPath();
+        static bool setupAssetPath();
     };
 } // namespace engine::core

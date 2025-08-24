@@ -41,20 +41,19 @@ namespace engine::render {
          * std::nullopt，则使用整个纹理。
          * @param is_flipped 是否水平翻转
          */
-        Sprite(std::string_view texture_id, const std::optional<SDL_FRect> &src_rect = std::nullopt,
+        explicit Sprite(std::string_view texture_id, const std::optional<SDL_FRect> &src_rect = std::nullopt,
                bool is_flipped = false)
             : texture_id_(texture_id), src_rect_(src_rect), is_flipped_(is_flipped)
-        {
-        }
+        {}
 
         // --- getters ---
-        std::string_view getTextureId() const { return texture_id_; }
-        const std::optional<SDL_FRect> &getSrcRect() const { return src_rect_; }
-        bool isFlipped() const { return is_flipped_; }
+        [[nodiscard]] std::string_view getTextureId() const { return texture_id_; }
+        [[nodiscard]] const std::optional<SDL_FRect> &getSrcRect() const { return src_rect_; }
+        [[nodiscard]] bool isFlipped() const { return is_flipped_; }
 
         // --- setters ---
         void setTextureId(std::string_view texture_id) { texture_id_ = texture_id; }
-        void setSrcRect(std::optional<SDL_FRect> src_rect) { src_rect_ = std::move(src_rect); }
+        void setSrcRect(std::optional<SDL_FRect> src_rect) { src_rect_ = src_rect; }
         void setFlipped(bool flipped) { is_flipped_ = flipped; }
     };
 

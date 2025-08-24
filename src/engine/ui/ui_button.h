@@ -28,13 +28,13 @@ namespace engine::ui {
          */
         UIButton(engine::core::Context &context, std::string_view normal_sprite_id,
                  std::string_view hover_sprite_id, std::string_view pressed_sprite_id,
-                 glm::vec2 position = {0.0f, 0.0f}, glm::vec2 size = {0.0f, 0.0f},
+                 glm::vec2 position = {0.0F, 0.0F}, glm::vec2 size = {0.0F, 0.0F},
                  std::function<void()> callback = nullptr);
         ~UIButton() override = default;
 
         void clicked() override;
 
-        std::function<void()> getCallback() const { return callback_; }
+        [[nodiscard]] std::function<void()> getCallback() const { return callback_; }
         void setCallback(std::function<void()> callback) { callback_ = std::move(callback); }
     };
 

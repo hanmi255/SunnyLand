@@ -14,16 +14,16 @@ namespace engine::component {
     {
     }
 
-    void HealthComponent::update(float delta_time, engine::core::Context &)
+    void HealthComponent::update(float delta_time, engine::core::Context & /*unused*/)
     {
         if (!is_invincible_) {
             return;
         }
 
         invincibility_timer_ -= delta_time;
-        if (invincibility_timer_ <= 0.0f) {
+        if (invincibility_timer_ <= 0.0F) {
             is_invincible_ = false;
-            invincibility_timer_ = 0.0f;
+            invincibility_timer_ = 0.0F;
         }
     }
 
@@ -35,18 +35,18 @@ namespace engine::component {
 
         if (is_invincible_) {
             spdlog::debug("游戏对象 '{}' 处于无敌状态，免疫了 {} 点伤害。",
-                          owner_ ? owner_->getName() : "Unknown", damage_amount);
+                          (owner_ != nullptr) ? owner_->getName() : "Unknown", damage_amount);
             return false;
         }
 
         current_health_ -= damage_amount;
         current_health_ = glm::max(0, current_health_); // 防止生命值变为负数
         // 如果受伤但没死亡，并且设置了无敌时间，则触发无敌
-        if (isAlive() && invincibility_duration_ > 0.0f) {
+        if (isAlive() && invincibility_duration_ > 0.0F) {
             setInvincible(invincibility_duration_);
         }
         spdlog::debug("游戏对象 '{}' 受到了 {} 点伤害，当前生命值: {}/{}。",
-                      owner_ ? owner_->getName() : "Unknown", damage_amount, current_health_,
+                      (owner_ != nullptr) ? owner_->getName() : "Unknown", damage_amount, current_health_,
                       max_health_);
         return true;
     }
@@ -60,7 +60,7 @@ namespace engine::component {
         current_health_ += heal_amount;
         current_health_ = std::min(max_health_, current_health_); // 防止超过最大生命值
         spdlog::debug("游戏对象 '{}' 治疗了 {} 点，当前生命值: {}/{}。",
-                      owner_ ? owner_->getName() : "Unknown", heal_amount, current_health_,
+                      (owner_ != nullptr) ? owner_->getName() : "Unknown", heal_amount, current_health_,
                       max_health_);
         return current_health_;
     }
@@ -79,17 +79,17 @@ namespace engine::component {
 
     void HealthComponent::setInvincible(float duration)
     {
-        if (duration > 0.0f) {
+        if (duration > 0.0F) {
             is_invincible_ = true;
             invincibility_timer_ = duration;
             spdlog::debug("游戏对象 '{}' 进入无敌状态，持续 {} 秒。",
-                          owner_ ? owner_->getName() : "Unknown", duration);
+                          (owner_ != nullptr) ? owner_->getName() : "Unknown", duration);
         } else {
             // 如果持续时间为 0 或负数，则立即取消无敌
             is_invincible_ = false;
-            invincibility_timer_ = 0.0f;
+            invincibility_timer_ = 0.0F;
             spdlog::debug("游戏对象 '{}' 的无敌状态被手动移除。",
-                          owner_ ? owner_->getName() : "Unknown");
+                          (owner_ != nullptr) ? owner_->getName() : "Unknown");
         }
     }
 } // namespace engine::component

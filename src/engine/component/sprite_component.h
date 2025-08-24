@@ -30,8 +30,8 @@ namespace engine::component {
         engine::render::Sprite sprite_;        ///< @brief 精灵
         engine::utils::Alignment alignment_ =
             engine::utils::Alignment::NONE;    ///< @brief 精灵对齐方式
-        glm::vec2 sprite_size_ = {0.0f, 0.0f}; ///< @brief 精灵大小
-        glm::vec2 offset_ = {0.0f, 0.0f};      ///< @brief 偏移量
+        glm::vec2 sprite_size_ = {0.0F, 0.0F}; ///< @brief 精灵大小
+        glm::vec2 offset_ = {0.0F, 0.0F};      ///< @brief 偏移量
         bool is_visible_ = true;               ///< @brief 是否可见
 
     public:
@@ -46,7 +46,7 @@ namespace engine::component {
         SpriteComponent(std::string_view texture_id,
                         engine::resource::ResourceManager &resource_manager,
                         engine::utils::Alignment alignment = engine::utils::Alignment::NONE,
-                        const std::optional<SDL_FRect> source_rect_opt = std::nullopt,
+                        std::optional<SDL_FRect> src_rect_opt = std::nullopt,
                         bool is_flipped = false);
 
         /**
@@ -70,27 +70,27 @@ namespace engine::component {
         void updateOffset();
 
         // --- getters ---
-        const engine::render::Sprite &getSprite() const { return sprite_; }
-        std::string_view getTextureId() const { return sprite_.getTextureId(); }
-        bool isFlipped() const { return sprite_.isFlipped(); }
-        bool isVisible() const { return is_visible_; }
-        const glm::vec2 &getSpriteSize() const { return sprite_size_; }
-        const glm::vec2 &getOffset() const { return offset_; }
-        engine::utils::Alignment getAlignment() const { return alignment_; }
+        [[nodiscard]] const engine::render::Sprite &getSprite() const { return sprite_; }
+        [[nodiscard]] std::string_view getTextureId() const { return sprite_.getTextureId(); }
+        [[nodiscard]] bool isFlipped() const { return sprite_.isFlipped(); }
+        [[nodiscard]] bool isVisible() const { return is_visible_; }
+        [[nodiscard]] const glm::vec2 &getSpriteSize() const { return sprite_size_; }
+        [[nodiscard]] const glm::vec2 &getOffset() const { return offset_; }
+        [[nodiscard]] engine::utils::Alignment getAlignment() const { return alignment_; }
 
         // --- setters ---
         void setSpriteById(std::string_view texture_id,
-                           std::optional<SDL_FRect> source_rect_opt = std::nullopt);
+                           std::optional<SDL_FRect> src_rect_opt = std::nullopt);
         void setFlipped(bool flipped) { sprite_.setFlipped(flipped); }
         void setVisible(bool visible) { is_visible_ = visible; }
-        void setSrcRect(std::optional<SDL_FRect> src_rect_pot);
+        void setSrcRect(std::optional<SDL_FRect> src_rect_opt);
         void setAlignment(engine::utils::Alignment anchor);
 
     private:
         void updateSpriteSize();
 
         void init() override;
-        void update(float, engine::core::Context &) override {};
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {};
         void render(engine::core::Context &context) override;
     };
 } // namespace engine::component

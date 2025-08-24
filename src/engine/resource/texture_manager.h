@@ -30,7 +30,7 @@ namespace engine::resource {
         struct SDLTextureDeleter {
             void operator()(SDL_Texture* texture) const
             {
-                if (texture) {
+                if (texture != nullptr) {
                     SDL_DestroyTexture(texture);
                 }
             }

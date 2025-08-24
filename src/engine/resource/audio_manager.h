@@ -21,7 +21,7 @@ namespace engine::resource {
         struct SDLMixChunkDeleter {
             void operator()(Mix_Chunk* chunk) const
             {
-                if (chunk) {
+                if (chunk != nullptr) {
                     Mix_FreeChunk(chunk);
                 }
             }
@@ -31,7 +31,7 @@ namespace engine::resource {
         struct SDLMixMusicDeleter {
             void operator()(Mix_Music* music) const
             {
-                if (music) {
+                if (music != nullptr) {
                     Mix_FreeMusic(music);
                 }
             }

@@ -33,7 +33,7 @@ namespace engine::ui {
          * @param position 初始局部位置
          * @param size 初始大小
          */
-        explicit UIElement(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 size = {0.0f, 0.0f});
+        explicit UIElement(glm::vec2 position = {0.0F, 0.0F}, glm::vec2 size = {0.0F, 0.0F});
         virtual ~UIElement() = default;
 
         // --- 核心逻辑 ---
@@ -47,24 +47,27 @@ namespace engine::ui {
         void removeAllChildren();
 
         // --- getters ---
-        const glm::vec2 &getSize() const { return size_; }
-        const glm::vec2 &getPosition() const { return position_; }
-        bool isVisible() const { return visible_; }
-        bool isNeedRemove() const { return need_remove_; }
-        UIElement* getParent() const { return parent_; }
-        const std::vector<std::unique_ptr<UIElement>> &getChildren() const { return children_; }
+        [[nodiscard]] const glm::vec2 &getSize() const { return size_; }
+        [[nodiscard]] const glm::vec2 &getPosition() const { return position_; }
+        [[nodiscard]] bool isVisible() const { return visible_; }
+        [[nodiscard]] bool isNeedRemove() const { return need_remove_; }
+        [[nodiscard]] UIElement* getParent() const { return parent_; }
+        [[nodiscard]] const std::vector<std::unique_ptr<UIElement>> &getChildren() const
+        {
+            return children_;
+        }
 
         // --- setters ---
-        void setSize(glm::vec2 size) { size_ = std::move(size); }
+        void setSize(glm::vec2 size) { size_ = size; }
         void setVisible(bool visible) { visible_ = visible; }
         void setParent(UIElement* parent) { parent_ = parent; }
-        void setPosition(glm::vec2 position) { position_ = std::move(position); } // 相对于父节点
+        void setPosition(glm::vec2 position) { position_ = position; } // 相对于父节点
         void setNeedRemove(bool need_remove) { need_remove_ = need_remove; }
 
         // --- 辅助方法 ---
-        engine::utils::Rect getBounds() const;
-        glm::vec2 getScreenPosition() const;
-        bool isPointInside(const glm::vec2 &point) const;
+        [[nodiscard]] engine::utils::Rect getBounds() const;
+        [[nodiscard]] glm::vec2 getScreenPosition() const;
+        [[nodiscard]] bool isPointInside(const glm::vec2 &point) const;
         void cleanupChildren();
 
         // --- 禁用拷贝和移动语义 ---

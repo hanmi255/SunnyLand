@@ -14,12 +14,17 @@ namespace engine::scene {
      */
     class SceneManager final {
     private:
-        engine::core::Context &context_;                       ///< @brief 上下文引用
-        std::vector<std::unique_ptr<Scene>> scenes_stack_;     ///< @brief 场景栈
+        engine::core::Context &context_;                   ///< @brief 上下文引用
+        std::vector<std::unique_ptr<Scene>> scenes_stack_; ///< @brief 场景栈
 
-        enum class PendingAction { NONE, POP, PUSH, REPLACE }; ///< @brief 待处理的操作
-        PendingAction pending_action_ = PendingAction::NONE;   ///< @brief 默认待处理的操作
-        std::unique_ptr<Scene> pending_scene_;                 ///< @brief 待处理的场景
+        enum class PendingAction : std::uint8_t {
+            NONE,
+            POP,
+            PUSH,
+            REPLACE
+        };                                                   ///< @brief 待处理的操作
+        PendingAction pending_action_ = PendingAction::NONE; ///< @brief 默认待处理的操作
+        std::unique_ptr<Scene> pending_scene_;               ///< @brief 待处理的场景
 
     public:
         explicit SceneManager(engine::core::Context &context);
@@ -37,10 +42,10 @@ namespace engine::scene {
         void requestReplaceScene(std::unique_ptr<Scene> &&scene);
 
         // --- getters ---
-        Scene* getCurrentScene() const;
-        engine::core::Context &getContext() const { return context_; }
-        bool isEmpty() const { return scenes_stack_.empty(); }
-        size_t getSceneCount() const { return scenes_stack_.size(); }
+        [[nodiscard]] Scene* getCurrentScene() const;
+        [[nodiscard]] engine::core::Context &getContext() const { return context_; }
+        [[nodiscard]] bool isEmpty() const { return scenes_stack_.empty(); }
+        [[nodiscard]] size_t getSceneCount() const { return scenes_stack_.size(); }
 
         // 核心逻辑
         void update(float delta_time);

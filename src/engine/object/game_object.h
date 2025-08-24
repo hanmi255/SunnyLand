@@ -22,7 +22,7 @@ namespace engine::object {
         bool need_remove_ = false; ///< @breif 将来由场景类负责删除
 
     public:
-        GameObject(std::string_view name = "", std::string_view tag = "");
+        explicit GameObject(std::string_view name = "", std::string_view tag = "");
 
         // 禁止拷贝和移动语义
         GameObject(const GameObject &) = delete;
@@ -31,9 +31,9 @@ namespace engine::object {
         GameObject &operator=(const GameObject &&) = delete;
 
         // --- getters ---
-        std::string_view getName() const { return name_; }
-        std::string_view getTag() const { return tag_; }
-        bool isNeedRemove() const { return need_remove_; }
+        [[nodiscard]] std::string_view getName() const { return name_; }
+        [[nodiscard]] std::string_view getTag() const { return tag_; }
+        [[nodiscard]] bool isNeedRemove() const { return need_remove_; }
 
         // --- setters ---
         void setName(std::string_view name) { name_ = name; }
@@ -116,7 +116,7 @@ namespace engine::object {
          * @tparam T 组件类型
          * @return 是否存在组件
          */
-        template <typename T> bool hasComponent() const noexcept
+        template <typename T> [[nodiscard]] bool hasComponent() const noexcept
         {
             static_assert(std::is_base_of_v<engine::component::Component, T>,
                           "T 必须继承自 Component");

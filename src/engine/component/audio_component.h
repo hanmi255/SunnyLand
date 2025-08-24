@@ -57,7 +57,7 @@ namespace engine::component {
     private:
         // 核心逻辑
         void init() override;
-        void update(float, engine::core::Context &) override {}
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {}
     };
 
 } // namespace engine::component

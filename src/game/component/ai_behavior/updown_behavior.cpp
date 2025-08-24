@@ -35,7 +35,7 @@ namespace game::component::ai_behavior {
         auto* physics_component = ai_component.getPhysicsComponent();
         auto* transform_component = ai_component.getTransformComponent();
 
-        if (!physics_component || !transform_component) {
+        if ((physics_component == nullptr) || (transform_component == nullptr)) {
             spdlog::error("UpdownBehavior：缺少必要的组件，无法执行巡逻行为。");
             return;
         }

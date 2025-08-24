@@ -41,20 +41,20 @@ namespace game::component {
         bool is_dead_ = false;                                                 ///< @brief 是否死亡
 
         // --- 移动相关参数 ---
-        float move_force_ = 200.0f;     ///< @brief 水平移动力
-        float max_speed_ = 120.0f;      ///< @brief 最大移动速度 (像素/秒)
-        float climb_speed_ = 120.0f;    ///< @brief 爬梯子速度 (像素/秒)
-        float friction_factor_ = 0.85f; ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
-        float jump_velocity_ = 350.0f;  ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
+        float move_force_ = 200.0F;     ///< @brief 水平移动力
+        float max_speed_ = 120.0F;      ///< @brief 最大移动速度 (像素/秒)
+        float climb_speed_ = 120.0F;    ///< @brief 爬梯子速度 (像素/秒)
+        float friction_factor_ = 0.85F; ///< @brief 摩擦系数 (Idle时缓冲效果，每帧乘以此系数)
+        float jump_velocity_ = 350.0F;  ///< @brief 跳跃速度 (按下"jump"键给的瞬间向上的速度)
 
         // --- 状态相关参数 ---
-        float stunned_duration_ = 0.4f;                ///< @brief 击退硬直效果持续时间
+        float stunned_duration_ = 0.4F;                ///< @brief 击退硬直效果持续时间
 
-        static constexpr float coyote_time_ = 0.1f;    ///< @brief coyote time（单位：秒）
-        float coyote_timer_ = 0.0f;                    ///< @brief coyote timer 计时器
+        static constexpr float coyote_time_ = 0.1F;    ///< @brief coyote time（单位：秒）
+        float coyote_timer_ = 0.0F;                    ///< @brief coyote timer 计时器
 
-        static constexpr float flash_interval_ = 0.1f; ///< @brief 闪烁间隔（单位：秒）
-        float flash_timer_ = 0.0f;                     ///< @brief 闪烁计时器
+        static constexpr float flash_interval_ = 0.1F; ///< @brief 闪烁间隔（单位：秒）
+        float flash_timer_ = 0.0F;                     ///< @brief 闪烁计时器
 
     public:
         PlayerComponent() = default;
@@ -69,29 +69,39 @@ namespace game::component {
         bool takeDamage(int damage_amount);
 
         // --- getters ---
-        engine::component::AnimationComponent* getAnimationComponent() const
+        [[nodiscard]] engine::component::AnimationComponent* getAnimationComponent() const
         {
             return animation_component_;
         }
-        engine::component::AudioComponent* getAudioComponent() const { return audio_component_; }
-        engine::component::HealthComponent* getHealthComponent() const { return health_component_; }
-        engine::component::PhysicsComponent* getPhysicsComponent() const
+        [[nodiscard]] engine::component::AudioComponent* getAudioComponent() const
+        {
+            return audio_component_;
+        }
+        [[nodiscard]] engine::component::HealthComponent* getHealthComponent() const
+        {
+            return health_component_;
+        }
+        [[nodiscard]] engine::component::PhysicsComponent* getPhysicsComponent() const
         {
             return physics_component_;
         }
-        engine::component::SpriteComponent* getSpriteComponent() const { return sprite_component_; }
-        engine::component::TransformComponent* getTransformComponent() const
+        [[nodiscard]] engine::component::SpriteComponent* getSpriteComponent() const
+        {
+            return sprite_component_;
+        }
+        [[nodiscard]] engine::component::TransformComponent* getTransformComponent() const
         {
             return transform_component_;
         }
 
-        bool isDead() const { return is_dead_; }
-        float getMoveForce() const { return move_force_; }
-        float getMaxSpeed() const { return max_speed_; }
-        float getClimbSpeed() const { return climb_speed_; }
-        float getFrictionFactor() const { return friction_factor_; }
-        float getJumpVelocity() const { return jump_velocity_; }
-        float getStunnedDuration() const { return stunned_duration_; }
+        [[nodiscard]] bool isDead() const { return is_dead_; }
+        [[nodiscard]] bool isOnGround() const;
+        [[nodiscard]] float getMoveForce() const { return move_force_; }
+        [[nodiscard]] float getMaxSpeed() const { return max_speed_; }
+        [[nodiscard]] float getClimbSpeed() const { return climb_speed_; }
+        [[nodiscard]] float getFrictionFactor() const { return friction_factor_; }
+        [[nodiscard]] float getJumpVelocity() const { return jump_velocity_; }
+        [[nodiscard]] float getStunnedDuration() const { return stunned_duration_; }
 
         // --- setters ---
         void setIsDead(bool is_dead) { is_dead_ = is_dead; }
@@ -103,7 +113,6 @@ namespace game::component {
         void setStunnedDuration(float duration) { stunned_duration_ = duration; }
 
         void setState(std::unique_ptr<player_state::PlayerState> new_state);
-        bool isOnGround() const;
 
     private:
         // 核心逻辑

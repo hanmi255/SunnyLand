@@ -1,7 +1,6 @@
 #pragma once
 #include "component.h"
 #include <glm/vec2.hpp>
-#include <utility>
 
 namespace engine::component {
     /**
@@ -12,9 +11,9 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     private:
-        glm::vec2 position_ = {0.0f, 0.0f}; ///< @brief 位置
-        glm::vec2 scale_ = {1.0f, 1.0f};    ///< @brief 缩放
-        float rotation_ = 0.0f;             ///< @brief 旋转 角度制 单位：度
+        glm::vec2 position_ = {0.0F, 0.0F}; ///< @brief 位置
+        glm::vec2 scale_ = {1.0F, 1.0F};    ///< @brief 缩放
+        float rotation_ = 0.0F;             ///< @brief 旋转 角度制 单位：度
 
     public:
         /**
@@ -23,11 +22,10 @@ namespace engine::component {
          * @param scale 缩放
          * @param rotation 旋转
          */
-        TransformComponent(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 scale = {1.0f, 1.0f},
-                           float rotation = 0.0f)
-            : position_(std::move(position)), scale_(std::move(scale)), rotation_(rotation)
-        {
-        }
+        explicit TransformComponent(glm::vec2 position = {0.0F, 0.0F},
+                                    glm::vec2 scale = {1.0F, 1.0F}, float rotation = 0.0F)
+            : position_(position), scale_(scale), rotation_(rotation)
+        {}
 
         // 禁止拷贝和移动语义
         TransformComponent(const TransformComponent &) = delete;
@@ -36,18 +34,18 @@ namespace engine::component {
         TransformComponent &operator=(TransformComponent &&) = delete;
 
         // --- getters ---
-        const glm::vec2 &getPosition() const { return position_; }
-        const glm::vec2 &getScale() const { return scale_; }
-        float getRotation() const { return rotation_; }
+        [[nodiscard]] const glm::vec2 &getPosition() const { return position_; }
+        [[nodiscard]] const glm::vec2 &getScale() const { return scale_; }
+        [[nodiscard]] float getRotation() const { return rotation_; }
 
         // --- setters ---
-        void setPosition(glm::vec2 position) { position_ = std::move(position); }
+        void setPosition(glm::vec2 position) { position_ = position; }
         void setScale(glm::vec2 scale);
         void setRotation(float rotation) { rotation_ = rotation; }
 
         void translate(const glm::vec2 &offset) { position_ += offset; }
 
     private:
-        void update(float, engine::core::Context &) override {}
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {}
     };
 } // namespace engine::component

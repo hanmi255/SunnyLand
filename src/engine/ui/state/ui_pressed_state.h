@@ -12,7 +12,7 @@ namespace engine::ui::state {
         friend class engine::ui::UIInteractive;
 
     public:
-        UIPressedState(engine::ui::UIInteractive* owner) : UIState(owner) {}
+        explicit UIPressedState(engine::ui::UIInteractive* owner) : UIState(owner) {}
         ~UIPressedState() override = default;
 
     private:

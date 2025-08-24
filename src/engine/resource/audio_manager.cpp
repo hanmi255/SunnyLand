@@ -61,7 +61,7 @@ namespace engine::resource {
         // 加载音效块
         spdlog::debug("加载音效: {}", file_path);
         Mix_Chunk* raw_chunk = Mix_LoadWAV(file_path.data());
-        if (!raw_chunk) {
+        if (raw_chunk == nullptr) {
             spdlog::error("加载音效失败: '{}': {}", file_path, SDL_GetError());
             return nullptr;
         }
@@ -113,7 +113,7 @@ namespace engine::resource {
         // 加载音乐
         spdlog::debug("加载音乐: {}", file_path);
         Mix_Music* raw_music = Mix_LoadMUS(file_path.data());
-        if (!raw_music) {
+        if (raw_music == nullptr) {
             spdlog::error("加载音乐失败: '{}': {}", file_path, SDL_GetError());
             return nullptr;
         }

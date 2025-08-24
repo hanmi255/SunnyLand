@@ -10,7 +10,7 @@ namespace engine::audio {
     AudioPlayer::AudioPlayer(engine::resource::ResourceManager* resource_manager)
         : resource_manager_(resource_manager)
     {
-        if (!resource_manager_) {
+        if (resource_manager_ == nullptr) {
             throw std::runtime_error("AudioPlayer 构造失败: 提供的 ResourceManager 指针为空。");
         }
     }
@@ -18,7 +18,7 @@ namespace engine::audio {
     int AudioPlayer::playSound(std::string_view sound_path, int channel)
     {
         Mix_Chunk* chunk = resource_manager_->getSound(sound_path);
-        if (!chunk) {
+        if (chunk == nullptr) {
             spdlog::error("AudioPlayer: 无法获取音效 '{}' 播放。", sound_path);
             return -1;
         }
@@ -37,7 +37,7 @@ namespace engine::audio {
         if (music_path == current_music_path_) return true; // 如果当前音乐已经在播放，则不重复播放
 
         Mix_Music* music = resource_manager_->getMusic(music_path);
-        if (!music) {
+        if (music == nullptr) {
             spdlog::error("AudioPlayer: 无法获取音乐 '{}' 播放。", music_path);
             return false;
         }
@@ -84,14 +84,14 @@ namespace engine::audio {
     void AudioPlayer::setSoundVolume(float volume, int channel)
     {
         // 将浮点音量(0-1)转换为SDL_mixer的音量(0-128)
-        int sdl_volume = static_cast<int>(glm::max(0.0f, glm::min(1.0f, volume)) * MIX_MAX_VOLUME);
+        int sdl_volume = static_cast<int>(glm::max(0.0F, glm::min(1.0F, volume)) * MIX_MAX_VOLUME);
         Mix_Volume(channel, sdl_volume);
         spdlog::trace("AudioPlayer: 设置通道 {} 的音量为 {:.2f}。", channel, volume);
     }
 
     void AudioPlayer::setMusicVolume(float volume)
     {
-        int sdl_volume = static_cast<int>(glm::max(0.0f, glm::min(1.0f, volume)) * MIX_MAX_VOLUME);
+        int sdl_volume = static_cast<int>(glm::max(0.0F, glm::min(1.0F, volume)) * MIX_MAX_VOLUME);
         Mix_VolumeMusic(sdl_volume);
         spdlog::trace("AudioPlayer: 设置音乐音量为 {:.2f}。", volume);
     }

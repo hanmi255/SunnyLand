@@ -14,7 +14,7 @@
 namespace engine::resource {
     TextureManager::TextureManager(SDL_Renderer* renderer) : renderer_(renderer)
     {
-        if (!renderer_) {
+        if (renderer_ == nullptr) {
             // 关键错误，无法继续，抛出异常 （它将由catch语句捕获（位于GameApp），并进行处理）
             throw std::runtime_error("TextureManager 构造失败: 渲染器指针为空。");
         }
@@ -38,7 +38,7 @@ namespace engine::resource {
             spdlog::warn("无法设置纹理缩放模式为最邻近插值");
         }
 
-        if (!raw_texture) {
+        if (raw_texture == nullptr) {
             spdlog::error("加载纹理失败: '{}': {}", file_path, SDL_GetError());
             return nullptr;
         }
@@ -67,7 +67,7 @@ namespace engine::resource {
     {
         // 获取纹理
         SDL_Texture* texture = getTexture(file_path);
-        if (!texture) {
+        if (texture == nullptr) {
             spdlog::error("无法获取纹理: {}", file_path);
             return glm::vec2(0);
         }

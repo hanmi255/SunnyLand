@@ -13,10 +13,10 @@ namespace engine::render {
     {
         spdlog::trace("Renderer 构造中...");
 
-        if (!renderer_) {
+        if (renderer_ == nullptr) {
             throw std::runtime_error("Renderer 构造失败: 提供的SDL_Renderer 为空指针");
         }
-        if (!resource_manager_) {
+        if (resource_manager_ == nullptr) {
             throw std::runtime_error("Renderer 构造失败: 提供的ResourceManager 为空指针");
         }
 
@@ -28,12 +28,12 @@ namespace engine::render {
                               const glm::vec2 &scale, double angle)
     {
         // 早期验证 - 避免无效的缩放
-        if (scale.x <= 0.0f || scale.y <= 0.0f) {
+        if (scale.x <= 0.0F || scale.y <= 0.0F) {
             return;
         }
 
         auto* texture = resource_manager_->getTexture(sprite.getTextureId());
-        if (!texture) {
+        if (texture == nullptr) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
         }
@@ -51,7 +51,7 @@ namespace engine::render {
         const float scaled_w = src_rect.value().w * scale.x;
         const float scaled_h = src_rect.value().h * scale.y;
         // 提前检查纹理是否太小以至于不可见
-        if (scaled_w < 0.5f || scaled_h < 0.5f) {
+        if (scaled_w < 0.5F || scaled_h < 0.5F) {
             return;
         }
         SDL_FRect dst_rect = {screen_pos.x, screen_pos.y, scaled_w, scaled_h};
@@ -71,12 +71,12 @@ namespace engine::render {
                                 glm::bvec2 repeat, const glm::vec2 &scale)
     {
         // 早期验证 - 避免无效的缩放
-        if (scale.x <= 0.0f || scale.y <= 0.0f) {
+        if (scale.x <= 0.0F || scale.y <= 0.0F) {
             return;
         }
 
         auto* texture = resource_manager_->getTexture(sprite.getTextureId());
-        if (!texture) {
+        if (texture == nullptr) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
         }
@@ -95,7 +95,7 @@ namespace engine::render {
         const float scaled_h = src_rect.value().h * scale.y;
 
         // 提前检查纹理是否太小以至于不可见
-        if (scaled_w < 0.5f || scaled_h < 0.5f) {
+        if (scaled_w < 0.5F || scaled_h < 0.5F) {
             return;
         }
 
@@ -180,7 +180,7 @@ namespace engine::render {
                                 const std::optional<glm::vec2> &size)
     {
         auto* texture = resource_manager_->getTexture(sprite.getTextureId());
-        if (!texture) {
+        if (texture == nullptr) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return;
         }
@@ -249,7 +249,7 @@ namespace engine::render {
     std::optional<SDL_FRect> Renderer::getSpriteSrcRect(const Sprite &sprite)
     {
         auto* texture = resource_manager_->getTexture(sprite.getTextureId());
-        if (!texture) {
+        if (texture == nullptr) {
             spdlog::error("ID: {} 纹理不存在", sprite.getTextureId());
             return std::nullopt;
         }

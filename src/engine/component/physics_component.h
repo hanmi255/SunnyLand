@@ -1,7 +1,6 @@
 #pragma once
 #include "component.h"
 #include <glm/vec2.hpp>
-#include <utility>
 
 namespace engine::physics {
     class PhysicsEngine;
@@ -14,14 +13,14 @@ namespace engine::component {
         friend class engine::object::GameObject;
 
     public:
-        glm::vec2 velocity_ = {0.0f, 0.0f}; ///< @brief 物体的速度
+        glm::vec2 velocity_ = {0.0F, 0.0F}; ///< @brief 物体的速度
 
     private:
         engine::physics::PhysicsEngine* physics_engine_ = nullptr; ///< @brief 物理引擎
         TransformComponent* transform_component_ = nullptr;        ///< @brief 物体的变换组件
 
-        glm::vec2 force_ = {0.0f, 0.0f};                           ///< @brief 物体的力
-        float mass_ = 1.0f;                                        ///< @brief 物体的质量 默认为1.0f
+        glm::vec2 force_ = {0.0F, 0.0F};                           ///< @brief 物体的力
+        float mass_ = 1.0F;                                        ///< @brief 物体的质量 默认为1.0f
         bool use_gravity_ = true;                                  ///< @brief 物体是否受重力影响
         bool enabled_ = true;                                      ///< @brief 是否启用组件
 
@@ -41,8 +40,8 @@ namespace engine::component {
          * @param use_gravity 物体是否受重力影响，默认true
          * @param mass 物体质量，默认1.0
          */
-        PhysicsComponent(engine::physics::PhysicsEngine* physics_engine, bool use_gravity = true,
-                         float mass = 1.0f);
+        explicit PhysicsComponent(engine::physics::PhysicsEngine* physics_engine,
+                                  bool use_gravity = true, float mass = 1.0F);
         ~PhysicsComponent() override = default;
 
         // 禁用拷贝和移动语义
@@ -56,22 +55,25 @@ namespace engine::component {
         {
             if (enabled_) force_ += force;
         }
-        void clearForce() { force_ = {0.0f, 0.0f}; }
-        const glm::vec2 &getForce() const { return force_; }
-        float getMass() const { return mass_; }
-        bool isEnabled() const { return enabled_; }
-        bool isUseGravity() const { return use_gravity_; }
+        void clearForce() { force_ = {0.0F, 0.0F}; }
+        [[nodiscard]] const glm::vec2 &getForce() const { return force_; }
+        [[nodiscard]] float getMass() const { return mass_; }
+        [[nodiscard]] bool isEnabled() const { return enabled_; }
+        [[nodiscard]] bool isUseGravity() const { return use_gravity_; }
 
         // 其他方法
         // --- getters ---
-        const glm::vec2 &getVelocity() const { return velocity_; }
-        TransformComponent* getTransformComponent() const { return transform_component_; }
+        [[nodiscard]] const glm::vec2 &getVelocity() const { return velocity_; }
+        [[nodiscard]] TransformComponent* getTransformComponent() const
+        {
+            return transform_component_;
+        }
 
         // --- setters ---
         void setEnabled(bool enabled) { enabled_ = enabled; }
-        void setMass(float mass) { mass_ = (mass >= 0.0f) ? mass : 1.0f; }
+        void setMass(float mass) { mass_ = (mass >= 0.0F) ? mass : 1.0F; }
         void setUseGravity(bool use_gravity) { use_gravity_ = use_gravity; }
-        void setVelocity(glm::vec2 velocity) { velocity_ = std::move(velocity); }
+        void setVelocity(glm::vec2 velocity) { velocity_ = velocity; }
 
         // 碰撞状态的访问和修改（供 PhysicsEngine 使用）
         void resetCollisionFlags()
@@ -91,17 +93,17 @@ namespace engine::component {
         void setCollidedLadder(bool collided_ladder) { collided_ladder_ = collided_ladder; }
         void setOnTopLadder(bool on_top) { is_on_top_ladder_ = on_top; }
 
-        bool hasCollidedAbove() const { return collided_above_; }
-        bool hasCollidedBelow() const { return collided_below_; }
-        bool hasCollidedLeft() const { return collided_left_; }
-        bool hasCollidedRight() const { return collided_right_; }
-        bool hasCollidedLadder() const { return collided_ladder_; }
-        bool isOnTopLadder() const { return is_on_top_ladder_; }
+        [[nodiscard]] bool hasCollidedAbove() const { return collided_above_; }
+        [[nodiscard]] bool hasCollidedBelow() const { return collided_below_; }
+        [[nodiscard]] bool hasCollidedLeft() const { return collided_left_; }
+        [[nodiscard]] bool hasCollidedRight() const { return collided_right_; }
+        [[nodiscard]] bool hasCollidedLadder() const { return collided_ladder_; }
+        [[nodiscard]] bool isOnTopLadder() const { return is_on_top_ladder_; }
 
     private:
         // 核心逻辑
         void init() override;
-        void update(float, engine::core::Context &) override {}
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {}
         void clean() override;
     };
 } // namespace engine::component

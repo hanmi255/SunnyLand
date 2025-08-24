@@ -112,23 +112,25 @@ namespace engine::scene {
 
     void Scene::addGameObject(std::unique_ptr<engine::object::GameObject> &&object)
     {
-        if (object)
+        if (object) {
             game_objects_.push_back(std::move(object));
-        else
+        } else {
             spdlog::warn("尝试向场景 '{}' 添加空游戏对象。", name_);
+        }
     }
 
     void Scene::safelyAddGameObject(std::unique_ptr<engine::object::GameObject> &&object)
     {
-        if (object)
+        if (object) {
             pending_additions_.push_back(std::move(object));
-        else
+        } else {
             spdlog::warn("尝试向场景 '{}' 添加空游戏对象。", name_);
+        }
     }
 
     void Scene::removeGameObject(engine::object::GameObject* object_ptr)
     {
-        if (!object_ptr) {
+        if (object_ptr == nullptr) {
             spdlog::warn("尝试从场景 '{}' 中移除空的游戏对象指针", name_);
             return;
         }

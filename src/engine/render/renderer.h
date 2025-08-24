@@ -18,7 +18,7 @@ struct SDL_FColor;
 
 namespace engine::resource {
     class ResourceManager;
-}
+} // namespace engine::resource
 
 namespace engine::render {
     class Camera;
@@ -61,7 +61,7 @@ namespace engine::render {
          * @param angle 旋转角度（度）。
          */
         void drawSprite(const Camera &camera, const Sprite &sprite, const glm::vec2 &position,
-                        const glm::vec2 &scale = {1.0f, 1.0f}, double angle = 0.0f);
+                        const glm::vec2 &scale = {1.0F, 1.0F}, double angle = 0.0F);
 
         /**
          * @brief 绘制视差滚动背景
@@ -73,7 +73,7 @@ namespace engine::render {
          */
         void drawParallax(const Camera &camera, const Sprite &sprite, const glm::vec2 &position,
                           const glm::vec2 &scroll_factor, glm::bvec2 repeat = {true, true},
-                          const glm::vec2 &scale = {1.0f, 1.0f});
+                          const glm::vec2 &scale = {1.0F, 1.0F});
 
         /**
          * @brief 在屏幕坐标中直接渲染一个用于UI的Sprite对象。
@@ -105,11 +105,11 @@ namespace engine::render {
 
         void setDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255);
 
-        void setDrawColorFloat(float r, float g, float b, float a = 1.0f);
-        SDL_Renderer* getSDLRenderer() const { return renderer_; }
+        void setDrawColorFloat(float r, float g, float b, float a = 1.0F);
+        [[nodiscard]] SDL_Renderer* getSDLRenderer() const { return renderer_; }
 
     private:
         std::optional<SDL_FRect> getSpriteSrcRect(const Sprite &sprite);
-        bool isRectInViewport(const Camera &camera, const SDL_FRect &rect);
+        static bool isRectInViewport(const Camera &camera, const SDL_FRect &rect);
     };
 } // namespace engine::render

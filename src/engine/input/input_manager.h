@@ -27,7 +27,7 @@ namespace engine::input {
     /**
      * @brief 动作状态枚举
      */
-    enum class ActionState {
+    enum class ActionState : std::uint8_t {
         INACTIVE,      ///< @brief 动作未激活
         JUST_PRESSED,  ///< @brief 刚刚按下
         HELD_DOWN,     ///< @brief 持续按下
@@ -72,21 +72,21 @@ namespace engine::input {
          * @param action_name 动作名称
          * @return true 如果动作在当前帧刚被按下
          */
-        bool isActionJustPressed(std::string_view action_name) const;
+        [[nodiscard]] bool isActionJustPressed(std::string_view action_name) const;
 
         /**
          * @brief 检查动作是否被持续按下
          * @param action_name 动作名称
          * @return true 如果动作当前被按下（包括刚按下和持续按下）
          */
-        bool isActionHeldDown(std::string_view action_name) const;
+        [[nodiscard]] bool isActionHeldDown(std::string_view action_name) const;
 
         /**
          * @brief 检查动作是否刚刚被释放
          * @param action_name 动作名称
          * @return true 如果动作在当前帧刚被释放
          */
-        bool isActionJustReleased(std::string_view action_name) const;
+        [[nodiscard]] bool isActionJustReleased(std::string_view action_name) const;
 
         // --- 应用程序状态 ---
 
@@ -94,7 +94,7 @@ namespace engine::input {
          * @brief 检查是否应该退出应用程序
          * @return true 如果接收到退出信号
          */
-        bool shouldQuit() const noexcept;
+        [[nodiscard]] bool shouldQuit() const noexcept;
 
         /**
          * @brief 设置退出标志
@@ -108,13 +108,13 @@ namespace engine::input {
          * @brief 获取屏幕坐标系下的鼠标位置
          * @return 鼠标在屏幕坐标系中的位置
          */
-        glm::vec2 getScreenMousePosition() const noexcept;
+        [[nodiscard]] glm::vec2 getScreenMousePosition() const noexcept;
 
         /**
          * @brief 获取逻辑坐标系下的鼠标位置
          * @return 鼠标在渲染器逻辑坐标系中的位置
          */
-        glm::vec2 getLogicalMousePosition() const;
+        [[nodiscard]] glm::vec2 getLogicalMousePosition() const;
 
     private:
         // --- 核心处理函数 ---

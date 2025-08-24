@@ -12,13 +12,12 @@ namespace engine::component {
     SpriteComponent::SpriteComponent(std::string_view texture_id,
                                      engine::resource::ResourceManager &resource_manager,
                                      engine::utils::Alignment alignment,
-                                     const std::optional<SDL_FRect> source_rect_opt,
-                                     bool is_flipped)
+                                     const std::optional<SDL_FRect> src_rect_opt, bool is_flipped)
         : resource_manager_(&resource_manager)
-        , sprite_(texture_id, std::move(source_rect_opt), is_flipped)
+        , sprite_(texture_id, src_rect_opt, is_flipped)
         , alignment_(alignment)
     {
-        if (!resource_manager_) {
+        if (resource_manager_ == nullptr) {
             spdlog::critical("创建 SpriteComponent 时 ResourceManager 为空！，此组件将无效。");
         }
         spdlog::trace("创建 SpriteComponent，纹理ID: {}", sprite_.getTextureId());
@@ -29,7 +28,7 @@ namespace engine::component {
                                      engine::utils::Alignment alignment)
         : resource_manager_(&resource_manager), sprite_(std::move(sprite)), alignment_(alignment)
     {
-        if (!resource_manager_) {
+        if (resource_manager_ == nullptr) {
             spdlog::critical("创建 SpriteComponent 时 ResourceManager 为空！，此组件将无效。");
         }
         spdlog::trace("创建 SpriteComponent，纹理ID: {}", sprite_.getTextureId());
@@ -37,12 +36,12 @@ namespace engine::component {
 
     void SpriteComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("SpriteComponent 在初始化前未设置 owner_。");
             return;
         }
         transform_component_ = owner_->getComponent<TransformComponent>();
-        if (!transform_component_) {
+        if (transform_component_ == nullptr) {
             spdlog::warn(
                 "GameObject '{}' 上的 SpriteComponent 需要一个 TransformComponent，但未找到。",
                 owner_->getName());
@@ -57,7 +56,7 @@ namespace engine::component {
 
     void SpriteComponent::updateSpriteSize()
     {
-        if (!resource_manager_) {
+        if (resource_manager_ == nullptr) {
             spdlog::error("ResourceManager 为空！无法获取纹理尺寸。");
             return;
         }
@@ -73,35 +72,35 @@ namespace engine::component {
     {
         // 如果尺寸无效，偏移为0
         if (sprite_size_.x <= 0 || sprite_size_.y <= 0) {
-            offset_ = {0.0f, 0.0f};
+            offset_ = {0.0F, 0.0F};
             return;
         }
         auto scale = transform_component_->getScale();
         // 计算精灵左上角相对于 TransformComponent::position_ 的偏移
         switch (alignment_) {
             case engine::utils::Alignment::TOP_LEFT:
-                offset_ = glm::vec2{0.0f, 0.0f} * scale;
+                offset_ = glm::vec2{0.0F, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::TOP_CENTER:
-                offset_ = glm::vec2{-sprite_size_.x / 2.0f, 0.0f} * scale;
+                offset_ = glm::vec2{-sprite_size_.x / 2.0F, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::TOP_RIGHT:
-                offset_ = glm::vec2{-sprite_size_.x, 0.0f} * scale;
+                offset_ = glm::vec2{-sprite_size_.x, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER_LEFT:
-                offset_ = glm::vec2{0.0f, -sprite_size_.y / 2.0f} * scale;
+                offset_ = glm::vec2{0.0F, -sprite_size_.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER:
-                offset_ = glm::vec2{-sprite_size_.x / 2.0f, -sprite_size_.y / 2.0f} * scale;
+                offset_ = glm::vec2{-sprite_size_.x / 2.0F, -sprite_size_.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER_RIGHT:
-                offset_ = glm::vec2{-sprite_size_.x, -sprite_size_.y / 2.0f} * scale;
+                offset_ = glm::vec2{-sprite_size_.x, -sprite_size_.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_LEFT:
-                offset_ = glm::vec2{0.0f, -sprite_size_.y} * scale;
+                offset_ = glm::vec2{0.0F, -sprite_size_.y} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_CENTER:
-                offset_ = glm::vec2{-sprite_size_.x / 2.0f, -sprite_size_.y} * scale;
+                offset_ = glm::vec2{-sprite_size_.x / 2.0F, -sprite_size_.y} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_RIGHT:
                 offset_ = glm::vec2{-sprite_size_.x, -sprite_size_.y} * scale;
@@ -114,7 +113,7 @@ namespace engine::component {
 
     void SpriteComponent::render(engine::core::Context &context)
     {
-        if (!is_visible_ || !transform_component_ || !resource_manager_) {
+        if (!is_visible_ || (transform_component_ == nullptr) || (resource_manager_ == nullptr)) {
             return;
         }
 
@@ -132,7 +131,7 @@ namespace engine::component {
                                         std::optional<SDL_FRect> src_rect_opt)
     {
         sprite_.setTextureId(std::string(texture_id));
-        sprite_.setSrcRect(std::move(src_rect_opt));
+        sprite_.setSrcRect(src_rect_opt);
 
         updateSpriteSize();
         updateOffset();
@@ -140,7 +139,7 @@ namespace engine::component {
 
     void SpriteComponent::setSrcRect(std::optional<SDL_FRect> src_rect_opt)
     {
-        sprite_.setSrcRect(std::move(src_rect_opt));
+        sprite_.setSrcRect(src_rect_opt);
         updateSpriteSize();
         updateOffset();
     }

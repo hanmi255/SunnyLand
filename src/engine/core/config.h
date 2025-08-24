@@ -36,18 +36,18 @@ namespace engine::core {
         [[nodiscard]] bool saveToFile(std::string_view file_path) const;
 
         // --- getters ---
-        const std::string &getWindowTitle() const;
-        int getWindowWidth() const;
-        int getWindowHeight() const;
-        bool isVSyncEnabled() const;
-        int getTargetFps() const;
-        float getMusicVolume() const;
-        float getSoundVolume() const;
-        const std::unordered_map<std::string, std::vector<std::string>> &getInputMappings() const;
+        [[nodiscard]] const std::string &getWindowTitle() const;
+        [[nodiscard]] int getWindowWidth() const;
+        [[nodiscard]] int getWindowHeight() const;
+        [[nodiscard]] bool isVSyncEnabled() const;
+        [[nodiscard]] int getTargetFps() const;
+        [[nodiscard]] float getMusicVolume() const;
+        [[nodiscard]] float getSoundVolume() const;
+        [[nodiscard]] const std::unordered_map<std::string, std::vector<std::string>> &getInputMappings() const;
 
     private:
         void fromJson(const nlohmann::json &json);
-        nlohmann::ordered_json toJson() const;
+        [[nodiscard]] nlohmann::ordered_json toJson() const;
 
     private:
         // --- 默认配置项 ---
@@ -64,8 +64,8 @@ namespace engine::core {
         int target_fps_ = 144;
 
         // 音频设置
-        float music_volume_ = 0.2f;
-        float sound_volume_ = 0.5f;
+        float music_volume_ = 0.2F;
+        float sound_volume_ = 0.5F;
 
         // 存储动作名称到 SDL Scancode 名称列表的映射
         std::unordered_map<std::string, std::vector<std::string>> input_mappings_ = {

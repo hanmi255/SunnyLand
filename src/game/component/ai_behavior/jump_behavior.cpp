@@ -20,10 +20,10 @@ namespace game::component::ai_behavior {
                           max_x);
             patrol_min_x_ = patrol_max_x_;
         }
-        if (jump_interval_ <= 0.0f) { // 确保跳跃间隔是正数
+        if (jump_interval_ <= 0.0F) { // 确保跳跃间隔是正数
             spdlog::error("JumpBehavior: jump_interval ({}) 应为正数。已设置为 2.0f。",
                           jump_interval);
-            jump_interval_ = 2.0f;
+            jump_interval_ = 2.0F;
         }
         if (jump_vel_.y > 0) { // 确保垂直跳跃速度是负数（向上）
             spdlog::error("JumpBehavior: 垂直跳跃速度 ({}) 应为负数（向上）。已取相反数。",
@@ -42,8 +42,8 @@ namespace game::component::ai_behavior {
         auto* audio_component = ai_component.getAudioComponent();
 
         // 检查必要组件
-        if (!physics_component || !transform_component || !sprite_component ||
-            !animation_component) {
+        if ((physics_component == nullptr) || (transform_component == nullptr) ||
+            (sprite_component == nullptr) || (animation_component == nullptr)) {
             spdlog::error("JumpBehavior：缺少必要的组件，无法执行跳跃行为。");
             return;
         }
@@ -61,13 +61,13 @@ namespace game::component::ai_behavior {
         }
 
         // 播放落地音效
-        if (audio_component && jump_timer_ < 0.001f) {
+        if ((audio_component != nullptr) && jump_timer_ < 0.001F) {
             audio_component->playSound("cry", -1, true);
         }
 
         // 更新计时器和速度
         jump_timer_ += delta_time;
-        physics_component->velocity_.x = 0.0f;
+        physics_component->velocity_.x = 0.0F;
 
         // 还在地面等待时
         if (jump_timer_ < jump_interval_) {
@@ -76,7 +76,7 @@ namespace game::component::ai_behavior {
         }
 
         // 准备跳跃
-        jump_timer_ = 0.0f;
+        jump_timer_ = 0.0F;
 
         // 更新跳跃方向
         const auto current_x = transform_component->getPosition().x;

@@ -10,22 +10,22 @@ namespace engine::component {
 
     void AnimationComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("AnimationComponent 在初始化前未设置 owner_。");
             return;
         }
         sprite_component_ = owner_->getComponent<SpriteComponent>();
-        if (!sprite_component_) {
+        if (sprite_component_ == nullptr) {
             spdlog::error("GameObject '{}' 的 AnimationComponent 需要 SpriteComponent，但未找到。",
                           owner_->getName());
             return;
         }
     }
 
-    void AnimationComponent::update(float delta_time, engine::core::Context &)
+    void AnimationComponent::update(float delta_time, engine::core::Context & /*unused*/)
     {
         // 如果没有正在播放的动画，或者没有当前动画，或者没有精灵组件，或者当前动画没有帧，则直接返回
-        if (!is_playing_ || !current_animation_ || !sprite_component_ ||
+        if (!is_playing_ || (current_animation_ == nullptr) || (sprite_component_ == nullptr) ||
             current_animation_->isEmpty()) {
             spdlog::trace("AnimationComponent 更新时没有正在播放的动画或精灵组件为空。");
             return;
@@ -52,7 +52,7 @@ namespace engine::component {
         std::string_view name = animation->getName();
         animations_[std::string(name)] = std::move(animation);
         spdlog::debug("已将动画 '{}' 添加到 GameObject '{}'", name,
-                      owner_ ? owner_->getName() : "Unknown");
+                      (owner_ != nullptr) ? owner_->getName() : "Unknown");
     }
 
     void AnimationComponent::playAnimation(std::string_view name)
@@ -60,7 +60,7 @@ namespace engine::component {
         auto it = animations_.find(std::string(name));
         if (it == animations_.end() || !it->second) {
             spdlog::warn("未找到 GameObject '{}' 的动画 '{}'", name,
-                         owner_ ? owner_->getName() : "Unknown");
+                         (owner_ != nullptr) ? owner_->getName() : "Unknown");
             return;
         }
 
@@ -70,21 +70,21 @@ namespace engine::component {
         }
 
         current_animation_ = it->second.get();
-        animation_timer_ = 0.0f;
+        animation_timer_ = 0.0F;
         is_playing_ = true;
 
         // 立即将精灵更新到第一帧
-        if (sprite_component_ && !current_animation_->isEmpty()) {
-            const auto &first_frame = current_animation_->getFrame(0.0f);
+        if ((sprite_component_ != nullptr) && !current_animation_->isEmpty()) {
+            const auto &first_frame = current_animation_->getFrame(0.0F);
             sprite_component_->setSrcRect(first_frame.source_rect);
-            spdlog::debug("GameObject '{}' 播放动画 '{}'", owner_ ? owner_->getName() : "Unknown",
+            spdlog::debug("GameObject '{}' 播放动画 '{}'", (owner_ != nullptr) ? owner_->getName() : "Unknown",
                           name);
         }
     }
 
     std::string_view AnimationComponent::getCurrentAnimationName() const
     {
-        if (current_animation_) {
+        if (current_animation_ != nullptr) {
             return current_animation_->getName();
         }
         return std::string_view();
@@ -93,7 +93,7 @@ namespace engine::component {
     bool AnimationComponent::isAnimationFinished() const
     {
         // 如果没有当前动画(说明从未调用过playAnimation)，或者当前动画是循环的，则返回 false
-        if (!current_animation_ || current_animation_->isLooping()) {
+        if ((current_animation_ == nullptr) || current_animation_->isLooping()) {
             return false;
         }
         return animation_timer_ >= current_animation_->getTotalDuration();

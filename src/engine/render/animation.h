@@ -24,11 +24,11 @@ namespace engine::render {
     private:
         std::string name_;                   ///< @brief 动画名称
         std::vector<AnimationFrame> frames_; ///< @brief 动画帧
-        float total_duration_ = 0.0f;        ///< @brief 动画总时长（秒）
+        float total_duration_ = 0.0F;        ///< @brief 动画总时长（秒）
         bool loop_ = true;                   ///< @brief 是否循环播放（默认循环）
 
     public:
-        Animation(std::string_view name = "default", bool loop = true);
+        explicit Animation(std::string_view name = "default", bool loop = true);
         ~Animation() = default;
 
         // 禁止拷贝和移动语义
@@ -50,15 +50,15 @@ namespace engine::render {
          * @param time 当前时间（秒）。如果动画循环，则可以超过总持续时间。
          * @return 对应时间点的动画帧。
          */
-        const AnimationFrame &getFrame(float time) const;
+        [[nodiscard]] const AnimationFrame &getFrame(float time) const;
 
         // --- getters ---
-        std::string_view getName() const { return name_; }
-        const std::vector<AnimationFrame> &getFrames() const { return frames_; }
-        size_t getFrameCount() const { return frames_.size(); }
-        float getTotalDuration() const { return total_duration_; }
-        bool isLooping() const { return loop_; }
-        bool isEmpty() const { return frames_.empty(); }
+        [[nodiscard]] std::string_view getName() const { return name_; }
+        [[nodiscard]] const std::vector<AnimationFrame> &getFrames() const { return frames_; }
+        [[nodiscard]] size_t getFrameCount() const { return frames_.size(); }
+        [[nodiscard]] float getTotalDuration() const { return total_duration_; }
+        [[nodiscard]] bool isLooping() const { return loop_; }
+        [[nodiscard]] bool isEmpty() const { return frames_.empty(); }
 
         // --- setters ---
         void setName(std::string_view name) { name_ = name; }

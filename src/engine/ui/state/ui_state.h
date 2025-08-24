@@ -24,7 +24,7 @@ namespace engine::ui::state {
         engine::ui::UIInteractive* owner_ = nullptr; ///< @brief 指向父节点
 
     public:
-        UIState(engine::ui::UIInteractive* owner) : owner_(owner) {}
+        explicit UIState(engine::ui::UIInteractive* owner) : owner_(owner) {}
         virtual ~UIState() = default;
 
         // 禁止拷贝和移动语义

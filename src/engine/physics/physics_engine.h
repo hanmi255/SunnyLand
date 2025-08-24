@@ -1,4 +1,5 @@
 #pragma once
+#include "../component/tile_type.h"
 #include "../utils/math.h"
 #include <glm/vec2.hpp>
 #include <optional>
@@ -12,7 +13,6 @@ namespace engine::component {
     class PhysicsComponent;
     class TileLayerComponent;
     class TransformComponent;
-    enum class TileType;
 } // namespace engine::component
 
 namespace engine::object {
@@ -37,19 +37,20 @@ namespace engine::physics {
                                                      engine::component::ColliderComponent*>>>
                 grid;
 
-            SpatialGrid(float size = 100.0f) : cell_size(size), inv_cell_size(1.0f / size)
+            explicit SpatialGrid(float size = 100.0f) : cell_size(size), inv_cell_size(1.0f / size)
             {
                 grid.reserve(128); // 预分配空间
             }
 
-            int64_t getGridKey(float x, float y) const;
+            [[nodiscard]] int64_t getGridKey(float x, float y) const;
             void clear();
             void insert(engine::object::GameObject* obj, engine::component::ColliderComponent* cc);
             // 获取指定区域内的所有网格键
-            std::vector<int64_t> getNearbyKeys(float x, float y, float width, float height) const;
+            [[nodiscard]] std::vector<int64_t> getNearbyKeys(float x, float y, float width,
+                                                             float height) const;
             // 获取对象覆盖的所有网格键
-            std::vector<int64_t> getObjectGridKeys(float x, float y, float width,
-                                                   float height) const;
+            [[nodiscard]] std::vector<int64_t> getObjectGridKeys(float x, float y, float width,
+                                                                 float height) const;
         };
 
         /**
@@ -112,24 +113,29 @@ namespace engine::physics {
         void update(float delta_time);
 
         // --- getters ---
-        const glm::vec2 &getGravity() const { return gravity_; }
-        float getMaxSpeed() const { return max_speed_; }
-        const std::optional<engine::utils::Rect> &getWorldBounds() const { return world_bounds_; }
-        const std::vector<std::pair<engine::object::GameObject*, engine::object::GameObject*>> &
+        [[nodiscard]] const glm::vec2 &getGravity() const { return gravity_; }
+        [[nodiscard]] float getMaxSpeed() const { return max_speed_; }
+        [[nodiscard]] const std::optional<engine::utils::Rect> &getWorldBounds() const
+        {
+            return world_bounds_;
+        }
+        [[nodiscard]] const std::vector<
+            std::pair<engine::object::GameObject*, engine::object::GameObject*>> &
         getCollisionPairs() const
         {
             return collision_pairs_;
         }
-        const std::vector<std::pair<engine::object::GameObject*, engine::component::TileType>> &
+        [[nodiscard]] const std::vector<
+            std::pair<engine::object::GameObject*, engine::component::TileType>> &
         getTileTriggerEvents() const
         {
             return tile_trigger_events_;
         }
 
         // --- setters ---
-        void setGravity(glm::vec2 gravity) { gravity_ = std::move(gravity); }
+        void setGravity(glm::vec2 gravity) { gravity_ = gravity; }
         void setMaxSpeed(float max_speed) { max_speed_ = max_speed; }
-        void setWorldBounds(engine::utils::Rect bounds) { world_bounds_ = std::move(bounds); }
+        void setWorldBounds(engine::utils::Rect bounds) { world_bounds_ = bounds; }
 
     private:
         /**
@@ -172,10 +178,10 @@ namespace engine::physics {
         /**
          * @brief 确认瓦片图层输入参数是否有效
          */
-        bool validateTileCollisionInputs(engine::component::PhysicsComponent* pc,
+        static bool validateTileCollisionInputs(engine::component::PhysicsComponent* pc,
                                          engine::component::TransformComponent*&tc,
                                          engine::component::ColliderComponent*&cc,
-                                         TileCollisionContext &context) const;
+                                         TileCollisionContext &context);
 
         /**
          * @brief 计算瓦片图层对象在指定时间间隔内的位移
@@ -188,16 +194,16 @@ namespace engine::physics {
         /**
          * @brief 解决瓦片图层对象在 X 轴上的碰撞
          */
-        void resolveXAxisTileCollision(const engine::component::TileLayerComponent* layer,
+        static void resolveXAxisTileCollision(const engine::component::TileLayerComponent* layer,
                                        engine::component::PhysicsComponent* pc,
-                                       TileCollisionContext &context) const;
+                                       TileCollisionContext &context);
 
         /**
          * @brief 解决瓦片图层对象在 Y 轴上的碰撞
          */
-        void resolveYAxisTileCollision(const engine::component::TileLayerComponent* layer,
-                                       engine::component::PhysicsComponent* pc,
-                                       TileCollisionContext &context) const;
+        static void resolveYAxisTileCollision(const engine::component::TileLayerComponent* layer,
+                                              engine::component::PhysicsComponent* pc,
+                                              TileCollisionContext &context);
 
         /**
          * @brief 应用瓦片图层对象在指定时间间隔内的位移结果
@@ -211,93 +217,93 @@ namespace engine::physics {
         /**
          * @brief 检查瓦片类型是否为斜坡瓦片
          */
-        bool isSlopeTile(engine::component::TileType tile_type) const;
+        [[nodiscard]] static bool isSlopeTile(engine::component::TileType tile_type);
 
         /**
          * @brief 检查瓦片类型是否为固体瓦片
          */
-        bool isSolidTile(engine::component::TileType tile_type) const;
+        [[nodiscard]] static bool isSolidTile(engine::component::TileType tile_type);
 
         /**
          * @brief 检查瓦片类型是否为地面瓦片（固体或单向平台）
          */
-        bool isGroundTile(engine::component::TileType tile_type) const;
+        [[nodiscard]] static bool isGroundTile(engine::component::TileType tile_type);
 
         /**
          * @brief 检查瓦片类型是否为梯子瓦片
          */
-        bool isLadderTile(engine::component::TileType tile_type) const;
+        [[nodiscard]] static bool isLadderTile(engine::component::TileType tile_type);
 
         /**
          * @brief 根据瓦片类型和指定宽度的 x 坐标，计算瓦片上对应的 y 坐标
          */
-        float getTileHeightAtWidth(float width, engine::component::TileType tile_type,
-                                   glm::vec2 tile_size) const;
+        [[nodiscard]] static float getTileHeightAtWidth(float width,
+                                                        engine::component::TileType tile_type,
+                                                        glm::vec2 tile_size);
 
         /**
          * @brief 处理X轴固体瓦片碰撞
          */
-        void handleSolidCollisionX(bool moving_right, int tile_x, const glm::vec2 &tile_size,
-                                   engine::component::PhysicsComponent* pc,
-                                   TileCollisionContext &context) const;
+        static void handleSolidCollisionX(bool moving_right, int tile_x, const glm::vec2 &tile_size,
+                                          engine::component::PhysicsComponent* pc,
+                                          TileCollisionContext &context);
 
         /**
          * @brief 处理X轴斜坡瓦片碰撞
          */
-        void handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
-                                   engine::component::TileType tile_type_bottom,
-                                   const glm::vec2 &tile_size,
-                                   engine::component::PhysicsComponent* pc,
-                                   TileCollisionContext &context) const;
+        static void handleSlopeCollisionX(bool moving_right, int tile_x, int tile_y_bottom,
+                                          engine::component::TileType tile_type_bottom,
+                                          const glm::vec2 &tile_size,
+                                          engine::component::PhysicsComponent* pc,
+                                          TileCollisionContext &context);
 
         /**
          * @brief 处理Y轴地面碰撞
          */
-        void handleGroundCollisionY(int tile_y, const glm::vec2 &tile_size,
-                                    engine::component::PhysicsComponent* pc,
-                                    TileCollisionContext &context) const;
+        static void handleGroundCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                           engine::component::PhysicsComponent* pc,
+                                           TileCollisionContext &context);
 
         /**
          * @brief 处理Y轴梯子碰撞
          */
-        void handleLadderCollisionY(int tile_y, const glm::vec2 &tile_size,
-                                    engine::component::PhysicsComponent* pc,
-                                    TileCollisionContext &context) const;
+        static void handleLadderCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                           engine::component::PhysicsComponent* pc,
+                                           TileCollisionContext &context);
 
         /**
          * @brief 处理Y轴天花板碰撞
          */
-        void handleCeilingCollisionY(int tile_y, const glm::vec2 &tile_size,
-                                     engine::component::PhysicsComponent* pc,
-                                     TileCollisionContext &context) const;
+        static void handleCeilingCollisionY(int tile_y, const glm::vec2 &tile_size,
+                                            engine::component::PhysicsComponent* pc,
+                                            TileCollisionContext &context);
 
         /**
          * @brief 处理Y轴斜坡瓦片碰撞
          */
-        void handleSlopeCollisionY(int tile_x_left, int tile_x_right, int tile_y,
-                                   engine::component::TileType tile_type_left,
-                                   engine::component::TileType tile_type_right,
-                                   const glm::vec2 &tile_size,
-                                   engine::component::PhysicsComponent* pc,
-                                   TileCollisionContext &context) const;
+        static void handleSlopeCollisionY(int tile_x_left, int tile_x_right, int tile_y,
+                                          engine::component::TileType tile_type_left,
+                                          engine::component::TileType tile_type_right,
+                                          const glm::vec2 &tile_size,
+                                          engine::component::PhysicsComponent* pc,
+                                          TileCollisionContext &context);
 
         // ==================== 处理固体对象碰撞函数声明 ====================
 
         /**
          * @brief 验证固体对象碰撞输入参数
          */
-        bool validateSolidObjectCollisionInputs(engine::object::GameObject* move_obj,
-                                                engine::object::GameObject* solid_obj,
-                                                engine::component::TransformComponent*&move_tc,
-                                                engine::component::PhysicsComponent*&move_pc,
-                                                engine::component::ColliderComponent*&move_cc,
-                                                engine::component::ColliderComponent*&solid_cc,
-                                                SolidObjectCollisionContext &context) const;
+        static bool validateSolidObjectCollisionInputs(
+            engine::object::GameObject* move_obj, engine::object::GameObject* solid_obj,
+            engine::component::TransformComponent*&move_tc,
+            engine::component::PhysicsComponent*&move_pc,
+            engine::component::ColliderComponent*&move_cc,
+            engine::component::ColliderComponent*&solid_cc, SolidObjectCollisionContext &context);
 
         /**
          * @brief 计算固体对象碰撞数据
          */
-        bool calculateSolidObjectCollisionData(SolidObjectCollisionContext &context) const;
+        static bool calculateSolidObjectCollisionData(SolidObjectCollisionContext &context);
 
         /**
          * @brief 应用固体对象碰撞结果

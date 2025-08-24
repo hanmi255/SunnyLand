@@ -1,4 +1,5 @@
 #pragma once
+#include "../component/tile_type.h"
 #include "../utils/math.h"
 #include <glm/vec2.hpp>
 #include <map>
@@ -11,7 +12,6 @@ namespace engine::component {
     class AnimationComponent;
     class AudioComponent;
     struct TileInfo;
-    enum class TileType;
 } // namespace engine::component
 
 namespace engine::object {
@@ -74,11 +74,11 @@ namespace engine::scene {
          * @param scene 要加载数据的目标 Scene 对象。
          * @return bool 是否加载成功。
          */
-        bool loadLevel(std::string_view level_path, Scene &scene);
+        [[nodiscard]] bool loadLevel(std::string_view level_path, Scene &scene);
 
     private:
         // ========== 核心加载流程函数 ==========
-        [[nodiscard]] std::optional<nlohmann::json> loadJsonFile(std::string_view file_path) const;
+        [[nodiscard]] static std::optional<nlohmann::json> loadJsonFile(std::string_view file_path);
         [[nodiscard]] bool parseMapBasicInfo(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllTilesets(const nlohmann::json &json_data);
         [[nodiscard]] bool loadAllLayers(const nlohmann::json &json_data, Scene &scene);
@@ -116,11 +116,12 @@ namespace engine::scene {
         void addAnimation(const nlohmann::json &anim_json,
                           engine::component::AnimationComponent* ac, const glm::vec2 &sprite_size);
 
-        void addSound(const nlohmann::json &sound_json, engine::component::AudioComponent* ac);
+        static void addSound(const nlohmann::json &sound_json,
+                             engine::component::AudioComponent* ac);
 
         // ========== 瓦片数据处理函数 ==========
         [[nodiscard]] engine::component::TileInfo getTileInfoByGid(int gid) const;
-        std::optional<nlohmann::json> getTileJsonByGid(int gid) const;
+        [[nodiscard]] std::optional<nlohmann::json> getTileJsonByGid(int gid) const;
         [[nodiscard]] engine::component::TileType
         getTileType(const nlohmann::json &tile_json) const;
         [[nodiscard]] engine::component::TileType
@@ -131,7 +132,8 @@ namespace engine::scene {
         template <typename T>
         std::optional<T> getTileProperty(const nlohmann::json &tile_json,
                                          std::string_view property_name) const;
-        std::optional<engine::utils::Rect> getColliderRect(const nlohmann::json &tile_json) const;
+        [[nodiscard]] std::optional<engine::utils::Rect>
+        getColliderRect(const nlohmann::json &tile_json) const;
 
         // ========== 验证函数 ==========
         [[nodiscard]] bool validateMapData() const;

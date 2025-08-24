@@ -57,42 +57,42 @@ namespace engine::audio {
          * @brief 停止当前正在播放的背景音乐。
          * @param fade_out_ms 淡出时间（毫秒）（0 表示立即停止）。默认为 0。
          */
-        void stopMusic(int fade_out_ms = 0);
+        static void stopMusic(int fade_out_ms = 0);
 
         /**
          * @brief 暂停当前正在播放的背景音乐。
          */
-        void pauseMusic();
+        static void pauseMusic();
 
         /**
          * @brief 恢复已暂停的背景音乐。
          */
-        void resumeMusic();
+        static void resumeMusic();
 
         /**
          * @brief 设置音效通道的音量。
          * @param volume 音量级别（0.0-1.0）。
          * @param channel 通道号（-1 表示所有通道）。默认为 -1。
          */
-        void setSoundVolume(float volume, int channel = -1);
+        static void setSoundVolume(float volume, int channel = -1);
 
         /**
          * @brief 设置音乐通道的音量。
          * @param volume 音量级别（0.0-1.0）。
          */
-        void setMusicVolume(float volume);
+        static void setMusicVolume(float volume);
 
         /**
          * @brief 获取当前音乐音量。
          * @return 音量级别（0.0-1.0）。
          */
-        float getMusicVolume();
+        static float getMusicVolume();
 
         /**
          * @brief 获取当前音效音量。
          * @param channel 通道号（-1 表示所有通道）。默认为 -1。
          * @return 音量级别（0.0-1.0）。
          */
-        float getSoundVolume(int channel = -1);
+        static float getSoundVolume(int channel = -1);
     };
 } // namespace engine::audio

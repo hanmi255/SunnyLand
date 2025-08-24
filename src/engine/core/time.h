@@ -47,14 +47,14 @@ namespace engine::core {
          *
          * @return double 缩放后的 DeltaTime (秒)。
          */
-        double getDeltaTime() const;
+        [[nodiscard]] double getDeltaTime() const;
 
         /**
          * @brief 获取未经过时间缩放的原始帧间时间差。
          *
          * @return double 未缩放的 DeltaTime (秒)。
          */
-        double getUnscaledDeltaTime() const;
+        [[nodiscard]] double getUnscaledDeltaTime() const;
 
         /**
          * @brief 设置时间缩放因子。
@@ -69,7 +69,7 @@ namespace engine::core {
          *
          * @return double 当前的时间缩放因子。
          */
-        double getTimeScale() const;
+        [[nodiscard]] double getTimeScale() const;
 
         /**
          * @brief 设置目标帧率。
@@ -83,7 +83,7 @@ namespace engine::core {
          *
          * @return int 目标 FPS，0 表示不限制。
          */
-        int getTargetFps() const;
+        [[nodiscard]] int getTargetFps() const;
 
     private:
         /**

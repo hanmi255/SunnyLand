@@ -18,7 +18,7 @@ namespace engine::core {
     {
         if (current_state_ != new_state) {
             spdlog::debug("游戏状态改变");
-            current_state_ = std::move(new_state);
+            current_state_ = new_state;
         } else {
             spdlog::debug("尝试设置相同的游戏状态，跳过");
         }

@@ -20,7 +20,7 @@ namespace engine::component {
         TransformComponent* transform_component_ = nullptr;   ///< @brief 变换组件
 
         std::unique_ptr<engine::physics::Collider> collider_; ///< @brief 碰撞器对象
-        glm::vec2 offset_ = {0.0f, 0.0f}; ///< @brief 碰撞器左上角相对于原点的偏移
+        glm::vec2 offset_ = {0.0F, 0.0F}; ///< @brief 碰撞器左上角相对于原点的偏移
         engine::utils::Alignment alignment_ = engine::utils::Alignment::NONE; ///< @brief 对齐方式
 
         bool is_trigger_ = false; ///< @brief 是否触发器（仅检测碰撞，不产生物理响应）
@@ -47,24 +47,24 @@ namespace engine::component {
         void updateOffset();
 
         // --- getters ---
-        TransformComponent* getTransform() const { return transform_component_; }
-        const engine::physics::Collider* getCollider() const { return collider_.get(); }
-        const glm::vec2 &getOffset() const { return offset_; }
-        engine::utils::Alignment getAlignment() const { return alignment_; }
-        engine::utils::Rect getWorldAABB() const;
-        bool isTrigger() const { return is_trigger_; }
-        bool isActive() const { return is_active_; }
+        [[nodiscard]] TransformComponent* getTransform() const { return transform_component_; }
+        [[nodiscard]] const engine::physics::Collider* getCollider() const { return collider_.get(); }
+        [[nodiscard]] const glm::vec2 &getOffset() const { return offset_; }
+        [[nodiscard]] engine::utils::Alignment getAlignment() const { return alignment_; }
+        [[nodiscard]] engine::utils::Rect getWorldAABB() const;
+        [[nodiscard]] bool isTrigger() const { return is_trigger_; }
+        [[nodiscard]] bool isActive() const { return is_active_; }
 
         // --- setters ---
         void setAlignment(engine::utils::Alignment anchor);
-        void setOffset(glm::vec2 offset) { offset_ = std::move(offset); }
+        void setOffset(glm::vec2 offset) { offset_ = offset; }
         void setTrigger(bool is_trigger) { is_trigger_ = is_trigger; }
         void setActive(bool is_active) { is_active_ = is_active; }
 
     private:
         // 核心逻辑
         void init() override;
-        void update(float, engine::core::Context &) override {}
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {}
     };
 
 } // namespace engine::component

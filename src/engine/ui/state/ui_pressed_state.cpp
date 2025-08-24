@@ -6,7 +6,6 @@
 #include "ui_normal_state.h"
 #include <spdlog/spdlog.h>
 
-
 namespace engine::ui::state {
 
     void UIPressedState::enter()
@@ -24,10 +23,10 @@ namespace engine::ui::state {
             if (!owner_->isPointInside(
                     mouse_pos)) { // 松开鼠标时，如果不在UI元素内，则切换到正常状态
                 return std::make_unique<engine::ui::state::UINormalState>(owner_);
-            } else {              // 松开鼠标时，如果还在UI元素内，则触发点击事件
-                owner_->clicked();
-                return std::make_unique<engine::ui::state::UIHoverState>(owner_);
             }
+            // 松开鼠标时，如果还在UI元素内，则触发点击事件
+            owner_->clicked();
+            return std::make_unique<engine::ui::state::UIHoverState>(owner_);
         }
 
         return nullptr;

@@ -9,7 +9,7 @@ namespace engine::core {
      * @enum State
      * @brief 定义游戏可能处于的宏观状态。
      */
-    enum class State {
+    enum class State : std::uint8_t {
         Title,    ///< @brief 标题界面
         Playing,  ///< @brief 正常游戏进行中
         Paused,   ///< @brief 游戏暂停（通常覆盖菜单界面）
@@ -40,14 +40,14 @@ namespace engine::core {
                            State initial_state = State::Title);
 
         // --- getters ---
-        State getCurrentState() const { return current_state_; }
-        glm::vec2 getWindowSize() const;
-        glm::vec2 getLogicalSize() const;
+        [[nodiscard]] State getCurrentState() const { return current_state_; }
+        [[nodiscard]] glm::vec2 getWindowSize() const;
+        [[nodiscard]] glm::vec2 getLogicalSize() const;
 
-        bool isInTitle() const { return current_state_ == State::Title; }
-        bool isPlaying() const { return current_state_ == State::Playing; }
-        bool isPaused() const { return current_state_ == State::Paused; }
-        bool isGameOver() const { return current_state_ == State::GameOver; }
+        [[nodiscard]] bool isInTitle() const { return current_state_ == State::Title; }
+        [[nodiscard]] bool isPlaying() const { return current_state_ == State::Playing; }
+        [[nodiscard]] bool isPaused() const { return current_state_ == State::Paused; }
+        [[nodiscard]] bool isGameOver() const { return current_state_ == State::GameOver; }
 
         // --- setters ---
         void setState(State new_state);

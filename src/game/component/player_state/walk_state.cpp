@@ -9,6 +9,7 @@
 #include "fall_state.h"
 #include "idle_state.h"
 #include "jump_state.h"
+#include <algorithm>
 #include <glm/common.hpp>
 
 namespace game::component::player_state {
@@ -22,7 +23,7 @@ namespace game::component::player_state {
 
     std::unique_ptr<PlayerState> WalkState::handleInput(engine::core::Context &context)
     {
-        auto input_manager = context.getInputManager();
+        const auto& input_manager = context.getInputManager();
         auto* physics_component = player_component_->getPhysicsComponent();
         auto* sprite_component = player_component_->getSpriteComponent();
 
@@ -38,18 +39,14 @@ namespace game::component::player_state {
 
         // 步行状态可以左右移动
         if (input_manager.isActionHeldDown("move_left")) {
-            if (physics_component->velocity_.x > 0.0f) {
-                physics_component->velocity_.x = 0.0f; // 如果当前速度是向右的，则先减速到0
-            }
+            physics_component->velocity_.x = std::min(physics_component->velocity_.x, 0.0F);
             // 添加向左的水平力
-            physics_component->addForce({-player_component_->getMoveForce(), 0.0f});
+            physics_component->addForce({-player_component_->getMoveForce(), 0.0F});
             sprite_component->setFlipped(true); // 向左移动时翻转
         } else if (input_manager.isActionHeldDown("move_right")) {
-            if (physics_component->velocity_.x < 0.0f) {
-                physics_component->velocity_.x = 0.0f; // 如果当前速度是向左的，则先减速到0
-            }
+            physics_component->velocity_.x = std::max(physics_component->velocity_.x, 0.0F);
             // 添加向右的水平力
-            physics_component->addForce({player_component_->getMoveForce(), 0.0f});
+            physics_component->addForce({player_component_->getMoveForce(), 0.0F});
             sprite_component->setFlipped(false); // 向右移动时不翻转
         } else {
             // 如果没有按下左右移动键，则切换到 IdleState
@@ -58,7 +55,7 @@ namespace game::component::player_state {
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> WalkState::update(float, engine::core::Context &)
+    std::unique_ptr<PlayerState> WalkState::update(float /*unused*/, engine::core::Context & /*unused*/)
     {
         // 限制最大速度
         auto* physics_component = player_component_->getPhysicsComponent();

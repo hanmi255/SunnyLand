@@ -14,12 +14,12 @@ namespace game::component::player_state {
 
         // 应用击退力（只向上）
         auto* physics_component = player_component_->getPhysicsComponent();
-        physics_component->velocity_ = glm::vec2(0.0f, -200.0f); // 向上击退
+        physics_component->velocity_ = glm::vec2(0.0F, -200.0F); // 向上击退
 
         // 禁用碰撞(自动掉出屏幕)，播放死亡音效
         auto* collider_component =
             player_component_->getOwner()->getComponent<engine::component::ColliderComponent>();
-        if (collider_component) {
+        if (collider_component != nullptr) {
             collider_component->setActive(false);
         }
         if (auto* audio_component = player_component_->getAudioComponent(); audio_component) {
@@ -29,12 +29,12 @@ namespace game::component::player_state {
 
     void DeadState::exit() {}
 
-    std::unique_ptr<PlayerState> DeadState::handleInput(engine::core::Context &)
+    std::unique_ptr<PlayerState> DeadState::handleInput(engine::core::Context & /*unused*/)
     {
         return nullptr;
     }
 
-    std::unique_ptr<PlayerState> DeadState::update(float, engine::core::Context &)
+    std::unique_ptr<PlayerState> DeadState::update(float /*unused*/, engine::core::Context & /*unused*/)
     {
         return nullptr;
     }

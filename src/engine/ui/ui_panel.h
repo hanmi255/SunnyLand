@@ -21,16 +21,17 @@ namespace engine::ui {
          * @param size Panel的大小
          * @param background_color 背景色
          */
-        explicit UIPanel(glm::vec2 position = {0.0f, 0.0f}, glm::vec2 size = {0.0f, 0.0f},
+        explicit UIPanel(glm::vec2 position = {0.0F, 0.0F}, glm::vec2 size = {0.0F, 0.0F},
                          std::optional<engine::utils::FColor> background_color = std::nullopt);
+
+        [[nodiscard]] const std::optional<engine::utils::FColor> &getBackgroundColor() const
+        {
+            return background_color_;
+        }
 
         void setBackgroundColor(std::optional<engine::utils::FColor> background_color)
         {
-            background_color_ = std::move(background_color);
-        }
-        const std::optional<engine::utils::FColor> &getBackgroundColor() const
-        {
-            return background_color_;
+            background_color_ = background_color;
         }
 
         void render(engine::core::Context &context) override;

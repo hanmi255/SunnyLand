@@ -7,18 +7,18 @@ namespace game::component::player_state {
         friend class game::component::PlayerComponent;
 
     private:
-        float stunned_timer_ = 0.0f; ///< @brief 硬直计时器，单位为秒
+        float stunned_timer_ = 0.0F; ///< @brief 硬直计时器，单位为秒
 
     public:
-        HurtState(PlayerComponent* player_component) : PlayerState(player_component) {}
+        explicit HurtState(PlayerComponent* player_component) : PlayerState(player_component) {}
         ~HurtState() override = default;
-        const char* getStateName() const override { return "HurtState"; }
+        [[nodiscard]] const char* getStateName() const override { return "HurtState"; }
 
     private:
         void enter() override;
         void exit() override;
-        std::unique_ptr<PlayerState> handleInput(engine::core::Context &) override;
-        std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context &) override;
+        std::unique_ptr<PlayerState> handleInput(engine::core::Context & /*unused*/) override;
+        std::unique_ptr<PlayerState> update(float delta_time, engine::core::Context & /*unused*/) override;
     };
 
 } // namespace game::component::player_state

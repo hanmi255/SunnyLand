@@ -50,7 +50,7 @@ namespace game::scene {
         session_data_->syncHighScore("assets/data/save.json"); // 更新最高分
 
         // 重置相机坐标，不限制边界
-        context_.getCamera().setPosition(glm::vec2(0.0f, 0.0f));
+        context_.getCamera().setPosition(glm::vec2(0.0F, 0.0F));
         context_.getCamera().setLimitBounds(
             std::nullopt); // 若无这一行，从GameScene返回到标题场景时，相机会限制在地图边界内
 
@@ -67,7 +67,7 @@ namespace game::scene {
         Scene::update(delta_time);
 
         // 相机自动向右移动
-        context_.getCamera().move(glm::vec2(delta_time * 100.0f, 0.0f));
+        context_.getCamera().move(glm::vec2(delta_time * 100.0F, 0.0F));
     }
 
     // 创建 UI 界面元素
@@ -89,17 +89,17 @@ namespace game::scene {
         auto title_image =
             std::make_unique<engine::ui::UIImage>("assets/textures/UI/title-screen.png");
         auto size = context_.getResourceManager().getTextureSize(title_image->getTextureId());
-        title_image->setSize(size * 2.0f); // 放大为2倍
+        title_image->setSize(size * 2.0F); // 放大为2倍
 
         // 水平居中
-        auto title_pos = (window_size - title_image->getSize()) / 2.0f - glm::vec2(0.0f, 50.0f);
+        auto title_pos = (window_size - title_image->getSize()) / 2.0F - glm::vec2(0.0F, 50.0F);
         title_image->setPosition(title_pos);
         ui_manager_->addElement(std::move(title_image));
 
         // --- 创建按钮面板并居中 --- (4个按钮，设定好大小、间距)
-        float button_width = 96.0f;
-        float button_height = 32.0f;
-        float button_spacing = 20.0f;
+        float button_width = 96.0F;
+        float button_height = 32.0F;
+        float button_spacing = 20.0F;
         int num_buttons = 4;
 
         // 计算面板总大小
@@ -107,14 +107,14 @@ namespace game::scene {
         float panel_height = button_height;
 
         // 计算面板位置使其居中
-        float panel_x = (window_size.x - panel_width) / 2.0f;
-        float panel_y = window_size.y * 0.65f; // 垂直位置中间靠下
+        float panel_x = (window_size.x - panel_width) / 2.0F;
+        float panel_y = window_size.y * 0.65F; // 垂直位置中间靠下
 
         auto button_panel = std::make_unique<engine::ui::UIPanel>(
             glm::vec2(panel_x, panel_y), glm::vec2(panel_width, panel_height));
 
         // --- 创建按钮并添加到 UIPanel (位置是相对于 UIPanel 的 0,0) ---
-        glm::vec2 current_button_pos = glm::vec2(0.0f, 0.0f);
+        glm::vec2 current_button_pos = glm::vec2(0.0F, 0.0F);
         glm::vec2 button_size = glm::vec2(button_width, button_height);
 
         // Start Button
@@ -155,9 +155,9 @@ namespace game::scene {
         auto credits_label = std::make_unique<engine::ui::UILabel>(
             context_.getTextRenderer(), "SunnyLand Credits: 2025",
             "assets/fonts/VonwaonBitmap-16px.ttf", 16,
-            engine::utils::FColor{0.8f, 0.8f, 0.8f, 1.0f});
-        credits_label->setPosition(glm::vec2{(window_size.x - credits_label->getSize().x) / 2.0f,
-                                             window_size.y - credits_label->getSize().y - 10.0f});
+            engine::utils::FColor{.r = 0.8F, .g = 0.8F, .b = 0.8F, .a = 1.0F});
+        credits_label->setPosition(glm::vec2{(window_size.x - credits_label->getSize().x) / 2.0F,
+                                             window_size.y - credits_label->getSize().y - 10.0F});
         ui_manager_->addElement(std::move(credits_label));
 
         spdlog::trace("TitleScene UI 创建完成.");

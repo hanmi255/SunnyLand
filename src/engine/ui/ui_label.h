@@ -23,7 +23,7 @@ namespace engine::ui {
         std::string text_;    ///< @brief 文本内容
         std::string font_id_; ///< @brief 字体ID
         int font_size_;       ///< @brief 字体大小
-        engine::utils::FColor text_fcolor_ = {1.0f, 1.0f, 1.0f, 1.0f};
+        engine::utils::FColor text_fcolor_ = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F};
         /* 可添加其他内容，例如边框、底色 */
 
     public:
@@ -38,17 +38,17 @@ namespace engine::ui {
          */
         UILabel(engine::render::TextRenderer &text_renderer, std::string_view text,
                 std::string_view font_id, int font_size = 16,
-                engine::utils::FColor text_color = {1.0f, 1.0f, 1.0f, 1.0f},
-                glm::vec2 position = {0.0f, 0.0f});
+                engine::utils::FColor text_color = {.r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F},
+                glm::vec2 position = {0.0F, 0.0F});
 
         // --- 核心逻辑 ---
         void render(engine::core::Context &context) override;
 
         // --- getters ---
-        std::string_view getText() const { return text_; }
-        std::string_view getFontId() const { return font_id_; }
-        int getFontSize() const { return font_size_; }
-        const engine::utils::FColor &getTextFColor() const { return text_fcolor_; }
+        [[nodiscard]] std::string_view getText() const { return text_; }
+        [[nodiscard]] std::string_view getFontId() const { return font_id_; }
+        [[nodiscard]] int getFontSize() const { return font_size_; }
+        [[nodiscard]] const engine::utils::FColor &getTextFColor() const { return text_fcolor_; }
 
         // --- setters ---
         void setText(std::string_view text);

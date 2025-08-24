@@ -33,15 +33,15 @@ namespace engine::component {
         Component &operator=(const Component &&) = delete;
 
         // --- getter & setter ---
-        engine::object::GameObject* getOwner() const { return owner_; }
+        [[nodiscard]] engine::object::GameObject* getOwner() const { return owner_; }
         void setOwner(engine::object::GameObject* owner) { owner_ = owner; }
 
     protected:
         // 关键循环函数，全部设为保护，只有 GameObject 需要（可以）调用
         virtual void init() {}
-        virtual void handleInput(engine::core::Context &) {}
-        virtual void update(float, engine::core::Context &) {}
-        virtual void render(engine::core::Context &) {}
+        virtual void handleInput(engine::core::Context & /*unused*/) {}
+        virtual void update(float /*unused*/, engine::core::Context & /*unused*/) {}
+        virtual void render(engine::core::Context & /*unused*/) {}
         virtual void clean() {}
     };
 } // namespace engine::component

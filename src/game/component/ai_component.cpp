@@ -13,7 +13,7 @@ namespace game::component {
 
     void AIComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("AIComponent 在初始化前未设置 owner_。");
             return;
         }
@@ -26,20 +26,20 @@ namespace game::component {
         audio_component_ = owner_->getComponent<engine::component::AudioComponent>();
 
         // 检查是否所有必需的组件都存在（音频组件非必需）
-        if (!transform_component_ || !physics_component_ || !sprite_component_ ||
-            !animation_component_) {
+        if ((transform_component_ == nullptr) || (physics_component_ == nullptr) ||
+            (sprite_component_ == nullptr) || (animation_component_ == nullptr)) {
             spdlog::error("GameObject '{}' 上的 AIComponent 缺少必需的组件", owner_->getName());
         }
     }
 
-    void AIComponent::update(float delta_time, engine::core::Context &)
+    void AIComponent::update(float delta_time, engine::core::Context & /*unused*/)
     {
         // 将更新委托给当前的行为策略
         if (current_behavior_) {
             current_behavior_->update(delta_time, *this);
         } else {
             spdlog::warn("GameObject '{}' 上的 AIComponent 没有设置行为。",
-                         owner_ ? owner_->getName() : "Unknown");
+                         (owner_ != nullptr) ? owner_->getName() : "Unknown");
         }
     }
 
@@ -47,7 +47,7 @@ namespace game::component {
     {
         current_behavior_ = std::move(behavior);
         spdlog::debug("GameObject '{}' 上的 AIComponent 设置了新的行为。",
-                      owner_ ? owner_->getName() : "Unknown");
+                      (owner_ != nullptr) ? owner_->getName() : "Unknown");
         if (current_behavior_) {
             current_behavior_->enter(*this);
         }

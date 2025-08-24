@@ -4,7 +4,7 @@
 
 namespace engine::component {
     class ColliderComponent;
-}
+} // namespace engine::component
 
 namespace engine::physics::collision {
 
@@ -16,7 +16,7 @@ namespace engine::physics::collision {
         float radius;
         engine::physics::ColliderType type;
 
-        CollisionData(const engine::component::ColliderComponent &component);
+        explicit CollisionData(const engine::component::ColliderComponent &component);
     };
 
     /**

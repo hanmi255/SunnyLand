@@ -32,8 +32,8 @@ namespace engine::ui {
         bool interactive_ = true;                          ///< @brief 是否可交互
 
     public:
-        UIInteractive(engine::core::Context &context, glm::vec2 position = {0.0f, 0.0f},
-                      glm::vec2 size = {0.0f, 0.0f});
+        explicit UIInteractive(engine::core::Context &context, glm::vec2 position = {0.0F, 0.0F},
+                               glm::vec2 size = {0.0F, 0.0F});
         ~UIInteractive() override;
 
         virtual void clicked() {} ///< @brief 如果有点击事件，则重写该方法
@@ -44,8 +44,8 @@ namespace engine::ui {
         void playSound(std::string_view name);
 
         // --- getters ---
-        engine::ui::state::UIState* getState() const { return state_.get(); }
-        bool isInteractive() const { return interactive_; }
+        [[nodiscard]] engine::ui::state::UIState* getState() const { return state_.get(); }
+        [[nodiscard]] bool isInteractive() const { return interactive_; }
 
         // --- setters ---
         void setState(std::unique_ptr<engine::ui::state::UIState> state);

@@ -4,7 +4,8 @@
 
 namespace engine::core {
     class Context;
-}
+} // namespace engine::core
+
 namespace engine::ui {
     class UIElement;
     class UIPanel; // UIPanel 将作为根元素
@@ -28,7 +29,7 @@ namespace engine::ui {
 
         [[nodiscard]] bool init(const glm::vec2 &window_size);
         void addElement(std::unique_ptr<UIElement> element);
-        UIPanel* getRootElement() const;
+        [[nodiscard]] UIPanel* getRootElement() const;
         void clearElements();
 
         // --- 核心逻辑 ---

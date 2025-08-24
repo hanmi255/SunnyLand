@@ -8,7 +8,7 @@ namespace engine::render {
 
     void Animation::addFrame(SDL_FRect src_rect, float duration)
     {
-        if (duration <= 0.0f) {
+        if (duration <= 0.0F) {
             spdlog::warn("尝试向动画 '{}' 添加无效持续时间的帧", name_);
             return;
         }
@@ -20,7 +20,8 @@ namespace engine::render {
     {
         // 处理空帧情况
         if (frames_.empty()) {
-            static const AnimationFrame empty_frame = {{0, 0, 0, 0}, 0.0f};
+            static const AnimationFrame empty_frame = {.source_rect = {0, 0, 0, 0},
+                                                       .duration = 0.0F};
             spdlog::error("动画 '{}' 没有帧，无法获取帧", name_);
             return empty_frame;
         }
@@ -32,7 +33,7 @@ namespace engine::render {
 
         float current_time = time;
 
-        if (loop_ && total_duration_ > 0.0f) {
+        if (loop_ && total_duration_ > 0.0F) {
             // 对循环动画使用模运算获取有效时间
             current_time = glm::mod(time, total_duration_);
         } else {
@@ -43,7 +44,7 @@ namespace engine::render {
         }
 
         // 使用二分查找找到正确的帧，提高性能
-        float accumulated_time = 0.0f;
+        float accumulated_time = 0.0F;
         auto it = std::find_if(frames_.begin(), frames_.end(),
                                [&accumulated_time, current_time](const AnimationFrame &frame) {
                                    accumulated_time += frame.duration;

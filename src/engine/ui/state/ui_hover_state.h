@@ -12,7 +12,7 @@ namespace engine::ui::state {
         friend class engine::ui::UIInteractive;
 
     public:
-        UIHoverState(engine::ui::UIInteractive* owner) : UIState(owner) {}
+        explicit UIHoverState(engine::ui::UIInteractive* owner) : UIState(owner) {}
         ~UIHoverState() override = default;
 
     private:

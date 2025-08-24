@@ -33,7 +33,7 @@ namespace game::component::ai_behavior {
         auto* sprite_component = ai_component.getSpriteComponent();
 
         // 使用卫语句检查组件是否存在
-        if (!physics_component || !transform_component || !sprite_component) {
+        if ((physics_component == nullptr) || (transform_component == nullptr) || (sprite_component == nullptr)) {
             spdlog::error("PatrolBehavior：缺少必要的组件，无法执行巡逻行为。");
             return;
         }

@@ -37,21 +37,21 @@ namespace engine::component {
                           glm::bvec2 repeat_xy);
 
         // --- getters ---
-        const engine::render::Sprite &getSprite() const { return sprite_; }
-        const glm::vec2 &getScrollFactor() const { return scroll_factor_; }
-        const glm::bvec2 &getRepeatXY() const { return repeat_xy_; }
-        bool isVisible() const { return is_visible_; }
+        [[nodiscard]] const engine::render::Sprite &getSprite() const { return sprite_; }
+        [[nodiscard]] const glm::vec2 &getScrollFactor() const { return scroll_factor_; }
+        [[nodiscard]] const glm::bvec2 &getRepeatXY() const { return repeat_xy_; }
+        [[nodiscard]] bool isVisible() const { return is_visible_; }
 
         // --- setters ---
         void setSprite(const engine::render::Sprite &sprite) { sprite_ = sprite; }
-        void setScrollFactor(glm::vec2 factor) { scroll_factor_ = std::move(factor); }
-        void setRepeatXY(glm::bvec2 repeat_xy) { repeat_xy_ = std::move(repeat_xy); }
+        void setScrollFactor(glm::vec2 factor) { scroll_factor_ = factor; }
+        void setRepeatXY(glm::bvec2 repeat_xy) { repeat_xy_ = repeat_xy; }
         void setVisible(bool visible) { is_visible_ = visible; }
 
     private:
         // 核心逻辑
         void init() override;
-        void update(float, engine::core::Context &) override {}
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override {}
         void render(engine::core::Context &context) override;
     };
 } // namespace engine::component

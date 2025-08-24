@@ -67,14 +67,18 @@ namespace engine::scene {
         virtual void removeGameObject(engine::object::GameObject* object_ptr);
         virtual void safelyRemoveGameObject(engine::object::GameObject* object_ptr);
 
-        engine::object::GameObject* findGameObjectByName(std::string_view name) const;
+        [[nodiscard]] engine::object::GameObject* findGameObjectByName(std::string_view name) const;
 
         // --- getters ---
-        std::string_view getName() const { return name_; }
-        engine::core::Context &getContext() const { return context_; }
-        engine::scene::SceneManager &getSceneManager() const { return scene_manager_; }
-        bool isInitialized() const { return is_initialized_; }
-        const std::vector<std::unique_ptr<engine::object::GameObject>> &getGameObjects() const
+        [[nodiscard]] std::string_view getName() const { return name_; }
+        [[nodiscard]] engine::core::Context &getContext() const { return context_; }
+        [[nodiscard]] engine::scene::SceneManager &getSceneManager() const
+        {
+            return scene_manager_;
+        }
+        [[nodiscard]] bool isInitialized() const { return is_initialized_; }
+        [[nodiscard]] const std::vector<std::unique_ptr<engine::object::GameObject>> &
+        getGameObjects() const
         {
             return game_objects_;
         }

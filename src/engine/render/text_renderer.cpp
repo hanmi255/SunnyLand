@@ -12,17 +12,17 @@ namespace engine::render {
                                engine::resource::ResourceManager* resource_manager)
         : sdl_renderer_(sdl_renderer), resource_manager_(resource_manager)
     {
-        if (!sdl_renderer_ || !resource_manager_) {
+        if ((sdl_renderer_ == nullptr) || (resource_manager_ == nullptr)) {
             throw std::runtime_error(
                 "TextRenderer 需要一个有效的 SDL_Renderer 和 ResourceManager。");
         }
         // 初始化 SDL_ttf
-        if (!TTF_WasInit() && TTF_Init() == false) {
+        if (!TTF_WasInit() && !TTF_Init()) {
             throw std::runtime_error("初始化 SDL_ttf 失败: " + std::string(SDL_GetError()));
         }
 
         text_engine_ = TTF_CreateRendererTextEngine(sdl_renderer_);
-        if (!text_engine_) {
+        if (text_engine_ == nullptr) {
             spdlog::error("创建 TTF_TextEngine 失败: {}", SDL_GetError());
             throw std::runtime_error("创建 TTF_TextEngine 失败。");
         }
@@ -31,14 +31,14 @@ namespace engine::render {
 
     TextRenderer::~TextRenderer()
     {
-        if (text_engine_) {
+        if (text_engine_ != nullptr) {
             close();
         }
     }
 
     void TextRenderer::close()
     {
-        if (text_engine_) {
+        if (text_engine_ != nullptr) {
             TTF_DestroyRendererTextEngine(text_engine_);
             text_engine_ = nullptr;
             spdlog::trace("TTF_TextEngine 销毁。");
@@ -50,20 +50,20 @@ namespace engine::render {
                                   const glm::vec2 &position, const engine::utils::FColor &color)
     {
         TTF_Font* font = resource_manager_->getFont(font_id, font_size);
-        if (!font) {
+        if (font == nullptr) {
             spdlog::warn("drawUIText 获取字体失败: {} 大小 {}", font_id, font_size);
             return;
         }
 
         // 创建临时 TTF_Text 对象   (目前效率不高，未来可以考虑使用缓存优化)
         TTF_Text* temp_text_object = TTF_CreateText(text_engine_, font, text.data(), 0);
-        if (!temp_text_object) {
+        if (temp_text_object == nullptr) {
             spdlog::error("drawUIText 创建临时 TTF_Text 失败: {}", SDL_GetError());
             return;
         }
 
         // 先渲染一次黑色文字模拟阴影
-        TTF_SetTextColorFloat(temp_text_object, 0.0f, 0.0f, 0.0f, 1.0f);
+        TTF_SetTextColorFloat(temp_text_object, 0.0F, 0.0F, 0.0F, 1.0F);
         if (!TTF_DrawRendererText(temp_text_object, position.x + 2, position.y + 2)) {
             spdlog::error("drawUIText 绘制临时 TTF_Text 失败: {}", SDL_GetError());
         }
@@ -93,16 +93,16 @@ namespace engine::render {
                                         int font_size)
     {
         TTF_Font* font = resource_manager_->getFont(font_id, font_size);
-        if (!font) {
+        if (font == nullptr) {
             spdlog::warn("getTextSize 获取字体失败: {} 大小 {}", font_id, font_size);
-            return glm::vec2(0.0f, 0.0f);
+            return glm::vec2(0.0F, 0.0F);
         }
 
         // 创建临时 TTF_Text 对象
         TTF_Text* temp_text_object = TTF_CreateText(text_engine_, font, text.data(), 0);
-        if (!temp_text_object) {
+        if (temp_text_object == nullptr) {
             spdlog::error("getTextSize 创建临时 TTF_Text 失败: {}", SDL_GetError());
-            return glm::vec2(0.0f, 0.0f);
+            return glm::vec2(0.0F, 0.0F);
         }
 
         int width, height;

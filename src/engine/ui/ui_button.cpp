@@ -6,8 +6,7 @@ namespace engine::ui {
     UIButton::UIButton(engine::core::Context &context, std::string_view normal_sprite_id,
                        std::string_view hover_sprite_id, std::string_view pressed_sprite_id,
                        glm::vec2 position, glm::vec2 size, std::function<void()> callback)
-        : UIInteractive(context, std::move(position), std::move(size))
-        , callback_(std::move(callback))
+        : UIInteractive(context, position, size), callback_(std::move(callback))
     {
         addSprite("normal", std::make_unique<engine::render::Sprite>(normal_sprite_id));
         addSprite("hover", std::make_unique<engine::render::Sprite>(hover_sprite_id));

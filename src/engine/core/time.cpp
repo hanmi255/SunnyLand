@@ -13,12 +13,12 @@
 
 namespace engine::core {
 
-    Time::Time()
+    constexpr double NANOSECONDS_PER_SECOND = 1000000000.0; // 定义每秒纳秒数常量
+
+    Time::Time() : last_time_(SDL_GetTicksNS()), frame_start_time_(last_time_)
     {
         // 初始化 last_time_ 和 frame_start_time_ 为当前时间，避免第一帧
         // DeltaTime 过大
-        last_time_ = SDL_GetTicksNS();
-        frame_start_time_ = last_time_;
         spdlog::trace("Time 初始化。Last time: {}", last_time_);
     }
 
@@ -27,7 +27,7 @@ namespace engine::core {
 
         frame_start_time_ = SDL_GetTicksNS(); // 记录进入 update 时的时间戳
         auto current_delta_time = static_cast<double>(frame_start_time_ - last_time_) /
-                                  1000000000.0;
+                                  NANOSECONDS_PER_SECOND;
 
         // 如果设置了目标帧率，则限制帧率；
         // 否则delta_time_ = current_delta_time
@@ -48,9 +48,9 @@ namespace engine::core {
         }
 
         double time_to_wait = target_frame_time_ - current_delta_time;
-        Uint64 ns_to_wait = static_cast<Uint64>(time_to_wait * 1000000000.0);
+        auto ns_to_wait = static_cast<Uint64>(time_to_wait * NANOSECONDS_PER_SECOND);
         SDL_DelayNS(ns_to_wait);
-        delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / 1000000000.0;
+        delta_time_ = static_cast<double>(SDL_GetTicksNS() - last_time_) / NANOSECONDS_PER_SECOND;
     }
 
     double Time::getDeltaTime() const

@@ -8,7 +8,7 @@ struct TTF_TextEngine;
 
 namespace engine::resource {
     class ResourceManager;
-}
+} // namespace engine::resource
 
 namespace engine::render {
     class Camera;
@@ -52,7 +52,8 @@ namespace engine::render {
          */
         void drawUIText(std::string_view text, std::string_view font_id, int font_size,
                         const glm::vec2 &position,
-                        const engine::utils::FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
+                        const engine::utils::FColor &color = {
+                            .r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F});
 
         /**
          * @brief 绘制地图上的字符串。
@@ -66,7 +67,8 @@ namespace engine::render {
          */
         void drawText(const Camera &camera, std::string_view text, std::string_view font_id,
                       int font_size, const glm::vec2 &position,
-                      const engine::utils::FColor &color = {1.0f, 1.0f, 1.0f, 1.0f});
+                      const engine::utils::FColor &color = {
+                          .r = 1.0F, .g = 1.0F, .b = 1.0F, .a = 1.0F});
 
         /**
          * @brief 获取文本的尺寸。

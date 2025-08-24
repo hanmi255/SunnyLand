@@ -36,9 +36,9 @@
 namespace game::scene {
     // 定义EffectConfig的静态成员
     const GameScene::EffectConfig GameScene::EffectConfig::ENEMY{
-        "assets/textures/FX/enemy-deadth.png", 5, 40.0f, 41.0f, 0.1f};
+        "assets/textures/FX/enemy-deadth.png", 5, 40.0F, 41.0F, 0.1F};
     const GameScene::EffectConfig GameScene::EffectConfig::ITEM{
-        "assets/textures/FX/item-feedback.png", 4, 32.0f, 32.0f, 0.1f};
+        "assets/textures/FX/item-feedback.png", 4, 32.0F, 32.0F, 0.1F};
 
     GameScene::GameScene(engine::core::Context &context, engine::scene::SceneManager &scene_manager,
                          std::shared_ptr<game::data::SessionData> data)
@@ -129,12 +129,12 @@ namespace game::scene {
 
         // 注册"main"层到物理引擎
         auto* main_layer = findGameObjectByName("main");
-        if (!main_layer) {
+        if (main_layer == nullptr) {
             spdlog::error("未找到\"main\"层");
             return false;
         }
         auto* tile_layer = main_layer->getComponent<engine::component::TileLayerComponent>();
-        if (!tile_layer) {
+        if (tile_layer == nullptr) {
             spdlog::error("\"main\"层没有 TileLayerComponent 组件");
             return false;
         }
@@ -144,12 +144,12 @@ namespace game::scene {
         // 设置相机边界
         auto world_size =
             main_layer->getComponent<engine::component::TileLayerComponent>()->getWorldSize();
-        context_.getCamera().setLimitBounds(engine::utils::Rect(glm::vec2(0.0f), world_size));
-        context_.getCamera().setPosition(glm::vec2(0.0f)); // 开始时重置相机位置，以免切换场景时晃动
+        context_.getCamera().setLimitBounds(engine::utils::Rect(glm::vec2(0.0F), world_size));
+        context_.getCamera().setPosition(glm::vec2(0.0F)); // 开始时重置相机位置，以免切换场景时晃动
 
         // 设置世界边界
         context_.getPhysicsEngine().setWorldBounds(
-            engine::utils::Rect(glm::vec2(0.0f), world_size));
+            engine::utils::Rect(glm::vec2(0.0F), world_size));
 
         spdlog::trace("关卡初始化完成。");
         return true;
@@ -159,21 +159,21 @@ namespace game::scene {
     {
         // 获取玩家对象
         player_ = findGameObjectByName("player");
-        if (!player_) {
+        if (player_ == nullptr) {
             spdlog::error("未找到玩家对象");
             return false;
         }
 
         // 添加PlayerComponent到玩家对象
         auto* player_component = player_->addComponent<game::component::PlayerComponent>();
-        if (!player_component) {
+        if (player_component == nullptr) {
             spdlog::error("无法添加 PlayerComponent 到玩家对象");
             return false;
         }
 
         // 从SessionData中更新玩家生命值
         auto* health_component = player_->getComponent<engine::component::HealthComponent>();
-        if (!health_component) {
+        if (health_component == nullptr) {
             spdlog::error("玩家对象缺少 HealthComponent 组件，无法设置生命值");
             return false;
         }
@@ -182,7 +182,7 @@ namespace game::scene {
 
         // 相机跟随玩家
         auto* player_transform = player_->getComponent<engine::component::TransformComponent>();
-        if (!player_transform) {
+        if (player_transform == nullptr) {
             spdlog::error("玩家对象没有 TransformComponent 组件, 无法设置相机目标");
             return false;
         }
@@ -204,7 +204,7 @@ namespace game::scene {
                 auto* ai = obj->addComponent<game::component::AIComponent>();
                 auto* transform = obj->getComponent<engine::component::TransformComponent>();
 
-                if (!ai || !transform) {
+                if ((ai == nullptr) || (transform == nullptr)) {
                     spdlog::error("{}缺少必要组件", name);
                     success = false;
                     continue;
@@ -235,7 +235,7 @@ namespace game::scene {
             // 初始化道具动画
             if (obj->getTag() == "item") {
                 auto* ac = obj->getComponent<engine::component::AnimationComponent>();
-                if (ac) {
+                if (ac != nullptr) {
                     ac->playAnimation("idle");
                 } else {
                     spdlog::error("Item对象'{}'缺少AnimationComponent", obj->getName());
@@ -272,12 +272,12 @@ namespace game::scene {
             const auto [player, other] = [obj1, obj2]() {
                 if (obj1->getName() == "player") return std::make_pair(obj1, obj2);
                 if (obj2->getName() == "player") return std::make_pair(obj2, obj1);
-                return std::make_pair<engine::object::GameObject*, engine::object::GameObject*>(
+                return std::pair<engine::object::GameObject*, engine::object::GameObject*>(
                     nullptr, nullptr);
             }();
 
             // 如果没有玩家参与碰撞，跳过
-            if (!player) continue;
+            if (player == nullptr) continue;
 
             const auto &other_tag = other->getTag();
             [this, player, other, &other_tag]() {
@@ -318,14 +318,14 @@ namespace game::scene {
     void GameScene::checkPlayerFallOutOfWorld()
     {
         // 玩家掉出地图下方则判断为失败
-        if (!player_) {
+        if (player_ == nullptr) {
             return;
         }
 
         auto pos = player_->getComponent<engine::component::TransformComponent>()->getPosition();
         auto world_rect = context_.getPhysicsEngine().getWorldBounds();
         // 多100像素冗余量
-        if (world_rect && pos.y > world_rect->position.y + world_rect->size.y + 100.0f) {
+        if (world_rect && pos.y > world_rect->position.y + world_rect->size.y + 100.0F) {
             spdlog::debug("玩家掉出地图下方，游戏失败");
             showEndScene(false);
         }
@@ -349,7 +349,7 @@ namespace game::scene {
                                            engine::object::GameObject* enemy)
     {
         // 空指针检查
-        if (!player || !enemy) {
+        if ((player == nullptr) || (enemy == nullptr)) {
             spdlog::error("PlayerVSEnemyCollision: player或enemy为nullptr");
             return;
         }
@@ -358,12 +358,12 @@ namespace game::scene {
         auto* player_collider = player->getComponent<engine::component::ColliderComponent>();
         auto* enemy_collider = enemy->getComponent<engine::component::ColliderComponent>();
 
-        if (!player_collider) {
+        if (player_collider == nullptr) {
             spdlog::error("玩家 {} 没有 ColliderComponent 组件", player->getName());
             return;
         }
 
-        if (!enemy_collider) {
+        if (enemy_collider == nullptr) {
             spdlog::error("敌人 {} 没有 ColliderComponent 组件", enemy->getName());
             return;
         }
@@ -372,10 +372,10 @@ namespace game::scene {
         const auto player_aabb = player_collider->getWorldAABB();
         const auto enemy_aabb = enemy_collider->getWorldAABB();
 
-        const auto player_center = player_aabb.position + player_aabb.size / 2.0f;
-        const auto enemy_center = enemy_aabb.position + enemy_aabb.size / 2.0f;
+        const auto player_center = player_aabb.position + player_aabb.size / 2.0F;
+        const auto enemy_center = enemy_aabb.position + enemy_aabb.size / 2.0F;
 
-        const auto overlap = glm::vec2(player_aabb.size / 2.0f + enemy_aabb.size / 2.0f) -
+        const auto overlap = glm::vec2(player_aabb.size / 2.0F + enemy_aabb.size / 2.0F) -
                              glm::abs(player_center - enemy_center);
 
         // 踩踏判断成功，敌人受伤
@@ -383,7 +383,7 @@ namespace game::scene {
             spdlog::info("玩家 {} 踩踏了敌人 {}", player->getName(), enemy->getName());
 
             auto* enemy_health = enemy->getComponent<engine::component::HealthComponent>();
-            if (!enemy_health) {
+            if (enemy_health == nullptr) {
                 spdlog::error("敌人 {} 没有 HealthComponent 组件，无法处理踩踏伤害",
                               enemy->getName());
                 return;
@@ -399,8 +399,8 @@ namespace game::scene {
 
             // 玩家跳起效果
             auto* player_physics = player->getComponent<engine::component::PhysicsComponent>();
-            if (player_physics) {
-                player_physics->velocity_.y = -300.0f; // 向上跳起
+            if (player_physics != nullptr) {
+                player_physics->velocity_.y = -300.0F; // 向上跳起
                 context_.getAudioPlayer().playSound("assets/audio/punch2a.mp3");
                 // 加分
                 addScoreWithUI(10);
@@ -416,7 +416,7 @@ namespace game::scene {
         }
     }
 
-    void GameScene::PlayerVSItemCollision(engine::object::GameObject*,
+    void GameScene::PlayerVSItemCollision(engine::object::GameObject* /*unused*/,
                                           engine::object::GameObject* item)
     {
         if (item->getName() == "fruit") {
@@ -426,7 +426,7 @@ namespace game::scene {
         }
         item->setNeedRemove(true); // 标记道具为待删除状态
         auto item_aabb = item->getComponent<engine::component::ColliderComponent>()->getWorldAABB();
-        createEffect(item_aabb.position + item_aabb.size / 2.0f, item->getTag());
+        createEffect(item_aabb.position + item_aabb.size / 2.0F, item->getTag());
         context_.getAudioPlayer().playSound("assets/audio/poka01.mp3");
     }
 
@@ -474,7 +474,7 @@ namespace game::scene {
         // 创建动画
         auto animation = std::make_unique<engine::render::Animation>("effect", false);
         for (int i = 0; i < config->frame_count; ++i) {
-            animation->addFrame({static_cast<float>(i) * config->frame_width, 0.0f,
+            animation->addFrame({static_cast<float>(i) * config->frame_width, 0.0F,
                                  config->frame_width, config->frame_height},
                                 config->frame_duration);
         }
@@ -506,13 +506,13 @@ namespace game::scene {
 
         // 获取屏幕尺寸并检查根元素是否存在
         auto* root_element = ui_manager_->getRootElement();
-        if (!root_element) {
+        if (root_element == nullptr) {
             spdlog::error("UI根元素不存在，无法设置得分标签位置");
             return;
         }
 
         const auto screen_size = root_element->getSize();
-        score_label_->setPosition(glm::vec2(screen_size.x - 100.0f, 10.0f));
+        score_label_->setPosition(glm::vec2(screen_size.x - 100.0F, 10.0F));
         ui_manager_->addElement(std::move(score_label));
 
         spdlog::trace("得分UI创建完成");
@@ -522,11 +522,11 @@ namespace game::scene {
     {
         const int max_health = game_session_data_->getMaxHealth();
         const int current_health = game_session_data_->getCurrentHealth();
-        constexpr float start_x = 10.0f;
-        constexpr float start_y = 10.0f;
-        constexpr float icon_width = 20.0f;
-        constexpr float icon_height = 18.0f;
-        constexpr float spacing = 5.0f;
+        constexpr float start_x = 10.0F;
+        constexpr float start_y = 10.0F;
+        constexpr float icon_width = 20.0F;
+        constexpr float icon_height = 18.0F;
+        constexpr float spacing = 5.0F;
         constexpr std::string_view full_heart_tex = "assets/textures/UI/Heart.png";
         constexpr std::string_view empty_heart_tex = "assets/textures/UI/Heart-bg.png";
 
@@ -540,7 +540,7 @@ namespace game::scene {
 
         // --- 根据最大生命值，循环创建生命值图标(添加到UIPanel中) ---
         for (int i = 0; i < max_health; ++i) { // 创建背景图标
-            const glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
+            const glm::vec2 icon_pos = {start_x + (i * (icon_width + spacing)), start_y};
             const glm::vec2 icon_size = {icon_width, icon_height};
 
             auto bg_icon =
@@ -550,7 +550,7 @@ namespace game::scene {
         }
 
         for (int i = 0; i < max_health; ++i) { // 创建前景图标
-            const glm::vec2 icon_pos = {start_x + i * (icon_width + spacing), start_y};
+            const glm::vec2 icon_pos = {start_x + (i * (icon_width + spacing)), start_y};
             const glm::vec2 icon_size = {icon_width, icon_height};
 
             auto fg_icon =
@@ -589,7 +589,7 @@ namespace game::scene {
 
     void GameScene::updateHealthWithUI()
     {
-        if (!player_ || !health_panel_) {
+        if ((player_ == nullptr) || (health_panel_ == nullptr)) {
             spdlog::error("玩家对象或 HealthPanel 不存在，无法更新生命值UI");
             return;
         }

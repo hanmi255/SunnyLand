@@ -12,7 +12,7 @@ namespace engine::ui {
     UIInteractive::~UIInteractive() = default;
 
     UIInteractive::UIInteractive(engine::core::Context &context, glm::vec2 position, glm::vec2 size)
-        : UIElement(std::move(position), std::move(size)), context_(context)
+        : UIElement(position, size), context_(context)
     {
         spdlog::trace("UIInteractive 构造完成");
     }
@@ -33,7 +33,7 @@ namespace engine::ui {
     {
         // 可交互UI元素必须有一个 size 用于交互检测，因此如果参数列表中没有指定，则用图片大小作为
         // size
-        if (size_.x == 0.0f && size_.y == 0.0f) {
+        if (size_.x == 0.0F && size_.y == 0.0F) {
             size_ = context_.getResourceManager().getTextureSize(sprite->getTextureId());
         }
         // 添加精灵
@@ -42,7 +42,7 @@ namespace engine::ui {
 
     void UIInteractive::setSprite(std::string_view name)
     {
-        if (sprites_.find(std::string(name)) != sprites_.end()) {
+        if (sprites_.contains(std::string(name))) {
             current_sprite_ = sprites_[std::string(name)].get();
         } else {
             spdlog::warn("Sprite '{}' 未找到", name);
@@ -56,7 +56,7 @@ namespace engine::ui {
 
     void UIInteractive::playSound(std::string_view name)
     {
-        if (sounds_.find(std::string(name)) != sounds_.end()) {
+        if (sounds_.contains(std::string(name))) {
             context_.getAudioPlayer().playSound(sounds_[std::string(name)]);
         } else {
             spdlog::error("Sound '{}' 未找到", name);

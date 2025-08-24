@@ -22,9 +22,9 @@ namespace game::component::player_state {
         PlayerComponent* player_component_ = nullptr; ///< @brief 指向拥有此状态的玩家组件
 
     public:
-        PlayerState(PlayerComponent* player_component) : player_component_(player_component) {}
+        explicit PlayerState(PlayerComponent* player_component) : player_component_(player_component) {}
         virtual ~PlayerState() = default;
-        virtual const char* getStateName() const = 0;
+        [[nodiscard]] virtual const char* getStateName() const = 0;
 
         // 禁止拷贝和移动语义
         PlayerState(const PlayerState &) = delete;

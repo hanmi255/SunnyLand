@@ -1,0 +1,29 @@
+Diagnostics:
+  ClangTidy:
+    Add: ["*"]
+    Remove:
+    [
+      abseil*,
+      altera*,
+      fuchsia*,
+      llvmlib*,
+      zircon*,
+      google-readability-todo,
+      readability-braces-around-statements,
+      hicpp-braces-around-statements,
+      misc-unused*
+    ]
+    CheckOptions:
+      WarnOnFloatingPointNarrowingConversion: false
+---
+# 这段为C++代码配置
+If:
+  PathMatch: [.*\.cpp, .*\.cxx, .*\.cc, .*\.h, .*\.hpp, .*\.hxx]
+CompileFlags:
+  Add: [-std=c++20]
+---
+# 这段为C代码配置
+If:
+  PathMatch: [.*\.c]
+CompileFlags:
+  Add: [-std=c17]

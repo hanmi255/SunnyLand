@@ -31,7 +31,7 @@ namespace engine::component {
         engine::render::Animation* current_animation_ =
             nullptr;                                  ///< @brief 指向当前播放动画的原始指针
 
-        float animation_timer_ = 0.0f;                ///< @brief 动画播放中的计时器
+        float animation_timer_ = 0.0F;                ///< @brief 动画播放中的计时器
         bool is_playing_ = false;                     ///< @brief 当前是否有动画正在播放
         bool is_one_shot_removal_ = false;            ///< @brief 是否在动画结束后删除整个GameObject
 
@@ -51,10 +51,10 @@ namespace engine::component {
         void resumeAnimation() { is_playing_ = true; }
 
         // --- getters ---
-        std::string_view getCurrentAnimationName() const;
-        bool isPlaying() const { return is_playing_; }
-        bool isAnimationFinished() const;
-        bool isOneShotRemoval() const { return is_one_shot_removal_; }
+        [[nodiscard]] std::string_view getCurrentAnimationName() const;
+        [[nodiscard]] bool isPlaying() const { return is_playing_; }
+        [[nodiscard]] bool isAnimationFinished() const;
+        [[nodiscard]] bool isOneShotRemoval() const { return is_one_shot_removal_; }
 
         // --- setters ---
         void setOneShotRemoval(bool is_one_shot_removal)
@@ -65,7 +65,7 @@ namespace engine::component {
     protected:
         // 核心逻辑
         void init() override;
-        void update(float, engine::core::Context &) override;
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override;
     };
 
 } // namespace engine::component

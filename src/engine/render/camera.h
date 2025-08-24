@@ -28,7 +28,7 @@ namespace engine::render {
         glm::vec2 position_;               ///< @brief 相机左上角的世界坐标
         std::optional<engine::utils::Rect>
             limit_bounds_;                 ///< @brief 限制相机移动范围，空值表示不限制
-        float smooth_factor_ = 5.0f;       ///< @brief 平滑因子，用于平滑相机移动
+        float smooth_factor_ = 5.0F;       ///< @brief 平滑因子，用于平滑相机移动
         engine::component::TransformComponent* target_ =
             nullptr;                       ///< @brief 目标对象，空值表示不跟随
 
@@ -39,7 +39,7 @@ namespace engine::render {
          * @param position 相机位置
          * @param limit_bounds 限制相机的移动范围
          */
-        Camera(glm::vec2 viewport_size, glm::vec2 position = glm::vec2(0.0f, 0.0f),
+        explicit Camera(glm::vec2 viewport_size, glm::vec2 position = glm::vec2(0.0F, 0.0F),
                std::optional<engine::utils::Rect> limit_bounds = std::nullopt);
 
         // 禁用拷贝和移动语义
@@ -51,16 +51,16 @@ namespace engine::render {
         void update(float delta_time);
         void move(const glm::vec2 &offset);
 
-        glm::vec2 worldToScreen(const glm::vec2 &world_pos) const;
-        glm::vec2 worldToScreenWithParallax(const glm::vec2 &world_pos,
+        [[nodiscard]] glm::vec2 worldToScreen(const glm::vec2 &world_pos) const;
+        [[nodiscard]] glm::vec2 worldToScreenWithParallax(const glm::vec2 &world_pos,
                                             const glm::vec2 &scroll_factor) const;
-        glm::vec2 screenToWorld(const glm::vec2 &screen_pos) const;
+        [[nodiscard]] glm::vec2 screenToWorld(const glm::vec2 &screen_pos) const;
 
         // --- getters ---
-        const glm::vec2 getPosition() const;
-        std::optional<engine::utils::Rect> getLimitBounds() const;
-        glm::vec2 getViewportSize() const;
-        engine::component::TransformComponent* getTarget() const;
+        [[nodiscard]] glm::vec2 getPosition() const;
+        [[nodiscard]] std::optional<engine::utils::Rect> getLimitBounds() const;
+        [[nodiscard]] glm::vec2 getViewportSize() const;
+        [[nodiscard]] engine::component::TransformComponent* getTarget() const;
 
         // --- setters ---
         void setPosition(glm::vec2 position);

@@ -20,12 +20,12 @@ namespace engine::component {
 
     void ColliderComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("ColliderComponent 在初始化前未设置 owner_。");
             return;
         }
         transform_component_ = owner_->getComponent<TransformComponent>();
-        if (!transform_component_) {
+        if (transform_component_ == nullptr) {
             spdlog::warn(
                 "GameObject '{}' 上的 ColliderComponent 需要一个 TransformComponent，但未找到。",
                 owner_->getName());
@@ -39,7 +39,7 @@ namespace engine::component {
     {
         alignment_ = anchor;
         // 重新计算偏移量，确保 transform_component_ 和 collider_ 有效
-        if (transform_component_ && collider_) {
+        if ((transform_component_ != nullptr) && collider_) {
             updateOffset();
         }
     }
@@ -52,8 +52,8 @@ namespace engine::component {
         auto collider_size = collider_->getAABBSize();
 
         // 如果尺寸无效，偏移为0
-        if (collider_size.x <= 0.0f || collider_size.y <= 0.0f) {
-            offset_ = {0.0f, 0.0f};
+        if (collider_size.x <= 0.0F || collider_size.y <= 0.0F) {
+            offset_ = {0.0F, 0.0F};
             return;
         }
         auto scale = transform_component_->getScale();
@@ -61,28 +61,28 @@ namespace engine::component {
         // 根据 alignment_anchor_ 计算 AABB 左上角相对于 Transform 中心的偏移量
         switch (alignment_) {
             case engine::utils::Alignment::TOP_LEFT:
-                offset_ = glm::vec2{0.0f, 0.0f} * scale;
+                offset_ = glm::vec2{0.0F, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::TOP_CENTER:
-                offset_ = glm::vec2{-collider_size.x / 2.0f, 0.0f} * scale;
+                offset_ = glm::vec2{-collider_size.x / 2.0F, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::TOP_RIGHT:
-                offset_ = glm::vec2{-collider_size.x, 0.0f} * scale;
+                offset_ = glm::vec2{-collider_size.x, 0.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER_LEFT:
-                offset_ = glm::vec2{0.0f, -collider_size.y / 2.0f} * scale;
+                offset_ = glm::vec2{0.0F, -collider_size.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER:
-                offset_ = glm::vec2{-collider_size.x / 2.0f, -collider_size.y / 2.0f} * scale;
+                offset_ = glm::vec2{-collider_size.x / 2.0F, -collider_size.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::CENTER_RIGHT:
-                offset_ = glm::vec2{-collider_size.x, -collider_size.y / 2.0f} * scale;
+                offset_ = glm::vec2{-collider_size.x, -collider_size.y / 2.0F} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_LEFT:
-                offset_ = glm::vec2{0.0f, -collider_size.y} * scale;
+                offset_ = glm::vec2{0.0F, -collider_size.y} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_CENTER:
-                offset_ = glm::vec2{-collider_size.x / 2.0f, -collider_size.y} * scale;
+                offset_ = glm::vec2{-collider_size.x / 2.0F, -collider_size.y} * scale;
                 break;
             case engine::utils::Alignment::BOTTOM_RIGHT:
                 offset_ = glm::vec2{-collider_size.x, -collider_size.y} * scale;
@@ -94,7 +94,7 @@ namespace engine::component {
 
     engine::utils::Rect ColliderComponent::getWorldAABB() const
     {
-        if (!transform_component_ || !collider_) {
+        if ((transform_component_ == nullptr) || !collider_) {
             return {glm::vec2(0.0f, 0.0f), glm::vec2(0.0f, 0.0f)};
         }
         // 计算最小包围盒的左上角坐标（position）

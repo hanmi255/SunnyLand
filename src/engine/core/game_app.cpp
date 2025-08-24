@@ -222,8 +222,8 @@ namespace engine::core {
     {
         try {
             audio_player_ = std::make_unique<engine::audio::AudioPlayer>(resource_manager_.get());
-            audio_player_->setMusicVolume(config_->getMusicVolume()); // 设置背景音乐音量
-            audio_player_->setSoundVolume(config_->getSoundVolume()); // 设置音效音量
+            engine::audio::AudioPlayer::setMusicVolume(config_->getMusicVolume()); // 设置背景音乐音量
+            engine::audio::AudioPlayer::setSoundVolume(config_->getSoundVolume()); // 设置音效音量
         } catch (const std::exception &e) {
             spdlog::error("初始化音频播放器失败: {}", e.what());
             return false;
@@ -343,10 +343,11 @@ namespace engine::core {
             std::filesystem::current_path(assets_path.parent_path());
             spdlog::trace("设置工作目录到: {}", std::filesystem::current_path().string());
             return true;
-        } else {
-            spdlog::warn("未找到 assets 目录，使用默认工作目录");
-            return false;
         }
+
+        spdlog::warn("未找到 assets 目录，使用默认工作目录");
+        return false;
+
     }
 
 } // namespace engine::core

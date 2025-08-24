@@ -12,8 +12,8 @@ namespace engine::component {
         int max_health_ = 1;                  ///< @brief 最大生命值
         int current_health_ = 1;              ///< @brief 当前生命值
         bool is_invincible_ = false;          ///< @brief 是否处于无敌状态
-        float invincibility_duration_ = 2.0f; ///< @brief 受伤后无敌状态持续时间（秒）
-        float invincibility_timer_ = 0.0f;    ///< @brief 当前无敌状态计时器（秒）
+        float invincibility_duration_ = 2.0F; ///< @brief 受伤后无敌状态持续时间（秒）
+        float invincibility_timer_ = 0.0F;    ///< @brief 当前无敌状态计时器（秒）
 
     public:
         /**
@@ -21,7 +21,7 @@ namespace engine::component {
          * @param max_health 最大生命值，默认为 1
          * @param invincibility_duration 无敌状态持续时间，默认为 2.0 秒
          */
-        explicit HealthComponent(int max_health = 1, float invincibility_duration = 2.0f);
+        explicit HealthComponent(int max_health = 1, float invincibility_duration = 2.0F);
         ~HealthComponent() override = default;
 
         // 禁止拷贝和移动语义
@@ -34,10 +34,10 @@ namespace engine::component {
         int heal(int heal_amount);
 
         // --- getters ---
-        int getMaxHealth() const { return max_health_; }
-        int getCurrentHealth() const { return current_health_; }
-        bool isInvincible() const { return is_invincible_; }
-        bool isAlive() const { return current_health_ > 0; }
+        [[nodiscard]] int getMaxHealth() const { return max_health_; }
+        [[nodiscard]] int getCurrentHealth() const { return current_health_; }
+        [[nodiscard]] bool isInvincible() const { return is_invincible_; }
+        [[nodiscard]] bool isAlive() const { return current_health_ > 0; }
 
         // --- setters ---
         void setMaxHealth(int max_health);
@@ -47,7 +47,7 @@ namespace engine::component {
 
     protected:
         // 核心逻辑
-        void update(float, engine::core::Context &) override;
+        void update(float /*unused*/, engine::core::Context & /*unused*/) override;
     };
 
 } // namespace engine::component

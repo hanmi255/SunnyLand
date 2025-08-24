@@ -8,13 +8,13 @@ namespace game::component::player_state {
 
     void PlayerState::playAnimation(const std::string &name)
     {
-        if (!player_component_) {
+        if (player_component_ == nullptr) {
             spdlog::error("PlayerState 没有关联的 PlayerComponent，无法播放动画 '{}'", name);
             return;
         }
 
         auto* animation_component = player_component_->getAnimationComponent();
-        if (!animation_component) {
+        if (animation_component == nullptr) {
             spdlog::error("PlayerComponent '{}' 没有 AnimationComponent，无法播放动画 '{}'",
                           player_component_->getOwner()->getName(), name);
             return;

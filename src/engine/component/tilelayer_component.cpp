@@ -22,7 +22,7 @@ namespace engine::component {
 
     void TileLayerComponent::init()
     {
-        if (!owner_) {
+        if (owner_ == nullptr) {
             spdlog::error("ParallaxComponent 在初始化前未设置 owner_。");
             return;
         }
@@ -40,8 +40,8 @@ namespace engine::component {
         auto &camera = context.getCamera();
 
         // 预计算常用值
-        const float tile_width = static_cast<float>(tile_size_.x);
-        const float tile_height = static_cast<float>(tile_size_.y);
+        const auto tile_width = static_cast<float>(tile_size_.x);
+        const auto tile_height = static_cast<float>(tile_size_.y);
         const int map_width = map_size_.x;
 
         // 视锥剔除：计算需要渲染的瓦片范围
@@ -49,6 +49,7 @@ namespace engine::component {
 
         // 确定渲染边界：如果相机有限制边界则使用它，否则使用相机视口
         float left, right, top, bottom;
+
         if (camera_bounds_opt.has_value()) {
             const auto &camera_bounds = camera_bounds_opt.value();
             left = camera_bounds.position.x;
@@ -77,7 +78,7 @@ namespace engine::component {
         for (int y = start_y; y < end_y; ++y) {
             // 预计算y相关的值
             const size_t row_offset = static_cast<size_t>(y) * map_width;
-            const float base_y = offset_.y + y * tile_height;
+            const float base_y = offset_.y + (y * tile_height);
 
             for (int x = start_x; x < end_x; ++x) {
                 const size_t index = row_offset + x;
@@ -90,7 +91,7 @@ namespace engine::component {
                 const auto &tile_info = tiles_[index];
 
                 // 计算瓦片位置
-                glm::vec2 tile_pos = {offset_.x + x * tile_width, base_y};
+                glm::vec2 tile_pos = {offset_.x + (x * tile_width), base_y};
 
                 // 处理图片尺寸与瓦片尺寸不匹配的情况
                 const auto src_rect = tile_info.sprite.getSrcRect();
@@ -106,7 +107,7 @@ namespace engine::component {
 
     void TileLayerComponent::clean()
     {
-        if (physics_engine_) {
+        if (physics_engine_ != nullptr) {
             physics_engine_->unregisterCollisionTileLayer(this);
         }
     }
@@ -117,7 +118,7 @@ namespace engine::component {
             spdlog::warn("TileLayerComponent: 瓦片坐标越界: ({}, {})", pos.x, pos.y);
             return nullptr;
         }
-        size_t index = static_cast<size_t>(pos.y * map_size_.x + pos.x);
+        auto index = static_cast<size_t>((pos.y * map_size_.x) + pos.x);
         // 瓦片索引不能越界
         if (index < tiles_.size()) {
             return &tiles_[index];
@@ -129,7 +130,7 @@ namespace engine::component {
     TileType TileLayerComponent::getTileTypeAt(glm::ivec2 pos) const
     {
         const TileInfo* info = getTileInfoAt(pos);
-        return info ? info->type : TileType::EMPTY;
+        return (info != nullptr) ? info->type : TileType::EMPTY;
     }
 
     TileType TileLayerComponent::getTileTypeAtWorldPos(const glm::vec2 &world_pos) const

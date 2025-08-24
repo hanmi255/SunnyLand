@@ -14,10 +14,10 @@
 namespace engine::render {
     Camera::Camera(glm::vec2 viewport_size, glm::vec2 position,
                    std::optional<engine::utils::Rect> limit_bounds)
-        : viewport_size_(std::move(viewport_size))
-        , viewport_center_offset_(viewport_size_ * 0.5f)
-        , position_(std::move(position))
-        , limit_bounds_(std::move(limit_bounds))
+        : viewport_size_(viewport_size)
+        , viewport_center_offset_(viewport_size_ * 0.5F)
+        , position_(position)
+        , limit_bounds_(limit_bounds)
     {
         spdlog::trace("Camera 初始化成功，位置: {},{}", position_.x, position_.y);
     }
@@ -30,7 +30,7 @@ namespace engine::render {
         glm::vec2 offset = desired_position - position_;
 
         // 快速距离检查：使用曼哈顿距离或切比雪夫距离
-        if (std::abs(offset.x) < 1.0f && std::abs(offset.y) < 1.0f) {
+        if (std::abs(offset.x) < 1.0F && std::abs(offset.y) < 1.0F) {
             position_ = desired_position;
         } else {
             position_ += offset * (smooth_factor_ * delta_time);
@@ -62,7 +62,7 @@ namespace engine::render {
         return screen_pos + position_;
     }
 
-    const glm::vec2 Camera::getPosition() const
+    glm::vec2 Camera::getPosition() const
     {
         return position_;
     }
@@ -84,13 +84,13 @@ namespace engine::render {
 
     void Camera::setPosition(glm::vec2 position)
     {
-        position_ = std::move(position);
+        position_ = position;
         clampPosition();
     }
 
     void Camera::setLimitBounds(std::optional<engine::utils::Rect> limit_bounds)
     {
-        limit_bounds_ = std::move(limit_bounds);
+        limit_bounds_ = limit_bounds;
         clampPosition();
     }
 

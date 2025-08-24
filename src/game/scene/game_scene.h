@@ -31,10 +31,10 @@ namespace game::scene {
 
     private:
         struct EnemyConfig {
-            static constexpr float EAGLE_FLIGHT_RANGE = 80.0f;
-            static constexpr float FROG_JUMP_RANGE = 90.0f;
-            static constexpr float FROG_OFFSET = 10.0f;
-            static constexpr float OPOSSUM_PATROL_RANGE = 200.0f;
+            static constexpr float EAGLE_FLIGHT_RANGE = 80.0F;
+            static constexpr float FROG_JUMP_RANGE = 90.0F;
+            static constexpr float FROG_OFFSET = 10.0F;
+            static constexpr float OPOSSUM_PATROL_RANGE = 200.0F;
         };
 
         struct EffectConfig {
@@ -88,7 +88,7 @@ namespace game::scene {
         void toNextLevel(engine::object::GameObject* trigger);
         void showEndScene(bool is_win);
 
-        std::string levelNameToPath(std::string_view level_name) const
+        [[nodiscard]] static std::string levelNameToPath(std::string_view level_name)
         {
             return "assets/maps/" + std::string(level_name) + ".tmj";
         }
